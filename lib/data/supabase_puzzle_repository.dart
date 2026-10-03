@@ -58,11 +58,17 @@ class SupabasePuzzleRepository implements PuzzleRepository {
     }
     final ext = upload.extension.toLowerCase();
     final path = '$uid/${name ?? DateTime.now().microsecondsSinceEpoch}.$ext';
-    await _client.storage.from(_kBucket).uploadBinary(
-          path,
-          upload.bytes,
-          fileOptions: FileOptions(contentType: _mime(ext), upsert: name != null),
-        );
+    try {
+      // bez upsert: ten by vyžadoval i oprávnění SELECT/UPDATE v úložišti
+      await _client.storage.from(_kBucket).uploadBinary(
+            path,
+            upload.bytes,
+            fileOptions: FileOptions(contentType: _mime(ext)),
+          );
+    } on StorageException catch (e) {
+      // soubor zůstal z dřívějšího nedokončeného importu: použijeme ho
+      if (name == null || e.statusCode != '409') rethrow;
+    }
     return path;
   }
 
@@ -142,6 +148,7 @@ class SupabasePuzzleRepository implements PuzzleRepository {
     final todo = [for (final p in seed) if (!have.contains(p.id)) p];
 
     var imported = 0, failed = 0;
+    String? firstError;
     for (var i = 0; i < todo.length; i++) {
       final p = todo[i];
       String? path;
@@ -158,8 +165,9 @@ class SupabasePuzzleRepository implements PuzzleRepository {
           'seed_key': p.id,
         });
         imported++;
-      } catch (_) {
+      } catch (e) {
         failed++;
+        firstError ??= '${p.id}: $e';
         if (path != null) {
           try {
             await _client.storage.from(_kBucket).remove([path]);
@@ -168,7 +176,7 @@ class SupabasePuzzleRepository implements PuzzleRepository {
       }
       onProgress?.call(i + 1, todo.length);
     }
-    return ImportResult(imported: imported, failed: failed);
+    return ImportResult(imported: imported, failed: failed, firstError: firstError);
   }
 
   Map<String, dynamic> _toRow(Puzzle p, String imagePath) => {

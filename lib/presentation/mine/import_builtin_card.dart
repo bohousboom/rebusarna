@@ -57,7 +57,9 @@ class _ImportBuiltInCardState extends ConsumerState<ImportBuiltInCard> {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         content: Text(result.failed == 0
             ? 'Nahráno ${result.imported} rébusů.'
-            : 'Nahráno ${result.imported}, selhalo ${result.failed}. Zkus to znovu.'),
+            : 'Nahráno ${result.imported}, selhalo ${result.failed}.\n${result.firstError ?? ''}'),
+        duration: const Duration(seconds: 15),
+        showCloseIcon: true,
       ));
     } catch (e) {
       if (!mounted) return;

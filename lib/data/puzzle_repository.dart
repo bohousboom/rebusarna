@@ -14,10 +14,13 @@ class UploadImage {
 
 /// Výsledek importu vestavěných rébusů do účtu.
 class ImportResult {
-  const ImportResult({required this.imported, required this.failed});
+  const ImportResult({required this.imported, required this.failed, this.firstError});
 
   final int imported;
   final int failed;
+
+  /// Text první chyby (pro diagnostiku).
+  final String? firstError;
 }
 
 /// Zdroj rébusů. UI zná jen toto rozhraní, takže implementaci jde vyměnit
