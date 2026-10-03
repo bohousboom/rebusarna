@@ -3,7 +3,6 @@ import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:rebusarna/domain/models/puzzle.dart';
-import 'package:rebusarna/domain/puzzle_search.dart';
 
 List<Puzzle> _seed() => [
       for (final p in jsonDecode(File('assets/seed_puzzles.json').readAsStringSync()) as List)
@@ -28,20 +27,6 @@ void main() {
     test('JSON round-trip', () {
       final p = seed.first;
       expect(Puzzle.fromJson(p.toJson()).toJson(), p.toJson());
-    });
-  });
-
-  group('searchPuzzles', () {
-    test('bez diakritiky a velikosti písmen', () {
-      final r = searchPuzzles(seed, 'KRAVA');
-      expect(r.map((p) => p.solution), contains('Kráva'));
-    });
-    test('prázdný dotaz vrací vše', () => expect(searchPuzzles(seed, ' ').length, seed.length));
-    test('nenalezeno', () => expect(searchPuzzles(seed, 'qqqq'), isEmpty));
-    test('přesná shoda je první', () {
-      final r = searchPuzzles(seed, 'kopec');
-      expect(r, isNotEmpty);
-      expect(r.first.solution.toLowerCase(), 'kopec');
     });
   });
 }

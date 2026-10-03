@@ -7,7 +7,7 @@ import '../../data/supabase_client.dart';
 import '../../domain/models/puzzle.dart';
 import 'play_screen.dart';
 
-/// Jeden rébus otevřený z Knihovny nebo ze záložky Moje.
+/// Jeden rébus otevřený ze záložky Moje.
 /// Autor rébusu ho odsud může upravit nebo smazat.
 class PuzzleDetailScreen extends ConsumerWidget {
   const PuzzleDetailScreen({super.key, required this.puzzleId});

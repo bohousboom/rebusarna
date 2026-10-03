@@ -18,8 +18,9 @@ void main() {
     ));
     await tester.pumpAndSettle();
     expect(find.text('Hrát'), findsWidgets);
-    await tester.tap(find.byIcon(Icons.grid_view));
+    expect(find.text('Knihovna'), findsNothing);
+    await tester.tap(find.byIcon(Icons.person));
     await tester.pumpAndSettle();
-    expect(find.text('Knihovna rébusů'), findsOneWidget);
+    expect(find.text('Vytvořené'), findsOneWidget);
   });
 }

@@ -19,10 +19,9 @@ Poznámka: `flutter analyze` může padat, když cesta k projektu obsahuje znaky
 
 - **Rébus = jeden hotový obrázek + řešení.** Vestavěné rébusy jsou v `assets/images/` (název souboru = řešení) a popisuje je `assets/seed_puzzles.json`.
 - **Štítek karty:** `?` vždy; `±` právě když řešení neobsahuje žádný znak s čárkou (á é í ó ú ý, konstanta `kAcuteChars`); druh slova; barva = obtížnost (1 tyrkysová, 2 žlutá, 3 červená).
-- **Hrát:** feed karet (swipe nebo „Další"), tip, nápověda (1. klik: počet písmen, 2. klik: první písmeno), „Ukázat řešení", série vyřešených v řadě (přeruší ji ukázání řešení), srdíčko = oblíbené.
+- **Hrát:** feed karet (swipe nebo „Další"). Rébusy se nedají vyhledávat ani procházet, aby se hra nezlehčovala, tip, nápověda (1. klik: počet písmen, 2. klik: první písmeno), „Ukázat řešení", série vyřešených v řadě (přeruší ji ukázání řešení), srdíčko = oblíbené.
 - **Tvořit:** výběr obrázku z galerie, řešení, druh slova, obtížnost, význam, živý náhled karty, validace, „Zveřejnit" (zatím uloží jen do zařízení).
-- **Knihovna:** galerie všech rébusů, hledání podle řešení bez diakritiky. Vyřešené ukazují řešení.
-- **Moje:** vytvořené, vyřešené, oblíbené.
+- **Moje:** vytvořené, vyřešené, oblíbené a „Resetovat postup".
 
 ## Architektura
 
@@ -34,8 +33,8 @@ Poznámka: `flutter analyze` může padat, když cesta k projektu obsahuje znaky
 
 - Backend: Supabase (přihlášení přes Google, tabulky `puzzles`, `solved`, `favorites`, `profiles`, úložiště `puzzle-images`). Schéma je v `supabase/migrations/`.
 - URL a **publishable** klíč jsou v [lib/core/config.dart](lib/core/config.dart) jako výchozí hodnoty. Jsou určené pro veřejnou aplikaci, přístup hlídají pravidla (RLS) v databázi. `service_role` klíč nikdy nepatří do repa. Hodnoty jdou přepsat: `--dart-define=SUPABASE_URL=... --dart-define=SUPABASE_PUBLISHABLE_KEY=...`.
-- Bez přihlášení lze hrát, procházet knihovnu a mít postup lokálně. Nahrávat rébusy mohou jen přihlášení. Po přihlášení se postup (uhodnuté, oblíbené, série) sloučí s účtem a synchronizuje mezi zařízeními.
-- **Úprava a mazání:** autor rébusu ho otevře (Knihovna nebo Moje) a v horní liště vidí tužku a koš.
+- Bez přihlášení lze hrát a mít postup lokálně. Nahrávat rébusy mohou jen přihlášení. Po přihlášení se postup (uhodnuté, oblíbené, série) sloučí s účtem a synchronizuje mezi zařízeními.
+- **Úprava a mazání:** autor rébusu ho otevře (záložka Moje) a v horní liště vidí tužku a koš.
 - **Přidružení vestavěných rébusů k účtu:** v Moje je po přihlášení tlačítko „Přidružit k mému účtu". Nahraje vestavěné obrázky do Supabase pod tvým účtem (migrace `20261004000000_seed_import.sql` a `20261005000000_admins.sql` musí být spuštěné; import smí jen správce zapsaný v `app_admins`, viz komentář na konci druhé migrace). ID rébusů se zachovají, takže postup hráčů platí dál.
 - **Trvalé smazání vestavěných rébusů:** smazání importovaného rébusu (nebo smazání ještě neimportovaného správcem) zapíše id do `deleted_seeds` (migrace `20261006000000_deleted_seeds.sql`). Aplikace ho pak už nezobrazí ani znovu neimportuje.
 - **Obtížnost podle hráčů:** barva štítku se vypočítá z výsledků přihlášených hráčů (první pokus u rébusu: špatné tipy max 5 + 2 za nápovědu + 6 za ukázané řešení), vyhlazených obtížností od autora (váha 8 hráčů). Logika je v `lib/domain/difficulty.dart`, data v tabulce `puzzle_results` (migrace `20261007000000_difficulty.sql`).
@@ -43,7 +42,7 @@ Poznámka: `flutter analyze` může padat, když cesta k projektu obsahuje znaky
 
 ## Co je hotové a co zbývá
 
-Hotovo: viz výše (hraní, tvorba, knihovna, Moje, světlé i tmavé téma, použitelné od šířky 360 px, unit a widget testy).
+Hotovo: viz výše (hraní, tvorba, Moje, světlé i tmavé téma, použitelné od šířky 360 px, unit a widget testy).
 
 Zbývá: moderace sdílených rébusů, mazání vlastních rébusů, hodnocení (pole `ratingSum`/`ratingCount` v modelu jsou připravená), denní rébus, ověřování tipu na serveru.
 

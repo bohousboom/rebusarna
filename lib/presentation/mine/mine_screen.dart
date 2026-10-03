@@ -12,6 +12,26 @@ import '../shared/puzzle_thumb.dart';
 class MineScreen extends ConsumerWidget {
   const MineScreen({super.key});
 
+  Future<void> _confirmReset(BuildContext context, WidgetRef ref) async {
+    final ok = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Resetovat postup?'),
+        content: const Text(
+            'Všechny uhodnuté rébusy se znovu skryjí a série se vynuluje. Oblíbené zůstanou.'),
+        actions: [
+          TextButton(
+              onPressed: () => Navigator.pop(ctx, false),
+              child: const Text('Zrušit')),
+          FilledButton(
+              onPressed: () => Navigator.pop(ctx, true),
+              child: const Text('Resetovat')),
+        ],
+      ),
+    );
+    if (ok == true) await ref.read(progressProvider.notifier).resetAll();
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final puzzles = ref.watch(puzzlesProvider);
@@ -23,6 +43,18 @@ class MineScreen extends ConsumerWidget {
         children: [
           const AccountBar(),
           const ImportBuiltInCard(),
+          Align(
+            alignment: Alignment.centerRight,
+            child: Padding(
+              padding: const EdgeInsets.only(right: 8),
+              child: TextButton.icon(
+                key: const Key('reset-all-button'),
+                onPressed: progress.solved.isEmpty ? null : () => _confirmReset(context, ref),
+                icon: const Icon(Icons.restart_alt),
+                label: const Text('Resetovat postup'),
+              ),
+            ),
+          ),
           const TabBar(tabs: [
             Tab(text: 'Vytvořené'),
             Tab(text: 'Vyřešené'),

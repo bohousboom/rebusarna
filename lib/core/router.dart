@@ -1,7 +1,6 @@
 import 'package:go_router/go_router.dart';
 
 import '../presentation/create/create_screen.dart';
-import '../presentation/library/library_screen.dart';
 import '../presentation/mine/mine_screen.dart';
 import '../presentation/play/play_screen.dart';
 import '../presentation/play/puzzle_detail_screen.dart';
@@ -31,9 +30,6 @@ GoRouter buildRouter() => GoRouter(
             ]),
             StatefulShellBranch(routes: [
               GoRoute(path: '/create', builder: (_, _) => const CreateScreen()),
-            ]),
-            StatefulShellBranch(routes: [
-              GoRoute(path: '/library', builder: (_, _) => const LibraryScreen()),
             ]),
             StatefulShellBranch(routes: [
               GoRoute(path: '/mine', builder: (_, _) => const MineScreen()),

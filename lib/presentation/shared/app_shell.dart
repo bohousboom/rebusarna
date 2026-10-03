@@ -17,7 +17,6 @@ class AppShell extends StatelessWidget {
         destinations: const [
           NavigationDestination(icon: Icon(Icons.extension), label: 'Hrát'),
           NavigationDestination(icon: Icon(Icons.edit), label: 'Tvořit'),
-          NavigationDestination(icon: Icon(Icons.grid_view), label: 'Knihovna'),
           NavigationDestination(icon: Icon(Icons.person), label: 'Moje'),
         ],
       ),
