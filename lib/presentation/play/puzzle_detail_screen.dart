@@ -77,6 +77,18 @@ class PuzzleDetailScreen extends ConsumerWidget {
           data: (all) {
             final p = all.where((x) => x.id == puzzleId).firstOrNull;
             if (p == null) return const Center(child: Text('Rébus nenalezen'));
+            final showAdult = ref.watch(showAdultProvider);
+            if (p.adult && !showAdult && !isOwner) {
+              return const Center(
+                child: Padding(
+                  padding: EdgeInsets.all(24),
+                  child: Text(
+                    'Tento rébus je označený 18+. Zobrazení zapneš v záložce Moje.',
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+              );
+            }
             return PuzzlePage(
               key: ValueKey(p.id),
               puzzle: p,

@@ -89,4 +89,32 @@ void main() {
     expect(tester.widget<Text>(find.byKey(const Key('solution-text'))).data, 'poranit');
     expect(_streak(tester), 'Série: 0');
   });
+
+  testWidgets('rébus 18+ se v hádání neukáže, dokud to uživatel nezapne', (tester) async {
+    SharedPreferences.setMockInitialValues({});
+    final prefs = await SharedPreferences.getInstance();
+    tester.view.physicalSize = const Size(360 * 3, 800 * 3);
+    tester.view.devicePixelRatio = 3;
+    addTearDown(tester.view.reset);
+    final adult = Puzzle(
+      id: 'a1',
+      image: 'assets/images/neexistuje.png',
+      solution: 'tajne',
+      wordType: WordType.noun,
+      difficulty: 1,
+      authorName: 'test',
+      createdAt: DateTime(2026),
+      adult: true,
+    );
+    await tester.pumpWidget(ProviderScope(
+      overrides: [
+        sharedPreferencesProvider.overrideWithValue(prefs),
+        puzzlesProvider.overrideWith((ref) async => [adult]),
+      ],
+      child: const MaterialApp(home: Scaffold(body: PlayScreen())),
+    ));
+    await tester.pumpAndSettle();
+    expect(find.byKey(const Key('tip-field')), findsNothing);
+    expect(find.text('Zatím tu nejsou žádné rébusy.'), findsOneWidget);
+  });
 }

@@ -30,7 +30,7 @@ void main() {
       (tester) async {
     SharedPreferences.setMockInitialValues({});
     final prefs = await SharedPreferences.getInstance();
-    tester.view.physicalSize = const Size(360 * 3, 1400 * 3);
+    tester.view.physicalSize = const Size(360 * 3, 2400 * 3);
     tester.view.devicePixelRatio = 3;
     addTearDown(tester.view.reset);
     await tester.pumpWidget(ProviderScope(

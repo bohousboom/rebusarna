@@ -48,6 +48,8 @@ class PuzzleThumb extends ConsumerWidget {
                 ),
               ),
             ),
+            if (puzzle.adult)
+              const Positioned(right: 6, top: 6, child: AdultChip()),
             if (solved)
               Align(
                 alignment: Alignment.bottomCenter,

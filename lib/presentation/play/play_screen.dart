@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../data/difficulty.dart';
 import '../../data/providers.dart';
+import '../../domain/adult_filter.dart';
 import '../../domain/hints.dart';
 import '../../domain/models/puzzle.dart';
 import '../../domain/text_logic.dart';
@@ -12,7 +13,10 @@ import '../shared/puzzle_card.dart';
 
 /// Pořadí feedu: nevyřešené (zamíchané) první, potom vyřešené.
 final feedProvider = FutureProvider<List<Puzzle>>((ref) async {
-  final all = await ref.watch(puzzlesProvider.future);
+  final all = visiblePuzzles(
+    await ref.watch(puzzlesProvider.future),
+    showAdult: ref.watch(showAdultProvider),
+  );
   final solved = ref.read(progressProvider).solved;
   final rnd = Random();
   final todo = all.where((p) => !solved.contains(p.id)).toList()..shuffle(rnd);
@@ -219,6 +223,7 @@ class _PuzzlePageState extends ConsumerState<PuzzlePage>
                 image: p.image,
                 solution: p.solution,
                 wordType: p.wordType,
+                adult: p.adult,
                 difficulty: ref.watch(effectiveDifficultyProvider((p.id, p.difficulty))),
                 favorite: fav,
                 onFavorite: () =>

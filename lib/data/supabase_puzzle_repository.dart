@@ -114,6 +114,7 @@ class SupabasePuzzleRepository implements PuzzleRepository {
       'word_type': puzzle.wordType.name,
       'difficulty': puzzle.difficulty,
       'author_name': puzzle.authorName,
+      'is_adult': puzzle.adult,
     };
 
     String? oldPath;
@@ -212,6 +213,7 @@ class SupabasePuzzleRepository implements PuzzleRepository {
         'word_type': p.wordType.name,
         'difficulty': p.difficulty,
         'author_name': p.authorName,
+        'is_adult': p.adult,
       };
 
   String _mime(String ext) => switch (ext) {
@@ -223,6 +225,7 @@ class SupabasePuzzleRepository implements PuzzleRepository {
   Puzzle _fromRow(Map<String, dynamic> r) => Puzzle(
         id: (r['seed_key'] as String?) ?? r['id'] as String,
         ownerId: r['owner_id'] as String?,
+        adult: r['is_adult'] as bool? ?? false,
         image: _client.storage.from(_kBucket).getPublicUrl(r['image_path'] as String),
         solution: r['solution'] as String,
         meaning: r['meaning'] as String?,

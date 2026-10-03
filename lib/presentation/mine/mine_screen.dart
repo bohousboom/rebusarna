@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../data/providers.dart';
+import '../../domain/adult_filter.dart';
 import '../../domain/models/puzzle.dart';
 import '../../data/supabase_client.dart';
 import '../shared/account_bar.dart';
@@ -32,8 +33,27 @@ class MineScreen extends ConsumerWidget {
     if (ok == true) await ref.read(progressProvider.notifier).resetAll();
   }
 
+  Future<void> _toggleAdult(BuildContext context, WidgetRef ref, bool value) async {
+    if (value) {
+      final ok = await showDialog<bool>(
+        context: context,
+        builder: (ctx) => AlertDialog(
+          title: const Text('Zobrazit obsah 18+?'),
+          content: const Text('Rébusy označené 18+ nejsou vhodné pro mladší 18 let. Je ti 18 a více?'),
+          actions: [
+            TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Ne')),
+            FilledButton(onPressed: () => Navigator.pop(ctx, true), child: const Text('Ano, je mi 18+')),
+          ],
+        ),
+      );
+      if (ok != true) return;
+    }
+    await ref.read(showAdultProvider.notifier).set(value);
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final showAdult = ref.watch(showAdultProvider);
     final puzzles = ref.watch(puzzlesProvider);
     final progress = ref.watch(progressProvider);
     final userId = ref.watch(currentUserProvider).value?.id;
@@ -43,6 +63,13 @@ class MineScreen extends ConsumerWidget {
         children: [
           const AccountBar(),
           const ImportBuiltInCard(),
+          SwitchListTile(
+            key: const Key('show-adult-switch'),
+            dense: true,
+            title: const Text('Zobrazovat rébusy 18+'),
+            value: showAdult,
+            onChanged: (v) => _toggleAdult(context, ref, v),
+          ),
           Align(
             alignment: Alignment.centerRight,
             child: Padding(
@@ -75,12 +102,16 @@ class MineScreen extends ConsumerWidget {
                   empty: 'Zatím jsi nic nevytvořil. Zkus záložku Tvořit.',
                 ),
                 _Grid(
-                  puzzles: all.where((p) => progress.solved.contains(p.id)).toList(),
+                  puzzles: visiblePuzzles(all, showAdult: showAdult)
+                      .where((p) => progress.solved.contains(p.id))
+                      .toList(),
                   solved: progress.solved,
                   empty: 'Zatím jsi nic nevyřešil.',
                 ),
                 _Grid(
-                  puzzles: all.where((p) => progress.favorites.contains(p.id)).toList(),
+                  puzzles: visiblePuzzles(all, showAdult: showAdult)
+                      .where((p) => progress.favorites.contains(p.id))
+                      .toList(),
                   solved: progress.solved,
                   empty: 'Žádné oblíbené. Klepni na srdíčko na kartě.',
                 ),

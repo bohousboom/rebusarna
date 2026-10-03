@@ -28,5 +28,20 @@ final puzzlesProvider = FutureProvider<List<Puzzle>>(
   (ref) => ref.watch(puzzleRepositoryProvider).getAll(),
 );
 
+const _kShowAdult = 'show_adult';
+
+/// Zobrazovat rébusy 18+ (výchozí: ne). Ukládá se v zařízení.
+class ShowAdultNotifier extends Notifier<bool> {
+  @override
+  bool build() => ref.read(sharedPreferencesProvider).getBool(_kShowAdult) ?? false;
+
+  Future<void> set(bool value) async {
+    state = value;
+    await ref.read(sharedPreferencesProvider).setBool(_kShowAdult, value);
+  }
+}
+
+final showAdultProvider = NotifierProvider<ShowAdultNotifier, bool>(ShowAdultNotifier.new);
+
 final progressProvider =
     NotifierProvider<ProgressNotifier, PlayerProgress>(ProgressNotifier.new);

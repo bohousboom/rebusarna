@@ -30,6 +30,7 @@ class _PuzzleEditorState extends ConsumerState<PuzzleEditor> {
   PickedImage? _picked;
   late WordType _wordType = widget.editing?.wordType ?? WordType.noun;
   late int _difficulty = widget.editing?.difficulty ?? 1;
+  late bool _adult = widget.editing?.adult ?? false;
   List<String> _errors = const [];
   bool _saving = false;
 
@@ -82,6 +83,7 @@ class _PuzzleEditorState extends ConsumerState<PuzzleEditor> {
       explanation: explanation.isEmpty ? null : explanation,
       wordType: _wordType,
       difficulty: _difficulty,
+      adult: _adult,
       authorName: author.isEmpty ? fallbackAuthor : author,
       createdAt: widget.editing?.createdAt ?? now,
       ratingSum: widget.editing?.ratingSum ?? 0,
@@ -113,6 +115,7 @@ class _PuzzleEditorState extends ConsumerState<PuzzleEditor> {
         _explanation.clear();
         _wordType = WordType.noun;
         _difficulty = 1;
+        _adult = false;
         _errors = const [];
       }
     });
@@ -143,6 +146,7 @@ class _PuzzleEditorState extends ConsumerState<PuzzleEditor> {
                     solution: _solution.text,
                     wordType: _wordType,
                     difficulty: _difficulty,
+                    adult: _adult,
                   ),
           ),
         ),
@@ -191,7 +195,16 @@ class _PuzzleEditorState extends ConsumerState<PuzzleEditor> {
           selected: {_difficulty},
           onSelectionChanged: (s) => setState(() => _difficulty = s.first),
         ),
-        const SizedBox(height: 16),
+        const SizedBox(height: 8),
+        SwitchListTile(
+          key: const Key('adult-switch'),
+          contentPadding: EdgeInsets.zero,
+          title: const Text('Obsah pro dospělé (18+)'),
+          subtitle: const Text('Ukáže se jen hráčům, kteří si zobrazení 18+ zapnou.'),
+          value: _adult,
+          onChanged: (v) => setState(() => _adult = v),
+        ),
+        const SizedBox(height: 8),
         TextField(
           key: const Key('explanation-field'),
           controller: _explanation,

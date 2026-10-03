@@ -51,6 +51,7 @@ class PuzzleCard extends StatelessWidget {
     this.favorite,
     this.onFavorite,
     this.highlight = false,
+    this.adult = false,
   });
 
   final String image;
@@ -62,6 +63,7 @@ class PuzzleCard extends StatelessWidget {
   final bool? favorite;
   final VoidCallback? onFavorite;
   final bool highlight;
+  final bool adult;
 
   @override
   Widget build(BuildContext context) {
@@ -92,10 +94,16 @@ class PuzzleCard extends StatelessWidget {
           Positioned(
             left: 10,
             top: 10,
-            child: DifficultyBadge(
-              difficulty: difficulty,
-              wordType: wordType,
-              showPlusMinus: solution.trim().isNotEmpty && hasNoAcute(solution),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                DifficultyBadge(
+                  difficulty: difficulty,
+                  wordType: wordType,
+                  showPlusMinus: solution.trim().isNotEmpty && hasNoAcute(solution),
+                ),
+                if (adult) ...[const SizedBox(width: 6), const AdultChip()],
+              ],
             ),
           ),
           if (favorite != null)
@@ -120,6 +128,23 @@ class PuzzleCard extends StatelessWidget {
       ),
     );
   }
+}
+
+/// Značka 18+.
+class AdultChip extends StatelessWidget {
+  const AdultChip({super.key});
+
+  @override
+  Widget build(BuildContext context) => Container(
+        key: const Key('adult-chip'),
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+        decoration: BoxDecoration(
+          color: Colors.black87,
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: const Text('18+',
+            style: TextStyle(color: Colors.white, fontWeight: FontWeight.w800, fontSize: 14)),
+      );
 }
 
 class DifficultyBadge extends StatelessWidget {
