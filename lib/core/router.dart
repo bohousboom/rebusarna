@@ -4,11 +4,17 @@ import '../presentation/create/create_screen.dart';
 import '../presentation/library/library_screen.dart';
 import '../presentation/mine/mine_screen.dart';
 import '../presentation/play/play_screen.dart';
+import '../presentation/play/puzzle_detail_screen.dart';
 import '../presentation/shared/app_shell.dart';
 
 GoRouter buildRouter() => GoRouter(
       initialLocation: '/play',
       routes: [
+        GoRoute(
+          path: '/puzzle/:id',
+          builder: (_, state) =>
+              PuzzleDetailScreen(puzzleId: state.pathParameters['id']!),
+        ),
         StatefulShellRoute.indexedStack(
           builder: (context, state, shell) => AppShell(shell: shell),
           branches: [

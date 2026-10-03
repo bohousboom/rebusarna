@@ -3,6 +3,7 @@ import 'package:rebusarna/domain/hints.dart';
 import 'package:rebusarna/domain/text_logic.dart';
 
 void main() {
+  hintMaskTests();
   group('normalize', () {
     test('malá písmena a bez diakritiky', () {
       expect(normalize('Příliš žluťoučký kůň'), 'prilis zlutoucky kun');
@@ -67,5 +68,13 @@ void main() {
       expect(hintFirstLetter('  řeka'), 'ř');
       expect(hintFirstLetter(''), '');
     });
+  });
+}
+
+void hintMaskTests() {
+  group('hintMask', () {
+    test('úroveň 0', () => expect(hintMask('poranit', 0), ''));
+    test('úroveň 1', () => expect(hintMask('řeka', 1), '_ _ _ _'));
+    test('úroveň 2', () => expect(hintMask('Řeka', 2), 'ř _ _ _'));
   });
 }

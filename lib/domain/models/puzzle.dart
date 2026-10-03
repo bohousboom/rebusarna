@@ -1,10 +1,13 @@
-import 'token.dart';
 import 'word_type.dart';
 
+/// Cesta k vestavěným obrázkům (assets).
+const kImageAssetPrefix = 'assets/images/';
+
+/// Rébus = jeden hotový obrázek + skryté řešení.
 class Puzzle {
   const Puzzle({
     required this.id,
-    required this.tokens,
+    required this.image,
     required this.solution,
     required this.wordType,
     required this.difficulty,
@@ -16,7 +19,9 @@ class Puzzle {
   });
 
   final String id;
-  final List<PuzzleToken> tokens;
+
+  /// Asset (`assets/images/...`) nebo cesta k souboru v zařízení.
+  final String image;
   final String solution;
   final String? meaning;
   final WordType wordType;
@@ -28,9 +33,11 @@ class Puzzle {
   final int ratingSum;
   final int ratingCount;
 
+  bool get isAssetImage => image.startsWith(kImageAssetPrefix);
+
   Map<String, dynamic> toJson() => {
         'id': id,
-        'tokens': tokens.map((t) => t.toJson()).toList(),
+        'image': image,
         'solution': solution,
         if (meaning != null) 'meaning': meaning,
         'wordType': wordType.name,
@@ -43,9 +50,7 @@ class Puzzle {
 
   factory Puzzle.fromJson(Map<String, dynamic> json) => Puzzle(
         id: json['id'] as String,
-        tokens: (json['tokens'] as List)
-            .map((t) => PuzzleToken.fromJson(t as Map<String, dynamic>))
-            .toList(),
+        image: json['image'] as String,
         solution: json['solution'] as String,
         meaning: json['meaning'] as String?,
         wordType: WordType.fromName(json['wordType'] as String?),

@@ -22,5 +22,5 @@ flutter:
   uses-material-design: true
 
   assets:
-    - assets/emoji_library.json
+    - assets/seed_puzzles.json
     - assets/images/
