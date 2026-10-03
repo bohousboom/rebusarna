@@ -1,7 +1,7 @@
 [
  {
   "id": "seed-ananas",
-  "image": "assets/images/Ananas.png",
+  "image": "assets/images/Ananas.webp",
   "solution": "Ananas",
   "wordType": "noun",
   "difficulty": 1,
@@ -12,7 +12,7 @@
  },
  {
   "id": "seed-artur",
-  "image": "assets/images/Artur.png",
+  "image": "assets/images/Artur.webp",
   "solution": "Artur",
   "wordType": "noun",
   "difficulty": 1,
@@ -23,7 +23,7 @@
  },
  {
   "id": "seed-balon-v1-1",
-  "image": "assets/images/Balón_v1.1.png",
+  "image": "assets/images/Balón_v1.1.webp",
   "solution": "Balón",
   "wordType": "noun",
   "difficulty": 1,
@@ -34,7 +34,7 @@
  },
  {
   "id": "seed-balon-v1",
-  "image": "assets/images/Balón_v1.png",
+  "image": "assets/images/Balón_v1.webp",
   "solution": "Balón",
   "wordType": "noun",
   "difficulty": 1,
@@ -45,7 +45,7 @@
  },
  {
   "id": "seed-beroun-v2",
-  "image": "assets/images/Beroun v2.png",
+  "image": "assets/images/Beroun v2.webp",
   "solution": "Beroun",
   "wordType": "noun",
   "difficulty": 1,
@@ -56,7 +56,7 @@
  },
  {
   "id": "seed-beroun",
-  "image": "assets/images/Beroun.png",
+  "image": "assets/images/Beroun.webp",
   "solution": "Beroun",
   "wordType": "noun",
   "difficulty": 1,
@@ -67,7 +67,7 @@
  },
  {
   "id": "seed-boruvka",
-  "image": "assets/images/Borůvka.png",
+  "image": "assets/images/Borůvka.webp",
   "solution": "Borůvka",
   "wordType": "noun",
   "difficulty": 2,
@@ -78,7 +78,7 @@
  },
  {
   "id": "seed-brambora",
-  "image": "assets/images/Brambora.png",
+  "image": "assets/images/Brambora.webp",
   "solution": "Brambora",
   "wordType": "noun",
   "difficulty": 2,
@@ -89,7 +89,7 @@
  },
  {
   "id": "seed-brod",
-  "image": "assets/images/Brod.png",
+  "image": "assets/images/Brod.webp",
   "solution": "Brod",
   "wordType": "noun",
   "difficulty": 1,
@@ -100,7 +100,7 @@
  },
  {
   "id": "seed-brana",
-  "image": "assets/images/Brána.png",
+  "image": "assets/images/Brána.webp",
   "solution": "Brána",
   "wordType": "noun",
   "difficulty": 1,
@@ -111,7 +111,7 @@
  },
  {
   "id": "seed-chata",
-  "image": "assets/images/Chata.png",
+  "image": "assets/images/Chata.webp",
   "solution": "Chata",
   "wordType": "noun",
   "difficulty": 1,
@@ -122,7 +122,7 @@
  },
  {
   "id": "seed-chaty",
-  "image": "assets/images/Chaty.png",
+  "image": "assets/images/Chaty.webp",
   "solution": "Chaty",
   "wordType": "noun",
   "difficulty": 1,
@@ -133,7 +133,7 @@
  },
  {
   "id": "seed-diplom",
-  "image": "assets/images/Diplom.png",
+  "image": "assets/images/Diplom.webp",
   "solution": "Diplom",
   "wordType": "noun",
   "difficulty": 1,
@@ -144,7 +144,7 @@
  },
  {
   "id": "seed-dron-v1",
-  "image": "assets/images/Dron_v1.png",
+  "image": "assets/images/Dron_v1.webp",
   "solution": "Dron",
   "wordType": "noun",
   "difficulty": 1,
@@ -155,7 +155,7 @@
  },
  {
   "id": "seed-dron-v2",
-  "image": "assets/images/Dron_v2.png",
+  "image": "assets/images/Dron_v2.webp",
   "solution": "Dron",
   "wordType": "noun",
   "difficulty": 1,
@@ -166,7 +166,7 @@
  },
  {
   "id": "seed-evropa",
-  "image": "assets/images/Evropa.png",
+  "image": "assets/images/Evropa.webp",
   "solution": "Evropa",
   "wordType": "noun",
   "difficulty": 1,
@@ -177,7 +177,7 @@
  },
  {
   "id": "seed-evropa-v2",
-  "image": "assets/images/Evropa_v2.png",
+  "image": "assets/images/Evropa_v2.webp",
   "solution": "Evropa",
   "wordType": "noun",
   "difficulty": 1,
@@ -188,7 +188,7 @@
  },
  {
   "id": "seed-exkurze-v1",
-  "image": "assets/images/Exkurze_v1.png",
+  "image": "assets/images/Exkurze_v1.webp",
   "solution": "Exkurze",
   "wordType": "noun",
   "difficulty": 2,
@@ -199,7 +199,7 @@
  },
  {
   "id": "seed-exkurze-v2",
-  "image": "assets/images/Exkurze_v2.png",
+  "image": "assets/images/Exkurze_v2.webp",
   "solution": "Exkurze",
   "wordType": "noun",
   "difficulty": 2,
@@ -210,7 +210,7 @@
  },
  {
   "id": "seed-hodiny",
-  "image": "assets/images/Hodiny.png",
+  "image": "assets/images/Hodiny.webp",
   "solution": "Hodiny",
   "wordType": "noun",
   "difficulty": 1,
@@ -221,7 +221,7 @@
  },
  {
   "id": "seed-horymir",
-  "image": "assets/images/Horymír.png",
+  "image": "assets/images/Horymír.webp",
   "solution": "Horymír",
   "wordType": "noun",
   "difficulty": 2,
@@ -232,7 +232,7 @@
  },
  {
   "id": "seed-hromada",
-  "image": "assets/images/Hromada.png",
+  "image": "assets/images/Hromada.webp",
   "solution": "Hromada",
   "wordType": "noun",
   "difficulty": 2,
@@ -243,7 +243,7 @@
  },
  {
   "id": "seed-hrebik",
-  "image": "assets/images/Hřebík.png",
+  "image": "assets/images/Hřebík.webp",
   "solution": "Hřebík",
   "wordType": "noun",
   "difficulty": 1,
@@ -265,7 +265,7 @@
  },
  {
   "id": "seed-jahoda",
-  "image": "assets/images/Jahoda.png",
+  "image": "assets/images/Jahoda.webp",
   "solution": "Jahoda",
   "wordType": "noun",
   "difficulty": 1,
@@ -276,7 +276,7 @@
  },
  {
   "id": "seed-jakarta-v1",
-  "image": "assets/images/Jakarta_v1.png",
+  "image": "assets/images/Jakarta_v1.webp",
   "solution": "Jakarta",
   "wordType": "noun",
   "difficulty": 2,
@@ -287,7 +287,7 @@
  },
  {
   "id": "seed-jakarta-v2",
-  "image": "assets/images/Jakarta_v2.png",
+  "image": "assets/images/Jakarta_v2.webp",
   "solution": "Jakarta",
   "wordType": "noun",
   "difficulty": 2,
@@ -298,7 +298,7 @@
  },
  {
   "id": "seed-kabelka",
-  "image": "assets/images/Kabelka.png",
+  "image": "assets/images/Kabelka.webp",
   "solution": "Kabelka",
   "wordType": "noun",
   "difficulty": 2,
@@ -309,7 +309,7 @@
  },
  {
   "id": "seed-kalamita",
-  "image": "assets/images/Kalamita.png",
+  "image": "assets/images/Kalamita.webp",
   "solution": "Kalamita",
   "wordType": "noun",
   "difficulty": 2,
@@ -320,7 +320,7 @@
  },
  {
   "id": "seed-kapesnik",
-  "image": "assets/images/Kapesník.png",
+  "image": "assets/images/Kapesník.webp",
   "solution": "Kapesník",
   "wordType": "noun",
   "difficulty": 2,
@@ -331,7 +331,7 @@
  },
  {
   "id": "seed-kopec-v1",
-  "image": "assets/images/Kopec_v1.png",
+  "image": "assets/images/Kopec_v1.webp",
   "solution": "Kopec",
   "wordType": "noun",
   "difficulty": 1,
@@ -342,7 +342,7 @@
  },
  {
   "id": "seed-kopec-v2",
-  "image": "assets/images/Kopec_v2.png",
+  "image": "assets/images/Kopec_v2.webp",
   "solution": "Kopec",
   "wordType": "noun",
   "difficulty": 1,
@@ -353,7 +353,7 @@
  },
  {
   "id": "seed-kostel",
-  "image": "assets/images/Kostel.png",
+  "image": "assets/images/Kostel.webp",
   "solution": "Kostel",
   "wordType": "noun",
   "difficulty": 1,
@@ -364,7 +364,7 @@
  },
  {
   "id": "seed-krava",
-  "image": "assets/images/Kráva.png",
+  "image": "assets/images/Kráva.webp",
   "solution": "Kráva",
   "wordType": "noun",
   "difficulty": 1,
@@ -375,7 +375,7 @@
  },
  {
   "id": "seed-kvetinac",
-  "image": "assets/images/Květináč.png",
+  "image": "assets/images/Květináč.webp",
   "solution": "Květináč",
   "wordType": "noun",
   "difficulty": 2,
@@ -386,7 +386,7 @@
  },
  {
   "id": "seed-kava",
-  "image": "assets/images/Káva.png",
+  "image": "assets/images/Káva.webp",
   "solution": "Káva",
   "wordType": "noun",
   "difficulty": 1,
@@ -397,7 +397,7 @@
  },
  {
   "id": "seed-krivoklatsko",
-  "image": "assets/images/Křivoklátsko.png",
+  "image": "assets/images/Křivoklátsko.webp",
   "solution": "Křivoklátsko",
   "wordType": "noun",
   "difficulty": 3,
@@ -408,7 +408,7 @@
  },
  {
   "id": "seed-lenochod",
-  "image": "assets/images/Lenochod.png",
+  "image": "assets/images/Lenochod.webp",
   "solution": "Lenochod",
   "wordType": "noun",
   "difficulty": 2,
@@ -419,7 +419,7 @@
  },
  {
   "id": "seed-letohrad-v1",
-  "image": "assets/images/Letohrad_v1.png",
+  "image": "assets/images/Letohrad_v1.webp",
   "solution": "Letohrad",
   "wordType": "noun",
   "difficulty": 2,
@@ -430,7 +430,7 @@
  },
  {
   "id": "seed-letohrad-v2",
-  "image": "assets/images/Letohrad_v2.png",
+  "image": "assets/images/Letohrad_v2.webp",
   "solution": "Letohrad",
   "wordType": "noun",
   "difficulty": 2,
@@ -441,7 +441,7 @@
  },
  {
   "id": "seed-maledivy-v1",
-  "image": "assets/images/Maledivy_v1.png",
+  "image": "assets/images/Maledivy_v1.webp",
   "solution": "Maledivy",
   "wordType": "noun",
   "difficulty": 2,
@@ -452,7 +452,7 @@
  },
  {
   "id": "seed-maledivy-v2",
-  "image": "assets/images/Maledivy_v2.png",
+  "image": "assets/images/Maledivy_v2.webp",
   "solution": "Maledivy",
   "wordType": "noun",
   "difficulty": 2,
@@ -463,7 +463,7 @@
  },
  {
   "id": "seed-maroko-v1",
-  "image": "assets/images/Maroko_v1.png",
+  "image": "assets/images/Maroko_v1.webp",
   "solution": "Maroko",
   "wordType": "noun",
   "difficulty": 1,
@@ -474,7 +474,7 @@
  },
  {
   "id": "seed-maroko-v2",
-  "image": "assets/images/Maroko_v2.png",
+  "image": "assets/images/Maroko_v2.webp",
   "solution": "Maroko",
   "wordType": "noun",
   "difficulty": 1,
@@ -485,7 +485,7 @@
  },
  {
   "id": "seed-medaile",
-  "image": "assets/images/Medaile.png",
+  "image": "assets/images/Medaile.webp",
   "solution": "Medaile",
   "wordType": "noun",
   "difficulty": 2,
@@ -496,7 +496,7 @@
  },
  {
   "id": "seed-mokrady",
-  "image": "assets/images/Mokřady.png",
+  "image": "assets/images/Mokřady.webp",
   "solution": "Mokřady",
   "wordType": "noun",
   "difficulty": 2,
@@ -507,7 +507,7 @@
  },
  {
   "id": "seed-motorka",
-  "image": "assets/images/Motorka.png",
+  "image": "assets/images/Motorka.webp",
   "solution": "Motorka",
   "wordType": "noun",
   "difficulty": 2,
@@ -518,7 +518,7 @@
  },
  {
   "id": "seed-myslenka",
-  "image": "assets/images/Myšlenka.png",
+  "image": "assets/images/Myšlenka.webp",
   "solution": "Myšlenka",
   "wordType": "noun",
   "difficulty": 2,
@@ -529,7 +529,7 @@
  },
  {
   "id": "seed-nadeje",
-  "image": "assets/images/Naděje.png",
+  "image": "assets/images/Naděje.webp",
   "solution": "Naděje",
   "wordType": "noun",
   "difficulty": 1,
@@ -540,7 +540,7 @@
  },
  {
   "id": "seed-netopyr",
-  "image": "assets/images/Netopýr.png",
+  "image": "assets/images/Netopýr.webp",
   "solution": "Netopýr",
   "wordType": "noun",
   "difficulty": 2,
@@ -551,7 +551,7 @@
  },
  {
   "id": "seed-netvor",
-  "image": "assets/images/Netvor.png",
+  "image": "assets/images/Netvor.webp",
   "solution": "Netvor",
   "wordType": "noun",
   "difficulty": 1,
@@ -562,7 +562,7 @@
  },
  {
   "id": "seed-nalevka",
-  "image": "assets/images/Nálevka.png",
+  "image": "assets/images/Nálevka.webp",
   "solution": "Nálevka",
   "wordType": "noun",
   "difficulty": 2,
@@ -573,7 +573,7 @@
  },
  {
   "id": "seed-naves",
-  "image": "assets/images/Náves.png",
+  "image": "assets/images/Náves.webp",
   "solution": "Náves",
   "wordType": "noun",
   "difficulty": 1,
@@ -584,7 +584,7 @@
  },
  {
   "id": "seed-navlek",
-  "image": "assets/images/Návlek.png",
+  "image": "assets/images/Návlek.webp",
   "solution": "Návlek",
   "wordType": "noun",
   "difficulty": 1,
@@ -595,7 +595,7 @@
  },
  {
   "id": "seed-okurka",
-  "image": "assets/images/Okůrka.png",
+  "image": "assets/images/Okůrka.webp",
   "solution": "Okůrka",
   "wordType": "noun",
   "difficulty": 1,
@@ -606,7 +606,7 @@
  },
  {
   "id": "seed-omeleta",
-  "image": "assets/images/Omeleta.png",
+  "image": "assets/images/Omeleta.webp",
   "solution": "Omeleta",
   "wordType": "noun",
   "difficulty": 2,
@@ -617,7 +617,7 @@
  },
  {
   "id": "seed-omacka",
-  "image": "assets/images/Omáčka.png",
+  "image": "assets/images/Omáčka.webp",
   "solution": "Omáčka",
   "wordType": "noun",
   "difficulty": 1,
@@ -628,7 +628,7 @@
  },
  {
   "id": "seed-ostrov",
-  "image": "assets/images/Ostrov.png",
+  "image": "assets/images/Ostrov.webp",
   "solution": "Ostrov",
   "wordType": "noun",
   "difficulty": 1,
@@ -639,7 +639,7 @@
  },
  {
   "id": "seed-ostrov-v2",
-  "image": "assets/images/Ostrov_v2.png",
+  "image": "assets/images/Ostrov_v2.webp",
   "solution": "Ostrov",
   "wordType": "noun",
   "difficulty": 1,
@@ -650,7 +650,7 @@
  },
  {
   "id": "seed-paragraf",
-  "image": "assets/images/Paragraf.png",
+  "image": "assets/images/Paragraf.webp",
   "solution": "Paragraf",
   "wordType": "noun",
   "difficulty": 2,
@@ -661,7 +661,7 @@
  },
  {
   "id": "seed-paragraf-v1-1",
-  "image": "assets/images/Paragraf_v1.1.png",
+  "image": "assets/images/Paragraf_v1.1.webp",
   "solution": "Paragraf",
   "wordType": "noun",
   "difficulty": 2,
@@ -672,7 +672,7 @@
  },
  {
   "id": "seed-parkovani",
-  "image": "assets/images/Parkování.png",
+  "image": "assets/images/Parkování.webp",
   "solution": "Parkování",
   "wordType": "noun",
   "difficulty": 2,
@@ -683,7 +683,7 @@
  },
  {
   "id": "seed-pastvina",
-  "image": "assets/images/Pastvina.png",
+  "image": "assets/images/Pastvina.webp",
   "solution": "Pastvina",
   "wordType": "noun",
   "difficulty": 2,
@@ -694,7 +694,7 @@
  },
  {
   "id": "seed-plast",
-  "image": "assets/images/Plášť.png",
+  "image": "assets/images/Plášť.webp",
   "solution": "Plášť",
   "wordType": "noun",
   "difficulty": 1,
@@ -705,7 +705,7 @@
  },
  {
   "id": "seed-pneumatika",
-  "image": "assets/images/Pneumatika.PNG",
+  "image": "assets/images/Pneumatika.webp",
   "solution": "Pneumatika",
   "wordType": "noun",
   "difficulty": 3,
@@ -716,7 +716,7 @@
  },
  {
   "id": "seed-pobrezi",
-  "image": "assets/images/Pobřeží.png",
+  "image": "assets/images/Pobřeží.webp",
   "solution": "Pobřeží",
   "wordType": "noun",
   "difficulty": 2,
@@ -727,7 +727,7 @@
  },
  {
   "id": "seed-podlaha",
-  "image": "assets/images/Podlaha.png",
+  "image": "assets/images/Podlaha.webp",
   "solution": "Podlaha",
   "wordType": "noun",
   "difficulty": 2,
@@ -738,7 +738,7 @@
  },
  {
   "id": "seed-podnos",
-  "image": "assets/images/Podnos.png",
+  "image": "assets/images/Podnos.webp",
   "solution": "Podnos",
   "wordType": "noun",
   "difficulty": 1,
@@ -749,7 +749,7 @@
  },
  {
   "id": "seed-podpora",
-  "image": "assets/images/Podpora.png",
+  "image": "assets/images/Podpora.webp",
   "solution": "Podpora",
   "wordType": "noun",
   "difficulty": 2,
@@ -760,7 +760,7 @@
  },
  {
   "id": "seed-podpalit",
-  "image": "assets/images/Podpálit.png",
+  "image": "assets/images/Podpálit.webp",
   "solution": "Podpálit",
   "wordType": "verb",
   "difficulty": 2,
@@ -771,7 +771,7 @@
  },
  {
   "id": "seed-pohyby",
-  "image": "assets/images/Pohyby.png",
+  "image": "assets/images/Pohyby.webp",
   "solution": "Pohyby",
   "wordType": "noun",
   "difficulty": 1,
@@ -782,7 +782,7 @@
  },
  {
   "id": "seed-prachatice",
-  "image": "assets/images/Prachatice.png",
+  "image": "assets/images/Prachatice.webp",
   "solution": "Prachatice",
   "wordType": "noun",
   "difficulty": 3,
@@ -793,7 +793,7 @@
  },
  {
   "id": "seed-prsten",
-  "image": "assets/images/Prsten.png",
+  "image": "assets/images/Prsten.webp",
   "solution": "Prsten",
   "wordType": "noun",
   "difficulty": 1,
@@ -804,7 +804,7 @@
  },
  {
   "id": "seed-parecek",
-  "image": "assets/images/Páreček.png",
+  "image": "assets/images/Páreček.webp",
   "solution": "Páreček",
   "wordType": "noun",
   "difficulty": 2,
@@ -815,7 +815,7 @@
  },
  {
   "id": "seed-predkolo",
-  "image": "assets/images/Předkolo.png",
+  "image": "assets/images/Předkolo.webp",
   "solution": "Předkolo",
   "wordType": "noun",
   "difficulty": 2,
@@ -826,7 +826,7 @@
  },
  {
   "id": "seed-primotop",
-  "image": "assets/images/Přímotop.png",
+  "image": "assets/images/Přímotop.webp",
   "solution": "Přímotop",
   "wordType": "noun",
   "difficulty": 2,
@@ -837,7 +837,7 @@
  },
  {
   "id": "seed-semafor",
-  "image": "assets/images/Semafor.png",
+  "image": "assets/images/Semafor.webp",
   "solution": "Semafor",
   "wordType": "noun",
   "difficulty": 2,
@@ -848,7 +848,7 @@
  },
  {
   "id": "seed-sleva",
-  "image": "assets/images/Sleva.png",
+  "image": "assets/images/Sleva.webp",
   "solution": "Sleva",
   "wordType": "noun",
   "difficulty": 1,
@@ -859,7 +859,7 @@
  },
  {
   "id": "seed-snehulak",
-  "image": "assets/images/Sněhulák.png",
+  "image": "assets/images/Sněhulák.webp",
   "solution": "Sněhulák",
   "wordType": "noun",
   "difficulty": 2,
@@ -870,7 +870,7 @@
  },
  {
   "id": "seed-starosta",
-  "image": "assets/images/Starosta.png",
+  "image": "assets/images/Starosta.webp",
   "solution": "Starosta",
   "wordType": "noun",
   "difficulty": 2,
@@ -881,7 +881,7 @@
  },
  {
   "id": "seed-statika",
-  "image": "assets/images/Statika.png",
+  "image": "assets/images/Statika.webp",
   "solution": "Statika",
   "wordType": "noun",
   "difficulty": 2,
@@ -892,7 +892,7 @@
  },
  {
   "id": "seed-strakonice",
-  "image": "assets/images/Strakonice.png",
+  "image": "assets/images/Strakonice.webp",
   "solution": "Strakonice",
   "wordType": "noun",
   "difficulty": 3,
@@ -903,7 +903,7 @@
  },
  {
   "id": "seed-svickova",
-  "image": "assets/images/Svíčková.png",
+  "image": "assets/images/Svíčková.webp",
   "solution": "Svíčková",
   "wordType": "noun",
   "difficulty": 2,
@@ -914,7 +914,7 @@
  },
  {
   "id": "seed-svetlo",
-  "image": "assets/images/Světlo.png",
+  "image": "assets/images/Světlo.webp",
   "solution": "Světlo",
   "wordType": "noun",
   "difficulty": 1,
@@ -925,7 +925,7 @@
  },
  {
   "id": "seed-tabule",
-  "image": "assets/images/Tabule.png",
+  "image": "assets/images/Tabule.webp",
   "solution": "Tabule",
   "wordType": "noun",
   "difficulty": 1,
@@ -936,7 +936,7 @@
  },
  {
   "id": "seed-televize",
-  "image": "assets/images/Televize.png",
+  "image": "assets/images/Televize.webp",
   "solution": "Televize",
   "wordType": "noun",
   "difficulty": 2,
@@ -947,7 +947,7 @@
  },
  {
   "id": "seed-traktor",
-  "image": "assets/images/Traktor.png",
+  "image": "assets/images/Traktor.webp",
   "solution": "Traktor",
   "wordType": "noun",
   "difficulty": 2,
@@ -958,7 +958,7 @@
  },
  {
   "id": "seed-trhlina-v1",
-  "image": "assets/images/Trhlina_v1.png",
+  "image": "assets/images/Trhlina_v1.webp",
   "solution": "Trhlina",
   "wordType": "noun",
   "difficulty": 2,
@@ -969,7 +969,7 @@
  },
  {
   "id": "seed-trhlina-v2",
-  "image": "assets/images/Trhlina_v2.png",
+  "image": "assets/images/Trhlina_v2.webp",
   "solution": "Trhlina",
   "wordType": "noun",
   "difficulty": 2,
@@ -980,7 +980,7 @@
  },
  {
   "id": "seed-tropimasohryz",
-  "image": "assets/images/Tropimasohryz.png",
+  "image": "assets/images/Tropimasohryz.webp",
   "solution": "Tropimasohryz",
   "wordType": "noun",
   "difficulty": 3,
@@ -991,7 +991,7 @@
  },
  {
   "id": "seed-vanicka",
-  "image": "assets/images/Vanička.png",
+  "image": "assets/images/Vanička.webp",
   "solution": "Vanička",
   "wordType": "noun",
   "difficulty": 2,
@@ -1002,7 +1002,7 @@
  },
  {
   "id": "seed-venkov",
-  "image": "assets/images/Venkov.png",
+  "image": "assets/images/Venkov.webp",
   "solution": "Venkov",
   "wordType": "noun",
   "difficulty": 1,
@@ -1013,7 +1013,7 @@
  },
  {
   "id": "seed-vinohrady",
-  "image": "assets/images/Vinohrady.png",
+  "image": "assets/images/Vinohrady.webp",
   "solution": "Vinohrady",
   "wordType": "noun",
   "difficulty": 2,
@@ -1024,7 +1024,7 @@
  },
  {
   "id": "seed-virtuoz",
-  "image": "assets/images/Virtuóz.png",
+  "image": "assets/images/Virtuóz.webp",
   "solution": "Virtuóz",
   "wordType": "noun",
   "difficulty": 2,
@@ -1035,7 +1035,7 @@
  },
  {
   "id": "seed-voliera",
-  "image": "assets/images/Voliéra.png",
+  "image": "assets/images/Voliéra.webp",
   "solution": "Voliéra",
   "wordType": "noun",
   "difficulty": 2,
@@ -1046,7 +1046,7 @@
  },
  {
   "id": "seed-vrtule",
-  "image": "assets/images/Vrtule.png",
+  "image": "assets/images/Vrtule.webp",
   "solution": "Vrtule",
   "wordType": "noun",
   "difficulty": 1,
@@ -1057,7 +1057,7 @@
  },
  {
   "id": "seed-valet",
-  "image": "assets/images/Válet.png",
+  "image": "assets/images/Válet.webp",
   "solution": "Válet",
   "wordType": "verb",
   "difficulty": 1,
@@ -1068,7 +1068,7 @@
  },
  {
   "id": "seed-valet-v2",
-  "image": "assets/images/Válet_v2.png",
+  "image": "assets/images/Válet_v2.webp",
   "solution": "Válet",
   "wordType": "verb",
   "difficulty": 1,
@@ -1079,7 +1079,7 @@
  },
  {
   "id": "seed-valka",
-  "image": "assets/images/Válka.png",
+  "image": "assets/images/Válka.webp",
   "solution": "Válka",
   "wordType": "noun",
   "difficulty": 1,
@@ -1090,7 +1090,7 @@
  },
  {
   "id": "seed-vyvar",
-  "image": "assets/images/Vývar.png",
+  "image": "assets/images/Vývar.webp",
   "solution": "Vývar",
   "wordType": "noun",
   "difficulty": 1,
@@ -1101,7 +1101,7 @@
  },
  {
   "id": "seed-vcelicka-v1",
-  "image": "assets/images/Včelička_v1.png",
+  "image": "assets/images/Včelička_v1.webp",
   "solution": "Včelička",
   "wordType": "noun",
   "difficulty": 2,
@@ -1112,7 +1112,7 @@
  },
  {
   "id": "seed-vcelicka-v2",
-  "image": "assets/images/Včelička_v2.png",
+  "image": "assets/images/Včelička_v2.webp",
   "solution": "Včelička",
   "wordType": "noun",
   "difficulty": 2,
@@ -1123,7 +1123,7 @@
  },
  {
   "id": "seed-zahrada",
-  "image": "assets/images/Zahrada.png",
+  "image": "assets/images/Zahrada.webp",
   "solution": "Zahrada",
   "wordType": "noun",
   "difficulty": 2,
@@ -1134,7 +1134,7 @@
  },
  {
   "id": "seed-zahrada-v2",
-  "image": "assets/images/Zahrada_v2.png",
+  "image": "assets/images/Zahrada_v2.webp",
   "solution": "Zahrada",
   "wordType": "noun",
   "difficulty": 2,
@@ -1145,7 +1145,7 @@
  },
  {
   "id": "seed-zastavka",
-  "image": "assets/images/Zastávka.png",
+  "image": "assets/images/Zastávka.webp",
   "solution": "Zastávka",
   "wordType": "noun",
   "difficulty": 2,
@@ -1156,7 +1156,7 @@
  },
  {
   "id": "seed-zastavka-v1-1",
-  "image": "assets/images/Zastávka_v1.1.png",
+  "image": "assets/images/Zastávka_v1.1.webp",
   "solution": "Zastávka",
   "wordType": "noun",
   "difficulty": 2,
@@ -1167,7 +1167,7 @@
  },
  {
   "id": "seed-zaplaty",
-  "image": "assets/images/Záplaty.png",
+  "image": "assets/images/Záplaty.webp",
   "solution": "Záplaty",
   "wordType": "noun",
   "difficulty": 2,
@@ -1178,7 +1178,7 @@
  },
  {
   "id": "seed-autogramiada",
-  "image": "assets/images/autogramiáda.png",
+  "image": "assets/images/autogramiáda.webp",
   "solution": "autogramiáda",
   "wordType": "noun",
   "difficulty": 3,
@@ -1189,7 +1189,7 @@
  },
  {
   "id": "seed-fotovoltaika",
-  "image": "assets/images/fotovoltaika.png",
+  "image": "assets/images/fotovoltaika.webp",
   "solution": "fotovoltaika",
   "wordType": "noun",
   "difficulty": 3,
@@ -1200,7 +1200,7 @@
  },
  {
   "id": "seed-kalamita-v2",
-  "image": "assets/images/kalamita_v2.png",
+  "image": "assets/images/kalamita_v2.webp",
   "solution": "kalamita",
   "wordType": "noun",
   "difficulty": 2,
@@ -1211,7 +1211,7 @@
  },
  {
   "id": "seed-uplata",
-  "image": "assets/images/Úplata.png",
+  "image": "assets/images/Úplata.webp",
   "solution": "Úplata",
   "wordType": "noun",
   "difficulty": 1,
@@ -1222,7 +1222,7 @@
  },
  {
   "id": "seed-celovka",
-  "image": "assets/images/Čelovka.png",
+  "image": "assets/images/Čelovka.webp",
   "solution": "Čelovka",
   "wordType": "noun",
   "difficulty": 2,
@@ -1233,7 +1233,7 @@
  },
  {
   "id": "seed-caslav",
-  "image": "assets/images/Čáslav.png",
+  "image": "assets/images/Čáslav.webp",
   "solution": "Čáslav",
   "wordType": "noun",
   "difficulty": 1,
@@ -1244,7 +1244,7 @@
  },
  {
   "id": "seed-zidle",
-  "image": "assets/images/Židle.png",
+  "image": "assets/images/Židle.webp",
   "solution": "Židle",
   "wordType": "noun",
   "difficulty": 1,
