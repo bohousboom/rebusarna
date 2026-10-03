@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../data/providers.dart';
 import '../../data/supabase_client.dart';
+import '../../domain/models/puzzle.dart';
 
 /// Nabídne správci (autorovi vestavěných obrázků) nahrát vestavěné rébusy do jeho účtu,
 /// aby je mohl upravovat. Zmizí, když už jsou všechny nahrané.
@@ -70,13 +71,62 @@ class _ImportBuiltInCardState extends ConsumerState<ImportBuiltInCard> {
     }
   }
 
+  /// Trvale smaže všechny dosud nepřidružené vestavěné rébusy (po potvrzení se seznamem).
+  Future<void> _deletePending(List<Puzzle> pending) async {
+    final ok = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text('Smazat natrvalo (${pending.length})?'),
+        content: SingleChildScrollView(
+          child: Text(
+            'Tyto rébusy se trvale odstraní a nebudou se už nabízet:\n\n'
+            '${pending.map((p) => p.solution).join(', ')}',
+          ),
+        ),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Zrušit')),
+          FilledButton(onPressed: () => Navigator.pop(ctx, true), child: const Text('Smazat')),
+        ],
+      ),
+    );
+    if (ok != true) return;
+
+    setState(() {
+      _done = 0;
+      _total = pending.length;
+    });
+    final repo = ref.read(puzzleRepositoryProvider);
+    var failed = 0;
+    String? firstError;
+    for (var i = 0; i < pending.length; i++) {
+      try {
+        await repo.delete(pending[i]);
+      } catch (e) {
+        failed++;
+        firstError ??= '${pending[i].id}: $e';
+      }
+      if (mounted) setState(() => _done = i + 1);
+    }
+    ref.invalidate(puzzlesProvider);
+    if (!mounted) return;
+    setState(() => _done = null);
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      content: Text(failed == 0
+          ? 'Smazáno ${pending.length} rébusů.'
+          : 'Smazáno ${pending.length - failed}, selhalo $failed.\n${firstError ?? ''}'),
+      duration: const Duration(seconds: 15),
+      showCloseIcon: true,
+    ));
+  }
+
   @override
   Widget build(BuildContext context) {
     final isAdmin = ref.watch(isAdminProvider).value ?? false;
     final puzzles = ref.watch(puzzlesProvider).value;
     if (!isAdmin || puzzles == null) return const SizedBox.shrink();
-    final pending =
-        puzzles.where((p) => p.ownerId == null && p.id.startsWith('seed-')).length;
+    final pendingList =
+        puzzles.where((p) => p.ownerId == null && p.id.startsWith('seed-')).toList();
+    final pending = pendingList.length;
     if (pending == 0 && !_running) return const SizedBox.shrink();
 
     return Padding(
@@ -92,13 +142,20 @@ class _ImportBuiltInCardState extends ConsumerState<ImportBuiltInCard> {
               if (_running) ...[
                 LinearProgressIndicator(value: _total == 0 ? null : _done! / _total),
                 const SizedBox(height: 4),
-                Text('Nahrávám ${_done!} / $_total'),
-              ] else
+                Text('Pracuji ${_done!} / $_total'),
+              ] else ...[
                 FilledButton.tonal(
                   key: const Key('import-builtin-button'),
                   onPressed: _run,
                   child: const Text('Přidružit k mému účtu'),
                 ),
+                const SizedBox(height: 4),
+                TextButton(
+                  key: const Key('delete-pending-button'),
+                  onPressed: () => _deletePending(pendingList),
+                  child: Text('Smazat tyto natrvalo ($pending)'),
+                ),
+              ],
             ],
           ),
         ),
