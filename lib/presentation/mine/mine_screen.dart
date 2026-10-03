@@ -7,6 +7,7 @@ import '../../domain/models/puzzle.dart';
 import '../../data/supabase_client.dart';
 import '../shared/account_bar.dart';
 import 'import_builtin_card.dart';
+import 'reports_screen.dart';
 import '../shared/puzzle_thumb.dart';
 
 /// Moje: vytvořené, vyřešené a oblíbené rébusy.
@@ -63,6 +64,7 @@ class MineScreen extends ConsumerWidget {
         children: [
           const AccountBar(),
           const ImportBuiltInCard(),
+          const ReportsCard(),
           SwitchListTile(
             key: const Key('show-adult-switch'),
             dense: true,
