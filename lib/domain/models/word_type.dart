@@ -2,6 +2,7 @@ enum WordType {
   verb('sloveso'),
   noun('podstatné jméno'),
   adjective('přídavné jméno'),
+  city('město'),
   other('jiné');
 
   const WordType(this.label);

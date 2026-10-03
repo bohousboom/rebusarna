@@ -12,6 +12,7 @@ IconData wordTypeIcon(WordType t) => switch (t) {
       WordType.verb => Icons.directions_run,
       WordType.noun => Icons.label,
       WordType.adjective => Icons.brush,
+      WordType.city => Icons.location_city,
       WordType.other => Icons.more_horiz,
     };
 
