@@ -9,6 +9,13 @@ Color difficultyColor(int difficulty) => switch (difficulty) {
       _ => const Color(0xFFE74C3C),
     };
 
+/// Slovní popis obtížnosti.
+String difficultyLabel(int difficulty) => switch (difficulty) {
+      1 => 'lehká',
+      2 => 'střední',
+      _ => 'těžká',
+    };
+
 ThemeData _build(Brightness b) {
   final scheme = ColorScheme.fromSeed(seedColor: _seed, brightness: b);
   return ThemeData(

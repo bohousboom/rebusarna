@@ -9,16 +9,21 @@ import '../../domain/models/word_type.dart';
 import '../../domain/text_logic.dart';
 
 IconData wordTypeIcon(WordType t) => switch (t) {
-      WordType.verb => Icons.directions_run,
-      WordType.noun => Icons.label,
-      WordType.adjective => Icons.brush,
-      WordType.city => Icons.location_city,
-      WordType.other => Icons.more_horiz,
-    };
+  WordType.verb => Icons.directions_run,
+  WordType.noun => Icons.label,
+  WordType.adjective => Icons.brush,
+  WordType.city => Icons.location_city,
+  WordType.other => Icons.more_horiz,
+};
 
 /// Obrázek rébusu: asset, soubor v zařízení (nebo URL na webu).
 class PuzzleImage extends StatelessWidget {
-  const PuzzleImage(this.image, {super.key, this.fit = BoxFit.contain, this.cacheWidth});
+  const PuzzleImage(
+    this.image, {
+    super.key,
+    this.fit = BoxFit.contain,
+    this.cacheWidth,
+  });
 
   final String image;
   final BoxFit fit;
@@ -31,12 +36,22 @@ class PuzzleImage extends StatelessWidget {
     Widget broken(BuildContext _, Object e, StackTrace? s) =>
         const Center(child: Icon(Icons.broken_image, size: 48));
     if (image.startsWith(kImageAssetPrefix)) {
-      return Image.asset(image, fit: fit, cacheWidth: cacheWidth, errorBuilder: broken);
+      return Image.asset(
+        image,
+        fit: fit,
+        cacheWidth: cacheWidth,
+        errorBuilder: broken,
+      );
     }
     if (kIsWeb || image.startsWith('http')) {
       return Image.network(image, fit: fit, errorBuilder: broken);
     }
-    return Image.file(File(image), fit: fit, cacheWidth: cacheWidth, errorBuilder: broken);
+    return Image.file(
+      File(image),
+      fit: fit,
+      cacheWidth: cacheWidth,
+      errorBuilder: broken,
+    );
   }
 }
 
@@ -78,7 +93,11 @@ class PuzzleCard extends StatelessWidget {
           width: highlight ? 4 : 1,
         ),
         boxShadow: const [
-          BoxShadow(color: Colors.black26, blurRadius: 10, offset: Offset(0, 4)),
+          BoxShadow(
+            color: Colors.black26,
+            blurRadius: 10,
+            offset: Offset(0, 4),
+          ),
         ],
       ),
       clipBehavior: Clip.antiAlias,
@@ -101,7 +120,8 @@ class PuzzleCard extends StatelessWidget {
                 DifficultyBadge(
                   difficulty: difficulty,
                   wordType: wordType,
-                  showPlusMinus: solution.trim().isNotEmpty && hasNoAcute(solution),
+                  showPlusMinus:
+                      solution.trim().isNotEmpty && hasNoAcute(solution),
                 ),
                 if (adult) ...[const SizedBox(width: 6), const AdultChip()],
               ],
@@ -136,18 +156,30 @@ class AdultChip extends StatelessWidget {
   const AdultChip({super.key});
 
   @override
-  Widget build(BuildContext context) => Container(
-        key: const Key('adult-chip'),
-        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
-        decoration: BoxDecoration(
-          color: Colors.black87,
-          borderRadius: BorderRadius.circular(12),
+  Widget build(BuildContext context) => Tooltip(
+    message: 'Obsah pro dospělé (18+)',
+    triggerMode: TooltipTriggerMode.tap,
+    child: Container(
+      key: const Key('adult-chip'),
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+      decoration: BoxDecoration(
+        color: Colors.black87,
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: const Text(
+        '18+',
+        style: TextStyle(
+          color: Colors.white,
+          fontWeight: FontWeight.w800,
+          fontSize: 14,
         ),
-        child: const Text('18+',
-            style: TextStyle(color: Colors.white, fontWeight: FontWeight.w800, fontSize: 14)),
-      );
+      ),
+    ),
+  );
 }
 
+/// Štítek v rohu karty: jen symboly (? vždy, ± bez čárek, ikona druhu slova),
+/// barva = obtížnost. Význam každého symbolu se ukáže po najetí myší (v telefonu klepnutím).
 class DifficultyBadge extends StatelessWidget {
   const DifficultyBadge({
     super.key,
@@ -160,33 +192,60 @@ class DifficultyBadge extends StatelessWidget {
   final WordType wordType;
   final bool showPlusMinus;
 
+  Widget _hint(String message, Widget child, {Key? key}) => Tooltip(
+    key: key,
+    message: message,
+    triggerMode: TooltipTriggerMode.tap,
+    showDuration: const Duration(seconds: 4),
+    preferBelow: true,
+    child: child,
+  );
+
   @override
   Widget build(BuildContext context) {
     final color = difficultyColor(difficulty);
     final fg = ThemeData.estimateBrightnessForColor(color) == Brightness.dark
         ? Colors.white
         : Colors.black87;
-    final style = TextStyle(color: fg, fontWeight: FontWeight.w800, fontSize: 16);
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-      decoration: BoxDecoration(
-        color: color,
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Text('?', style: style),
-          if (showPlusMinus) ...[
-            const SizedBox(width: 8),
-            Text('±', key: const Key('badge-plusminus'), style: style),
+    final style = TextStyle(
+      color: fg,
+      fontWeight: FontWeight.w800,
+      fontSize: 18,
+    );
+    return _hint(
+      'Obtížnost: ${difficultyLabel(difficulty)} (barva štítku)',
+      Container(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+        decoration: BoxDecoration(
+          color: color,
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            _hint(
+              'Hádej skryté slovo nebo výraz z obrázku.',
+              Text('?', style: style),
+            ),
+            if (showPlusMinus) ...[
+              const SizedBox(width: 10),
+              _hint(
+                'Řešení neobsahuje čárky: délka samohlásek se neřeší (např. ó = o).',
+                Text('±', key: const Key('badge-plusminus'), style: style),
+              ),
+            ],
+            const SizedBox(width: 10),
+            _hint(
+              'Druh slova: ${wordType.label}',
+              Icon(
+                wordTypeIcon(wordType),
+                key: const Key('badge-wordtype'),
+                size: 22,
+                color: fg,
+              ),
+            ),
           ],
-          const SizedBox(width: 8),
-          Icon(wordTypeIcon(wordType), size: 18, color: fg),
-          const SizedBox(width: 4),
-          Text(wordType.label,
-              style: style.copyWith(fontSize: 12, fontWeight: FontWeight.w600)),
-        ],
+        ),
       ),
     );
   }

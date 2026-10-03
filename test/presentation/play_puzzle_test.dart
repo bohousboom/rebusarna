@@ -46,7 +46,11 @@ void main() {
     // štítek: "poranit" nemá čárku -> ±, druh slova sloveso
     expect(find.text('?'), findsOneWidget);
     expect(find.byKey(const Key('badge-plusminus')), findsOneWidget);
-    expect(find.text('sloveso'), findsOneWidget);
+    // štítek ukazuje jen symboly; význam je v nápovědě po najetí
+    expect(find.text('sloveso'), findsNothing);
+    expect(find.byKey(const Key('badge-wordtype')), findsOneWidget);
+    expect(find.byTooltip('Druh slova: sloveso'), findsOneWidget);
+    expect(find.byTooltip('Obtížnost: střední (barva štítku)'), findsOneWidget);
     expect(_streak(tester), 'Série: 0');
 
     // špatný tip
