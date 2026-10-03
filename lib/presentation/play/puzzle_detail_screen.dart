@@ -19,7 +19,7 @@ class PuzzleDetailScreen extends ConsumerWidget {
       context: context,
       builder: (ctx) => AlertDialog(
         title: const Text('Smazat rébus?'),
-        content: const Text('Rébus se smaže i s obrázkem pro všechny uživatele.'),
+        content: const Text('Rébus se trvale smaže i s obrázkem pro všechny uživatele.'),
         actions: [
           TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Zrušit')),
           FilledButton(onPressed: () => Navigator.pop(ctx, true), child: const Text('Smazat')),
@@ -45,25 +45,29 @@ class PuzzleDetailScreen extends ConsumerWidget {
     final userId = ref.watch(currentUserProvider).value?.id;
     final puzzle = puzzles.value?.where((x) => x.id == puzzleId).firstOrNull;
     final isOwner = userId != null && puzzle?.ownerId == userId;
+    // Správce smí trvale smazat i vestavěný rébus, který ještě není v jeho účtu.
+    final isAdmin = ref.watch(isAdminProvider).value ?? false;
+    final isPendingBuiltIn =
+        isAdmin && puzzle != null && puzzle.ownerId == null && puzzle.id.startsWith('seed-');
 
     return Scaffold(
       appBar: AppBar(
         title: const Text('Rébus'),
         actions: [
-          if (isOwner) ...[
+          if (isOwner)
             IconButton(
               key: const Key('edit-button'),
               tooltip: 'Upravit',
               icon: const Icon(Icons.edit),
               onPressed: () => context.push('/puzzle/${puzzle!.id}/edit'),
             ),
+          if (isOwner || isPendingBuiltIn)
             IconButton(
               key: const Key('delete-button'),
               tooltip: 'Smazat',
               icon: const Icon(Icons.delete_outline),
               onPressed: () => _confirmDelete(context, ref, puzzle!),
             ),
-          ],
         ],
       ),
       body: SafeArea(

@@ -34,14 +34,24 @@ class SupabasePuzzleRepository implements PuzzleRepository {
           .select()
           .order('created_at', ascending: false);
       final remote = [for (final r in rows) _fromRow(r)];
-      final importedIds = {for (final p in remote) p.id};
+      final hidden = {for (final p in remote) p.id, ...await _deletedSeedKeys()};
       return [
         for (final p in seed)
-          if (!importedIds.contains(p.id)) p,
+          if (!hidden.contains(p.id)) p,
         ...remote,
       ];
     } catch (_) {
       return seed; // offline: aspoň vestavěné rébusy
+    }
+  }
+
+  /// Trvale smazané vestavěné rébusy (selhání = žádné, aby nerozbilo načítání).
+  Future<Set<String>> _deletedSeedKeys() async {
+    try {
+      final rows = await _client.from('deleted_seeds').select('seed_key');
+      return {for (final r in rows) r['seed_key'] as String};
+    } catch (_) {
+      return {};
     }
   }
 
@@ -128,6 +138,14 @@ class SupabasePuzzleRepository implements PuzzleRepository {
   @override
   Future<void> delete(Puzzle puzzle) async {
     _requireUser();
+    final isBuiltIn = puzzle.id.startsWith(_kSeedPrefix);
+
+    // Vestavěný rébus, který ještě není v databázi: jen se trvale skryje (správce).
+    if (isBuiltIn && puzzle.ownerId == null) {
+      await _client.from('deleted_seeds').upsert({'seed_key': puzzle.id});
+      return;
+    }
+
     final row = await _byId(_client.from('puzzles').select('image_path'), puzzle.id)
         .maybeSingle();
     await _byId(_client.from('puzzles').delete(), puzzle.id);
@@ -137,6 +155,10 @@ class SupabasePuzzleRepository implements PuzzleRepository {
         await _client.storage.from(_kBucket).remove([path]);
       } catch (_) {}
     }
+    // Importovaný rébus: aby se vestavěná kopie znovu neukázala.
+    if (isBuiltIn) {
+      await _client.from('deleted_seeds').upsert({'seed_key': puzzle.id});
+    }
   }
 
   @override
@@ -144,7 +166,10 @@ class SupabasePuzzleRepository implements PuzzleRepository {
     final user = _requireUser();
     final seed = await _loadSeed();
     final existing = await _client.from('puzzles').select('seed_key').not('seed_key', 'is', null);
-    final have = {for (final r in existing) r['seed_key'] as String};
+    final have = {
+      for (final r in existing) r['seed_key'] as String,
+      ...await _deletedSeedKeys(),
+    };
     final todo = [for (final p in seed) if (!have.contains(p.id)) p];
 
     var imported = 0, failed = 0;

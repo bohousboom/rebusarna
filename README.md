@@ -37,6 +37,7 @@ Poznámka: `flutter analyze` může padat, když cesta k projektu obsahuje znaky
 - Bez přihlášení lze hrát, procházet knihovnu a mít postup lokálně. Nahrávat rébusy mohou jen přihlášení. Po přihlášení se postup (uhodnuté, oblíbené, série) sloučí s účtem a synchronizuje mezi zařízeními.
 - **Úprava a mazání:** autor rébusu ho otevře (Knihovna nebo Moje) a v horní liště vidí tužku a koš.
 - **Přidružení vestavěných rébusů k účtu:** v Moje je po přihlášení tlačítko „Přidružit k mému účtu". Nahraje vestavěné obrázky do Supabase pod tvým účtem (migrace `20261004000000_seed_import.sql` a `20261005000000_admins.sql` musí být spuštěné; import smí jen správce zapsaný v `app_admins`, viz komentář na konci druhé migrace). ID rébusů se zachovají, takže postup hráčů platí dál.
+- **Trvalé smazání vestavěných rébusů:** smazání importovaného rébusu (nebo smazání ještě neimportovaného správcem) zapíše id do `deleted_seeds` (migrace `20261006000000_deleted_seeds.sql`). Aplikace ho pak už nezobrazí ani znovu neimportuje.
 - Mobilní návrat z přihlášení: schéma `cz.rebusarna://login-callback` (Android manifest, iOS Info.plist). V Supabase (Authentication → URL Configuration) musí být v Redirect URLs: adresa webu `https://<doména>/**`, `http://localhost:*/**` a `cz.rebusarna://login-callback`.
 
 ## Co je hotové a co zbývá
