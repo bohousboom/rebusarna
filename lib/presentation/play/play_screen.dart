@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../data/difficulty.dart';
 import '../../data/providers.dart';
 import '../../domain/hints.dart';
 import '../../domain/models/puzzle.dart';
@@ -136,6 +137,7 @@ class _PuzzlePageState extends ConsumerState<PuzzlePage>
     with AutomaticKeepAliveClientMixin {
   final _tip = TextEditingController();
   int _hintLevel = 0;
+  int _wrongCount = 0;
   bool _wrong = false;
   late _Status _status =
       ref.read(progressProvider).solved.contains(widget.puzzle.id)
@@ -159,7 +161,9 @@ class _PuzzlePageState extends ConsumerState<PuzzlePage>
         _wrong = false;
       });
       ref.read(progressProvider.notifier).markSolved(widget.puzzle.id);
+      _report(revealed: false);
     } else {
+      _wrongCount++;
       setState(() => _wrong = true);
     }
   }
@@ -170,6 +174,17 @@ class _PuzzlePageState extends ConsumerState<PuzzlePage>
       _wrong = false;
     });
     ref.read(progressProvider.notifier).resetStreak();
+    _report(revealed: true);
+  }
+
+  /// Výsledek prvního pokusu do statistik obtížnosti (jen přihlášení hráči).
+  void _report({required bool revealed}) {
+    ref.read(resultReporterProvider).report(
+          puzzleId: widget.puzzle.id,
+          wrong: _wrongCount,
+          hints: _hintLevel,
+          revealed: revealed,
+        );
   }
 
   void _resetThis() {
@@ -177,6 +192,7 @@ class _PuzzlePageState extends ConsumerState<PuzzlePage>
     setState(() {
       _status = _Status.playing;
       _hintLevel = 0;
+      _wrongCount = 0;
       _wrong = false;
       _tip.clear();
     });
@@ -203,7 +219,7 @@ class _PuzzlePageState extends ConsumerState<PuzzlePage>
                 image: p.image,
                 solution: p.solution,
                 wordType: p.wordType,
-                difficulty: p.difficulty,
+                difficulty: ref.watch(effectiveDifficultyProvider((p.id, p.difficulty))),
                 favorite: fav,
                 onFavorite: () =>
                     ref.read(progressProvider.notifier).toggleFavorite(p.id),
