@@ -30,11 +30,18 @@ Poznámka: `flutter analyze` může padat, když cesta k projektu obsahuje znaky
 - `lib/data/` repozitáře. `PuzzleRepository` je rozhraní, `LocalPuzzleRepository` ukládá JSON do `shared_preferences`. Pozdější `SupabasePuzzleRepository` stačí podstrčit přes `puzzleRepositoryProvider`, UI se nemění.
 - `lib/presentation/` obrazovky a widgety (Riverpod, go_router).
 
+## Supabase a přihlášení
+
+- Backend: Supabase (přihlášení přes Google, tabulky `puzzles`, `solved`, `favorites`, `profiles`, úložiště `puzzle-images`). Schéma je v `supabase/migrations/`.
+- URL a **publishable** klíč jsou v [lib/core/config.dart](lib/core/config.dart) jako výchozí hodnoty. Jsou určené pro veřejnou aplikaci, přístup hlídají pravidla (RLS) v databázi. `service_role` klíč nikdy nepatří do repa. Hodnoty jdou přepsat: `--dart-define=SUPABASE_URL=... --dart-define=SUPABASE_PUBLISHABLE_KEY=...`.
+- Bez přihlášení lze hrát, procházet knihovnu a mít postup lokálně. Nahrávat rébusy mohou jen přihlášení. Po přihlášení se postup (uhodnuté, oblíbené, série) sloučí s účtem a synchronizuje mezi zařízeními.
+- Mobilní návrat z přihlášení: schéma `cz.rebusarna://login-callback` (Android manifest, iOS Info.plist). V Supabase (Authentication → URL Configuration) musí být v Redirect URLs: adresa webu `https://<doména>/**`, `http://localhost:*/**` a `cz.rebusarna://login-callback`.
+
 ## Co je hotové a co zbývá
 
 Hotovo: viz výše (hraní, tvorba, knihovna, Moje, světlé i tmavé téma, použitelné od šířky 360 px, unit a widget testy).
 
-Zbývá (mimo rozsah MVP): backend (Supabase), přihlášení, sdílení mezi uživateli, moderace, hodnocení (pole `ratingSum`/`ratingCount` v modelu jsou připravená), denní rébus.
+Zbývá: moderace sdílených rébusů, mazání vlastních rébusů, hodnocení (pole `ratingSum`/`ratingCount` v modelu jsou připravená), denní rébus, ověřování tipu na serveru.
 
 ## Seed rébusy (114)
 

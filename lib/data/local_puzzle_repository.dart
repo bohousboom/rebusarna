@@ -34,7 +34,7 @@ class LocalPuzzleRepository implements PuzzleRepository {
   }
 
   @override
-  Future<Puzzle> create(Puzzle puzzle) async {
+  Future<Puzzle> create(Puzzle puzzle, {UploadImage? upload}) async {
     final all = [..._readUser(), puzzle];
     await _prefs.setString(
         _kUserPuzzlesKey, jsonEncode([for (final p in all) p.toJson()]));

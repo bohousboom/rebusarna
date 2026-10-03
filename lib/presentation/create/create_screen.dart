@@ -3,10 +3,13 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../data/providers.dart';
+import '../../data/puzzle_repository.dart' show UploadImage;
+import '../../data/supabase_client.dart';
 import '../../data/user_image_store.dart';
 import '../../domain/models/puzzle.dart';
 import '../../domain/models/word_type.dart';
 import '../../domain/puzzle_validation.dart';
+import '../shared/account_bar.dart';
 import '../shared/puzzle_card.dart';
 
 class CreateScreen extends ConsumerStatefulWidget {
@@ -20,8 +23,9 @@ class _CreateScreenState extends ConsumerState<CreateScreen> {
   final _solution = TextEditingController();
   final _meaning = TextEditingController();
   final _explanation = TextEditingController();
-  final _author = TextEditingController(text: 'Já');
-  String? _image;
+  final _author = TextEditingController();
+  PickedImage? _image;
+  bool _publishing = false;
   WordType _wordType = WordType.noun;
   int _difficulty = 1;
   List<String> _errors = const [];
@@ -36,13 +40,13 @@ class _CreateScreenState extends ConsumerState<CreateScreen> {
   }
 
   Future<void> _pickImage() async {
-    final path = await ref.read(userImageStoreProvider).pickAndStore();
-    if (path != null) setState(() => _image = path);
+    final picked = await ref.read(userImageStoreProvider).pick();
+    if (picked != null) setState(() => _image = picked);
   }
 
   Future<void> _publish() async {
     final errors = validateDraft(
-      image: _image,
+      image: _image?.path,
       solution: _solution.text,
       explanation: _explanation.text,
     );
@@ -52,19 +56,34 @@ class _CreateScreenState extends ConsumerState<CreateScreen> {
     final now = DateTime.now();
     final author = _author.text.trim();
     final meaning = _meaning.text.trim();
-    await ref.read(puzzleRepositoryProvider).create(Puzzle(
-          id: 'user-${now.microsecondsSinceEpoch}',
-          image: _image!,
-          solution: _solution.text.trim(),
-          meaning: meaning.isEmpty ? null : meaning,
-          explanation: _explanation.text.trim(),
-          wordType: _wordType,
-          difficulty: _difficulty,
-          authorName: author.isEmpty ? 'Já' : author,
-          createdAt: now,
-        ));
+    final image = _image!;
+    final fallbackAuthor = displayNameOf(ref.read(currentUserProvider).value) ?? 'Anonym';
+    setState(() => _publishing = true);
+    try {
+      await ref.read(puzzleRepositoryProvider).create(
+            Puzzle(
+              id: 'user-${now.microsecondsSinceEpoch}',
+              image: image.path,
+              solution: _solution.text.trim(),
+              meaning: meaning.isEmpty ? null : meaning,
+              explanation: _explanation.text.trim(),
+              wordType: _wordType,
+              difficulty: _difficulty,
+              authorName: author.isEmpty ? fallbackAuthor : author,
+              createdAt: now,
+            ),
+            upload: UploadImage(bytes: image.bytes, extension: image.extension),
+          );
+    } catch (e) {
+      if (!mounted) return;
+      setState(() => _publishing = false);
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text('Zveřejnění se nepovedlo: $e')));
+      return;
+    }
     ref.invalidate(puzzlesProvider);
     if (!mounted) return;
+    _publishing = false;
     setState(() {
       _image = null;
       _solution.clear();
@@ -81,6 +100,14 @@ class _CreateScreenState extends ConsumerState<CreateScreen> {
 
   @override
   Widget build(BuildContext context) {
+    // S Supabase je nahrávání jen pro přihlášené.
+    final hasBackend = ref.watch(supabaseClientProvider) != null;
+    final loggedIn = ref.watch(currentUserProvider).value != null;
+    if (hasBackend && !loggedIn) {
+      return const LoginGate(
+        message: 'Vlastní rébusy mohou nahrávat jen přihlášení uživatelé.',
+      );
+    }
     final cardHeight = (MediaQuery.sizeOf(context).height * 0.4).clamp(200.0, 440.0);
     return ListView(
       padding: const EdgeInsets.all(16),
@@ -94,7 +121,7 @@ class _CreateScreenState extends ConsumerState<CreateScreen> {
             child: _image == null
                 ? _EmptyCard(onTap: _pickImage)
                 : PuzzleCard(
-                    image: _image!,
+                    image: _image!.path,
                     solution: _solution.text,
                     wordType: _wordType,
                     difficulty: _difficulty,
@@ -179,8 +206,8 @@ class _CreateScreenState extends ConsumerState<CreateScreen> {
         const SizedBox(height: 16),
         FilledButton(
           key: const Key('publish-button'),
-          onPressed: _publish,
-          child: const Text('Zveřejnit'),
+          onPressed: _publishing ? null : _publish,
+          child: Text(_publishing ? 'Nahrávám…' : 'Zveřejnit'),
         ),
       ],
     );

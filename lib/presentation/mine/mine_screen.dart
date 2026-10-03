@@ -3,6 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../data/providers.dart';
 import '../../domain/models/puzzle.dart';
+import '../../data/supabase_client.dart';
+import '../shared/account_bar.dart';
 import '../shared/puzzle_thumb.dart';
 
 /// Moje: vytvořené, vyřešené a oblíbené rébusy.
@@ -13,10 +15,12 @@ class MineScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final puzzles = ref.watch(puzzlesProvider);
     final progress = ref.watch(progressProvider);
+    final userId = ref.watch(currentUserProvider).value?.id;
     return DefaultTabController(
       length: 3,
       child: Column(
         children: [
+          const AccountBar(),
           const TabBar(tabs: [
             Tab(text: 'Vytvořené'),
             Tab(text: 'Vyřešené'),
@@ -28,7 +32,11 @@ class MineScreen extends ConsumerWidget {
               error: (e, _) => Center(child: Text('Nepodařilo se načíst.\n$e')),
               data: (all) => TabBarView(children: [
                 _Grid(
-                  puzzles: all.where((p) => p.id.startsWith('user-')).toList(),
+                  puzzles: all
+                      .where((p) =>
+                          p.id.startsWith('user-') ||
+                          (userId != null && p.ownerId == userId))
+                      .toList(),
                   solved: progress.solved,
                   empty: 'Zatím jsi nic nevytvořil. Zkus záložku Tvořit.',
                 ),

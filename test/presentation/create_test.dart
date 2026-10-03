@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -9,7 +11,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class _FakeStore implements UserImageStore {
   @override
-  Future<String?> pickAndStore() async => '/tmp/fake.jpg';
+  Future<PickedImage?> pick() async =>
+      PickedImage(path: '/tmp/fake.jpg', bytes: Uint8List(0), extension: 'jpg');
 }
 
 void main() {

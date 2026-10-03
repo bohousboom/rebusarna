@@ -15,6 +15,7 @@ class Puzzle {
     required this.createdAt,
     this.meaning,
     this.explanation,
+    this.ownerId,
     this.ratingSum = 0,
     this.ratingCount = 0,
   });
@@ -28,6 +29,9 @@ class Puzzle {
 
   /// Vysvětlení, jak se od obrázku dospěje k řešení.
   final String? explanation;
+
+  /// Id autora (Supabase uživatel); u vestavěných rébusů null.
+  final String? ownerId;
   final WordType wordType;
 
   /// 1 = lehká, 2 = střední, 3 = těžká.
@@ -45,6 +49,7 @@ class Puzzle {
         'solution': solution,
         if (meaning != null) 'meaning': meaning,
         if (explanation != null) 'explanation': explanation,
+        if (ownerId != null) 'ownerId': ownerId,
         'wordType': wordType.name,
         'difficulty': difficulty,
         'authorName': authorName,
@@ -59,6 +64,7 @@ class Puzzle {
         solution: json['solution'] as String,
         meaning: json['meaning'] as String?,
         explanation: json['explanation'] as String?,
+        ownerId: json['ownerId'] as String?,
         wordType: WordType.fromName(json['wordType'] as String?),
         difficulty: (json['difficulty'] as num?)?.toInt() ?? 1,
         authorName: json['authorName'] as String? ?? 'Neznámý',

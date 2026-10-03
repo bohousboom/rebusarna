@@ -6,6 +6,8 @@ import '../domain/models/puzzle.dart';
 import 'local_puzzle_repository.dart';
 import 'player_progress.dart';
 import 'puzzle_repository.dart';
+import 'supabase_client.dart';
+import 'supabase_puzzle_repository.dart';
 
 const kSeedPuzzlesAsset = 'assets/seed_puzzles.json';
 
@@ -14,11 +16,12 @@ final sharedPreferencesProvider = Provider<SharedPreferences>(
   (ref) => throw UnimplementedError('sharedPreferencesProvider není nastaven'),
 );
 
+/// Supabase, když je k dispozici; jinak jen lokální úložiště.
 final puzzleRepositoryProvider = Provider<PuzzleRepository>((ref) {
-  return LocalPuzzleRepository(
-    ref.watch(sharedPreferencesProvider),
-    loadSeed: () => rootBundle.loadString(kSeedPuzzlesAsset),
-  );
+  Future<String> loadSeed() => rootBundle.loadString(kSeedPuzzlesAsset);
+  final client = ref.watch(supabaseClientProvider);
+  if (client != null) return SupabasePuzzleRepository(client, loadSeed: loadSeed);
+  return LocalPuzzleRepository(ref.watch(sharedPreferencesProvider), loadSeed: loadSeed);
 });
 
 final puzzlesProvider = FutureProvider<List<Puzzle>>(

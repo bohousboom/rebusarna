@@ -32,7 +32,9 @@ class PuzzleImage extends StatelessWidget {
     if (image.startsWith(kImageAssetPrefix)) {
       return Image.asset(image, fit: fit, cacheWidth: cacheWidth, errorBuilder: broken);
     }
-    if (kIsWeb) return Image.network(image, fit: fit, errorBuilder: broken);
+    if (kIsWeb || image.startsWith('http')) {
+      return Image.network(image, fit: fit, errorBuilder: broken);
+    }
     return Image.file(File(image), fit: fit, cacheWidth: cacheWidth, errorBuilder: broken);
   }
 }
