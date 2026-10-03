@@ -8,7 +8,7 @@ import 'puzzle_repository.dart';
 const _kUserPuzzlesKey = 'user_puzzles';
 
 /// Uloží rébusy do zařízení (JSON v shared_preferences); vestavěné se
-/// načítají ze seed souboru.
+/// načítají ze seed souboru. Slouží bez Supabase (vývoj, testy).
 class LocalPuzzleRepository implements PuzzleRepository {
   LocalPuzzleRepository(this._prefs, {required this.loadSeed});
 
@@ -24,6 +24,9 @@ class LocalPuzzleRepository implements PuzzleRepository {
     ];
   }
 
+  Future<void> _writeUser(List<Puzzle> all) => _prefs.setString(
+      _kUserPuzzlesKey, jsonEncode([for (final p in all) p.toJson()]));
+
   @override
   Future<List<Puzzle>> getAll() async {
     final seed = [
@@ -35,9 +38,25 @@ class LocalPuzzleRepository implements PuzzleRepository {
 
   @override
   Future<Puzzle> create(Puzzle puzzle, {UploadImage? upload}) async {
-    final all = [..._readUser(), puzzle];
-    await _prefs.setString(
-        _kUserPuzzlesKey, jsonEncode([for (final p in all) p.toJson()]));
+    await _writeUser([..._readUser(), puzzle]);
     return puzzle;
+  }
+
+  @override
+  Future<Puzzle> update(Puzzle puzzle, {UploadImage? upload}) async {
+    await _writeUser([
+      for (final p in _readUser()) p.id == puzzle.id ? puzzle : p,
+    ]);
+    return puzzle;
+  }
+
+  @override
+  Future<void> delete(Puzzle puzzle) async {
+    await _writeUser([for (final p in _readUser()) if (p.id != puzzle.id) p]);
+  }
+
+  @override
+  Future<ImportResult> importBuiltIn({void Function(int done, int total)? onProgress}) {
+    throw UnsupportedError('Import je k dispozici jen s přihlášením (Supabase).');
   }
 }

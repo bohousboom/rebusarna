@@ -35,6 +35,8 @@ Poznámka: `flutter analyze` může padat, když cesta k projektu obsahuje znaky
 - Backend: Supabase (přihlášení přes Google, tabulky `puzzles`, `solved`, `favorites`, `profiles`, úložiště `puzzle-images`). Schéma je v `supabase/migrations/`.
 - URL a **publishable** klíč jsou v [lib/core/config.dart](lib/core/config.dart) jako výchozí hodnoty. Jsou určené pro veřejnou aplikaci, přístup hlídají pravidla (RLS) v databázi. `service_role` klíč nikdy nepatří do repa. Hodnoty jdou přepsat: `--dart-define=SUPABASE_URL=... --dart-define=SUPABASE_PUBLISHABLE_KEY=...`.
 - Bez přihlášení lze hrát, procházet knihovnu a mít postup lokálně. Nahrávat rébusy mohou jen přihlášení. Po přihlášení se postup (uhodnuté, oblíbené, série) sloučí s účtem a synchronizuje mezi zařízeními.
+- **Úprava a mazání:** autor rébusu ho otevře (Knihovna nebo Moje) a v horní liště vidí tužku a koš.
+- **Přidružení vestavěných rébusů k účtu:** v Moje je po přihlášení tlačítko „Přidružit k mému účtu". Nahraje vestavěné obrázky do Supabase pod tvým účtem (migrace `20261004000000_seed_import.sql` musí být spuštěná). ID rébusů se zachovají, takže postup hráčů platí dál.
 - Mobilní návrat z přihlášení: schéma `cz.rebusarna://login-callback` (Android manifest, iOS Info.plist). V Supabase (Authentication → URL Configuration) musí být v Redirect URLs: adresa webu `https://<doména>/**`, `http://localhost:*/**` a `cz.rebusarna://login-callback`.
 
 ## Co je hotové a co zbývá

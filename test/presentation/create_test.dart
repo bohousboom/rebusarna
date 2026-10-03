@@ -20,6 +20,9 @@ void main() {
     test('chybí obojí', () => expect(validateDraft(image: null, solution: ' ', explanation: ''), hasLength(3)));
     test('chybí řešení', () => expect(validateDraft(image: 'a.png', solution: '', explanation: 'x'), hasLength(1)));
     test('chybí obrázek', () => expect(validateDraft(image: '', solution: 'pes', explanation: 'x'), hasLength(1)));
+    test('při úpravě není vysvětlení povinné', () => expect(
+        validateDraft(image: 'a.png', solution: 'pes', explanation: '', requireExplanation: false),
+        isEmpty));
     test('OK', () => expect(validateDraft(image: 'a.png', solution: 'pes', explanation: 'x'), isEmpty));
   });
 
