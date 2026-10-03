@@ -12,6 +12,7 @@ final _puzzle = Puzzle(
   image: 'assets/images/neexistuje.png', // chybějící obrázek -> ikona, test běží dál
   solution: 'poranit',
   meaning: 'způsobit zranění',
+  explanation: 'pór + a + nit',
   wordType: WordType.verb,
   difficulty: 2,
   authorName: 'test',
@@ -70,7 +71,14 @@ void main() {
     await tester.pump(const Duration(milliseconds: 800));
     expect(find.text('Správně!'), findsOneWidget);
     expect(find.text('způsobit zranění'), findsOneWidget);
+    expect(find.text('Vysvětlení: pór + a + nit'), findsOneWidget);
     expect(_streak(tester), 'Série: 1');
+
+    // reset jednoho rébusu: vrátí se pole pro tip
+    await tester.ensureVisible(find.byKey(const Key('reset-one-button')));
+    await tester.tap(find.byKey(const Key('reset-one-button')));
+    await tester.pump();
+    expect(find.byKey(const Key('tip-field')), findsOneWidget);
   });
 
   testWidgets('ukázat řešení přeruší sérii', (tester) async {

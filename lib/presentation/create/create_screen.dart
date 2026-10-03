@@ -19,6 +19,7 @@ class CreateScreen extends ConsumerStatefulWidget {
 class _CreateScreenState extends ConsumerState<CreateScreen> {
   final _solution = TextEditingController();
   final _meaning = TextEditingController();
+  final _explanation = TextEditingController();
   final _author = TextEditingController(text: 'Já');
   String? _image;
   WordType _wordType = WordType.noun;
@@ -29,6 +30,7 @@ class _CreateScreenState extends ConsumerState<CreateScreen> {
   void dispose() {
     _solution.dispose();
     _meaning.dispose();
+    _explanation.dispose();
     _author.dispose();
     super.dispose();
   }
@@ -39,7 +41,11 @@ class _CreateScreenState extends ConsumerState<CreateScreen> {
   }
 
   Future<void> _publish() async {
-    final errors = validateDraft(image: _image, solution: _solution.text);
+    final errors = validateDraft(
+      image: _image,
+      solution: _solution.text,
+      explanation: _explanation.text,
+    );
     setState(() => _errors = errors);
     if (errors.isNotEmpty) return;
 
@@ -51,6 +57,7 @@ class _CreateScreenState extends ConsumerState<CreateScreen> {
           image: _image!,
           solution: _solution.text.trim(),
           meaning: meaning.isEmpty ? null : meaning,
+          explanation: _explanation.text.trim(),
           wordType: _wordType,
           difficulty: _difficulty,
           authorName: author.isEmpty ? 'Já' : author,
@@ -62,6 +69,7 @@ class _CreateScreenState extends ConsumerState<CreateScreen> {
       _image = null;
       _solution.clear();
       _meaning.clear();
+      _explanation.clear();
       _wordType = WordType.noun;
       _difficulty = 1;
       _errors = const [];
@@ -139,6 +147,16 @@ class _CreateScreenState extends ConsumerState<CreateScreen> {
           onSelectionChanged: (s) => setState(() => _difficulty = s.first),
         ),
         const SizedBox(height: 16),
+        TextField(
+          key: const Key('explanation-field'),
+          controller: _explanation,
+          maxLines: 3,
+          decoration: const InputDecoration(
+            labelText: 'Vysvětlení řešení *',
+            helperText: 'Jak se od obrázku dospěje k řešení.',
+          ),
+        ),
+        const SizedBox(height: 12),
         TextField(
           controller: _meaning,
           maxLines: 2,

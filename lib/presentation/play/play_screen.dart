@@ -137,7 +137,10 @@ class _PuzzlePageState extends ConsumerState<PuzzlePage>
   final _tip = TextEditingController();
   int _hintLevel = 0;
   bool _wrong = false;
-  _Status _status = _Status.playing;
+  late _Status _status =
+      ref.read(progressProvider).solved.contains(widget.puzzle.id)
+          ? _Status.solved
+          : _Status.playing;
 
   @override
   bool get wantKeepAlive => true;
@@ -167,6 +170,16 @@ class _PuzzlePageState extends ConsumerState<PuzzlePage>
       _wrong = false;
     });
     ref.read(progressProvider.notifier).resetStreak();
+  }
+
+  void _resetThis() {
+    ref.read(progressProvider.notifier).resetOne(widget.puzzle.id);
+    setState(() {
+      _status = _Status.playing;
+      _hintLevel = 0;
+      _wrong = false;
+      _tip.clear();
+    });
   }
 
   @override
@@ -329,6 +342,18 @@ class _PuzzlePageState extends ConsumerState<PuzzlePage>
                       ),
                     ),
                   ),
+                if (p.explanation != null && p.explanation!.isNotEmpty)
+                  Padding(
+                    padding: const EdgeInsets.only(top: 10),
+                    child: Text(
+                      'Vysvětlení: ${p.explanation!}',
+                      key: const Key('explanation-text'),
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        color: solved ? Colors.white : scheme.onSecondaryContainer,
+                      ),
+                    ),
+                  ),
               ],
             ),
           ),
@@ -339,6 +364,12 @@ class _PuzzlePageState extends ConsumerState<PuzzlePage>
           onPressed: widget.onNext,
           child: Text(widget.nextLabel),
         ),
+        if (solved)
+          TextButton(
+            key: const Key('reset-one-button'),
+            onPressed: _resetThis,
+            child: const Text('Resetovat tento rébus'),
+          ),
       ],
     );
   }

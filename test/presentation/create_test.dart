@@ -14,10 +14,10 @@ class _FakeStore implements UserImageStore {
 
 void main() {
   group('validateDraft', () {
-    test('chybí obojí', () => expect(validateDraft(image: null, solution: ' '), hasLength(2)));
-    test('chybí řešení', () => expect(validateDraft(image: 'a.png', solution: ''), hasLength(1)));
-    test('chybí obrázek', () => expect(validateDraft(image: '', solution: 'pes'), hasLength(1)));
-    test('OK', () => expect(validateDraft(image: 'a.png', solution: 'pes'), isEmpty));
+    test('chybí obojí', () => expect(validateDraft(image: null, solution: ' ', explanation: ''), hasLength(3)));
+    test('chybí řešení', () => expect(validateDraft(image: 'a.png', solution: '', explanation: 'x'), hasLength(1)));
+    test('chybí obrázek', () => expect(validateDraft(image: '', solution: 'pes', explanation: 'x'), hasLength(1)));
+    test('OK', () => expect(validateDraft(image: 'a.png', solution: 'pes', explanation: 'x'), isEmpty));
   });
 
   testWidgets('Zveřejnit bez obrázku a řešení ukáže chyby; po výběru obrázku jen chybu řešení',
@@ -42,6 +42,7 @@ void main() {
     expect(errors, contains('obrázek'));
     expect(errors, contains('řešení'));
 
+    await tester.ensureVisible(find.byKey(const Key('pick-image-button')));
     await tester.tap(find.byKey(const Key('pick-image-button')));
     await tester.pump();
     await tester.ensureVisible(find.byKey(const Key('publish-button')));

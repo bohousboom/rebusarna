@@ -55,6 +55,23 @@ class ProgressNotifier extends Notifier<PlayerProgress> {
     await _save();
   }
 
+  /// Smaže uhodnutý stav jednoho rébusu (oblíbené zůstává).
+  Future<void> resetOne(String id) async {
+    if (!state.solved.contains(id)) return;
+    state = PlayerProgress(
+      solved: {...state.solved}..remove(id),
+      favorites: state.favorites,
+      streak: state.streak,
+    );
+    await _save();
+  }
+
+  /// Smaže všechny uhodnuté rébusy a sérii (oblíbené zůstává).
+  Future<void> resetAll() async {
+    state = PlayerProgress(favorites: state.favorites);
+    await _save();
+  }
+
   Future<void> toggleFavorite(String id) async {
     final favs = {...state.favorites};
     if (!favs.remove(id)) favs.add(id);

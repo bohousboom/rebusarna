@@ -14,6 +14,7 @@ class Puzzle {
     required this.authorName,
     required this.createdAt,
     this.meaning,
+    this.explanation,
     this.ratingSum = 0,
     this.ratingCount = 0,
   });
@@ -24,6 +25,9 @@ class Puzzle {
   final String image;
   final String solution;
   final String? meaning;
+
+  /// Vysvětlení, jak se od obrázku dospěje k řešení.
+  final String? explanation;
   final WordType wordType;
 
   /// 1 = lehká, 2 = střední, 3 = těžká.
@@ -40,6 +44,7 @@ class Puzzle {
         'image': image,
         'solution': solution,
         if (meaning != null) 'meaning': meaning,
+        if (explanation != null) 'explanation': explanation,
         'wordType': wordType.name,
         'difficulty': difficulty,
         'authorName': authorName,
@@ -53,6 +58,7 @@ class Puzzle {
         image: json['image'] as String,
         solution: json['solution'] as String,
         meaning: json['meaning'] as String?,
+        explanation: json['explanation'] as String?,
         wordType: WordType.fromName(json['wordType'] as String?),
         difficulty: (json['difficulty'] as num?)?.toInt() ?? 1,
         authorName: json['authorName'] as String? ?? 'Neznámý',

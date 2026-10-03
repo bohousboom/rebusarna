@@ -16,6 +16,26 @@ class LibraryScreen extends ConsumerStatefulWidget {
 class _LibraryScreenState extends ConsumerState<LibraryScreen> {
   String _query = '';
 
+  Future<void> _confirmReset(BuildContext context) async {
+    final ok = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Resetovat postup?'),
+        content: const Text(
+            'Všechny uhodnuté rébusy se znovu skryjí a série se vynuluje. Oblíbené zůstanou.'),
+        actions: [
+          TextButton(
+              onPressed: () => Navigator.pop(ctx, false),
+              child: const Text('Zrušit')),
+          FilledButton(
+              onPressed: () => Navigator.pop(ctx, true),
+              child: const Text('Resetovat')),
+        ],
+      ),
+    );
+    if (ok == true) await ref.read(progressProvider.notifier).resetAll();
+  }
+
   @override
   Widget build(BuildContext context) {
     final puzzles = ref.watch(puzzlesProvider);
@@ -25,8 +45,20 @@ class _LibraryScreenState extends ConsumerState<LibraryScreen> {
       children: [
         Padding(
           padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
-          child: Text('Knihovna rébusů',
-              style: Theme.of(context).textTheme.headlineSmall),
+          child: Row(
+            children: [
+              Expanded(
+                child: Text('Knihovna rébusů',
+                    style: Theme.of(context).textTheme.headlineSmall),
+              ),
+              TextButton.icon(
+                key: const Key('reset-all-button'),
+                onPressed: solved.isEmpty ? null : () => _confirmReset(context),
+                icon: const Icon(Icons.restart_alt),
+                label: const Text('Resetovat postup'),
+              ),
+            ],
+          ),
         ),
         Padding(
           padding: const EdgeInsets.all(12),
