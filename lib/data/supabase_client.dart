@@ -34,6 +34,18 @@ final currentUserProvider = StreamProvider<User?>((ref) async* {
   yield* client.auth.onAuthStateChange.map((s) => s.session?.user);
 });
 
+/// Správce (smí importovat vestavěné rébusy); ověřuje databáze, ne aplikace.
+final isAdminProvider = FutureProvider<bool>((ref) async {
+  final client = ref.watch(supabaseClientProvider);
+  final user = ref.watch(currentUserProvider).value;
+  if (client == null || user == null) return false;
+  try {
+    return (await client.rpc('is_admin')) == true;
+  } catch (_) {
+    return false;
+  }
+});
+
 /// Zobrazované jméno z Google profilu.
 String? displayNameOf(User? user) {
   final meta = user?.userMetadata;

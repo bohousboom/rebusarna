@@ -4,7 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../data/providers.dart';
 import '../../data/supabase_client.dart';
 
-/// Nabídne přihlášenému autorovi nahrát vestavěné rébusy do jeho účtu,
+/// Nabídne správci (autorovi vestavěných obrázků) nahrát vestavěné rébusy do jeho účtu,
 /// aby je mohl upravovat. Zmizí, když už jsou všechny nahrané.
 class ImportBuiltInCard extends ConsumerStatefulWidget {
   const ImportBuiltInCard({super.key});
@@ -70,9 +70,9 @@ class _ImportBuiltInCardState extends ConsumerState<ImportBuiltInCard> {
 
   @override
   Widget build(BuildContext context) {
-    final user = ref.watch(currentUserProvider).value;
+    final isAdmin = ref.watch(isAdminProvider).value ?? false;
     final puzzles = ref.watch(puzzlesProvider).value;
-    if (user == null || puzzles == null) return const SizedBox.shrink();
+    if (!isAdmin || puzzles == null) return const SizedBox.shrink();
     final pending =
         puzzles.where((p) => p.ownerId == null && p.id.startsWith('seed-')).length;
     if (pending == 0 && !_running) return const SizedBox.shrink();
