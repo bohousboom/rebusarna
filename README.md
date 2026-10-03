@@ -106,7 +106,7 @@ Druh slova a obtížnost jsem u vestavěných rébusů doplnil automaticky (obt�
 | 62 | `Parkování.webp` | Parkování | podstatné jméno | 2 |  |
 | 63 | `Pastvina.webp` | Pastvina | podstatné jméno | 2 |  |
 | 64 | `Plášť.webp` | Plášť | podstatné jméno | 1 |  |
-| 65 | `Pneumatika.PNG` | Pneumatika | podstatné jméno | 3 |  |
+| 65 | `Pneumatika.webp` | Pneumatika | podstatné jméno | 3 |  |
 | 66 | `Pobřeží.webp` | Pobřeží | podstatné jméno | 2 |  |
 | 67 | `Podlaha.webp` | Podlaha | podstatné jméno | 2 |  |
 | 68 | `Podnos.webp` | Podnos | podstatné jméno | 1 |  |
