@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 import '../../core/constants.dart';
-import '../../core/theme.dart';
 
 /// Úvodní obrazovka s logem. Po krátké chvíli se plynule skryje
 /// a odhalí aplikaci pod sebou.
@@ -102,8 +101,7 @@ class _SplashOverlayState extends State<SplashOverlay>
   }
 }
 
-/// Testovací logo – později stačí nahradit obsahem tohoto widgetu
-/// (např. `Image.asset('assets/images/logo.png', width: size)`).
+/// Logo aplikace (`assets/images/logo.jpg`).
 class RebusarnaLogo extends StatelessWidget {
   const RebusarnaLogo({super.key, this.size = 120});
 
@@ -111,36 +109,17 @@ class RebusarnaLogo extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
     return Container(
       width: size,
       height: size,
       decoration: BoxDecoration(
-        color: scheme.onPrimary,
-        borderRadius: BorderRadius.circular(size * 0.26),
+        borderRadius: BorderRadius.circular(size * 0.22),
         boxShadow: const [
           BoxShadow(color: Color(0x33000000), blurRadius: 16, offset: Offset(0, 6)),
         ],
       ),
-      child: Stack(
-        alignment: Alignment.center,
-        children: [
-          Icon(Icons.extension_rounded, size: size * 0.66, color: scheme.primary),
-          Positioned(
-            right: size * 0.16,
-            top: size * 0.08,
-            child: Text(
-              '?',
-              style: TextStyle(
-                fontSize: size * 0.34,
-                fontWeight: FontWeight.w900,
-                color: difficultyColor(3),
-                decoration: TextDecoration.none,
-              ),
-            ),
-          ),
-        ],
-      ),
+      clipBehavior: Clip.antiAlias,
+      child: Image.asset('assets/images/logo.jpg', fit: BoxFit.cover),
     );
   }
 }
