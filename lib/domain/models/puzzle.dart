@@ -1,3 +1,4 @@
+import '../text_logic.dart';
 import 'word_type.dart';
 
 /// Cesta k vestavěným obrázkům (assets).
@@ -17,6 +18,7 @@ class Puzzle {
     this.explanation,
     this.ownerId,
     this.adult = false,
+    this.plusMinus = false,
     this.ratingSum = 0,
     this.ratingCount = 0,
   });
@@ -36,6 +38,9 @@ class Puzzle {
 
   /// Obsah pro dospělé (18+): v hádání se ukáže jen po zapnutí uživatelem.
   final bool adult;
+
+  /// Štítek ± (řešení se píše jinak, než se vyslovuje); nastavuje autor.
+  final bool plusMinus;
   final WordType wordType;
 
   /// 1 = lehká, 2 = střední, 3 = těžká.
@@ -55,6 +60,7 @@ class Puzzle {
         if (explanation != null) 'explanation': explanation,
         if (ownerId != null) 'ownerId': ownerId,
         if (adult) 'adult': true,
+        if (plusMinus) 'plusMinus': true,
         'wordType': wordType.name,
         'difficulty': difficulty,
         'authorName': authorName,
@@ -71,6 +77,8 @@ class Puzzle {
         explanation: json['explanation'] as String?,
         ownerId: json['ownerId'] as String?,
         adult: json['adult'] as bool? ?? false,
+        // starší záznamy bez příznaku: odvodit z řešení
+        plusMinus: json['plusMinus'] as bool? ?? hasNoAcute(json['solution'] as String),
         wordType: WordType.fromName(json['wordType'] as String?),
         difficulty: (json['difficulty'] as num?)?.toInt() ?? 1,
         authorName: json['authorName'] as String? ?? 'Neznámý',

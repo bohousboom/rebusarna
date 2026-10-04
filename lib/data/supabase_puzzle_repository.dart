@@ -5,6 +5,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../domain/models/puzzle.dart';
 import '../domain/models/word_type.dart';
+import '../domain/text_logic.dart';
 import 'puzzle_repository.dart';
 
 const _kBucket = 'puzzle-images';
@@ -115,6 +116,7 @@ class SupabasePuzzleRepository implements PuzzleRepository {
       'difficulty': puzzle.difficulty,
       'author_name': puzzle.authorName,
       'is_adult': puzzle.adult,
+      'is_plus_minus': puzzle.plusMinus,
     };
 
     String? oldPath;
@@ -214,6 +216,7 @@ class SupabasePuzzleRepository implements PuzzleRepository {
         'difficulty': p.difficulty,
         'author_name': p.authorName,
         'is_adult': p.adult,
+        'is_plus_minus': p.plusMinus,
       };
 
   String _mime(String ext) => switch (ext) {
@@ -226,6 +229,7 @@ class SupabasePuzzleRepository implements PuzzleRepository {
         id: (r['seed_key'] as String?) ?? r['id'] as String,
         ownerId: r['owner_id'] as String?,
         adult: r['is_adult'] as bool? ?? false,
+        plusMinus: r['is_plus_minus'] as bool? ?? hasNoAcute(r['solution'] as String),
         image: _client.storage.from(_kBucket).getPublicUrl(r['image_path'] as String),
         solution: r['solution'] as String,
         meaning: r['meaning'] as String?,

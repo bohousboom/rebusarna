@@ -3,7 +3,7 @@ import 'package:rebusarna/domain/models/word_type.dart';
 
 void main() {
   test('město je samostatný druh slova s popiskem', () {
-    expect(WordType.city.label, 'město');
+    expect(WordType.city.label, 'město / místo');
     expect(WordType.fromName('city'), WordType.city);
   });
 

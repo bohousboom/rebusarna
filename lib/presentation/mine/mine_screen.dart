@@ -20,7 +20,7 @@ class MineScreen extends ConsumerWidget {
       builder: (ctx) => AlertDialog(
         title: const Text('Resetovat postup?'),
         content: const Text(
-            'Všechny uhodnuté rébusy se znovu skryjí a série se vynuluje. Oblíbené zůstanou.'),
+            'Všechny uhodnuté rébusy se znovu skryjí. Oblíbené zůstanou.'),
         actions: [
           TextButton(
               onPressed: () => Navigator.pop(ctx, false),

@@ -23,6 +23,7 @@ class _SplashOverlayState extends State<SplashOverlay>
     duration: const Duration(milliseconds: 700),
   )..forward();
   bool _done = false;
+  bool _gone = false;
 
   @override
   void initState() {
@@ -45,10 +46,14 @@ class _SplashOverlayState extends State<SplashOverlay>
       fit: StackFit.expand,
       children: [
         widget.child,
+        if (!_gone)
         IgnorePointer(
           ignoring: _done,
           child: AnimatedOpacity(
             opacity: _done ? 0 : 1,
+            onEnd: () {
+              if (_done && mounted) setState(() => _gone = true);
+            },
             duration: const Duration(milliseconds: 500),
             curve: Curves.easeOut,
             child: ColoredBox(

@@ -31,6 +31,7 @@ class _PuzzleEditorState extends ConsumerState<PuzzleEditor> {
   late WordType _wordType = widget.editing?.wordType ?? WordType.noun;
   late int _difficulty = widget.editing?.difficulty ?? 1;
   late bool _adult = widget.editing?.adult ?? false;
+  late bool _plusMinus = widget.editing?.plusMinus ?? false;
   List<String> _errors = const [];
   bool _saving = false;
 
@@ -84,6 +85,7 @@ class _PuzzleEditorState extends ConsumerState<PuzzleEditor> {
       wordType: _wordType,
       difficulty: _difficulty,
       adult: _adult,
+      plusMinus: _plusMinus,
       authorName: author.isEmpty ? fallbackAuthor : author,
       createdAt: widget.editing?.createdAt ?? now,
       ratingSum: widget.editing?.ratingSum ?? 0,
@@ -116,6 +118,7 @@ class _PuzzleEditorState extends ConsumerState<PuzzleEditor> {
         _wordType = WordType.noun;
         _difficulty = 1;
         _adult = false;
+        _plusMinus = false;
         _errors = const [];
       }
     });
@@ -143,7 +146,7 @@ class _PuzzleEditorState extends ConsumerState<PuzzleEditor> {
                 ? _EmptyCard(onTap: _pickImage)
                 : PuzzleCard(
                     image: image,
-                    solution: _solution.text,
+                    plusMinus: _plusMinus,
                     wordType: _wordType,
                     difficulty: _difficulty,
                     adult: _adult,
@@ -163,9 +166,15 @@ class _PuzzleEditorState extends ConsumerState<PuzzleEditor> {
           controller: _solution,
           decoration: const InputDecoration(
             labelText: 'Řešení *',
-            helperText: 'Štítek ± se doplní sám (řešení bez čárek).',
           ),
-          onChanged: (_) => setState(() {}),
+        ),
+        SwitchListTile(
+          key: const Key('plusminus-switch'),
+          contentPadding: EdgeInsets.zero,
+          title: const Text('Štítek ±'),
+          subtitle: const Text('Zapni, když se řešení píše jinak, než se vyslovuje.'),
+          value: _plusMinus,
+          onChanged: (v) => setState(() => _plusMinus = v),
         ),
         const SizedBox(height: 16),
         Text('Druh slova', style: Theme.of(context).textTheme.labelLarge),

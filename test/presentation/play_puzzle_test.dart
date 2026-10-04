@@ -11,6 +11,7 @@ final _puzzle = Puzzle(
   id: 't1',
   image: 'assets/images/neexistuje.png', // chybějící obrázek -> ikona, test běží dál
   solution: 'poranit',
+  plusMinus: true,
   meaning: 'způsobit zranění',
   explanation: 'pór + a + nit',
   wordType: WordType.verb,
@@ -35,11 +36,11 @@ Future<void> _pump(WidgetTester tester) async {
   await tester.pumpAndSettle();
 }
 
-String _streak(WidgetTester tester) =>
-    (tester.widget<Chip>(find.byKey(const Key('streak'))).label as Text).data!;
+String _count(WidgetTester tester) =>
+    (tester.widget<Chip>(find.byKey(const Key('solved-count'))).label as Text).data!;
 
 void main() {
-  testWidgets('hraní jednoho puzzle: štítek, špatný tip, nápověda, výhra, série',
+  testWidgets('hraní jednoho puzzle: štítek, špatný tip, nápověda, výhra, počet uhodnutých',
       (tester) async {
     await _pump(tester);
 
@@ -51,19 +52,20 @@ void main() {
     expect(find.byKey(const Key('badge-wordtype')), findsOneWidget);
     expect(find.byTooltip('Druh slova: sloveso'), findsOneWidget);
     expect(find.byTooltip('Obtížnost: střední (barva štítku)'), findsOneWidget);
-    expect(_streak(tester), 'Série: 0');
+    expect(_count(tester), 'Uhodnuto 0 / 1');
 
     // špatný tip
     await tester.enterText(find.byKey(const Key('tip-field')), 'zranit');
     await tester.tap(find.byKey(const Key('submit-button')));
     await tester.pump();
     expect(find.text('Zkus to znovu'), findsOneWidget);
-    expect(_streak(tester), 'Série: 0');
+    expect(_count(tester), 'Uhodnuto 0 / 1');
 
     // nápověda: 1. klik počet písmen, 2. klik první písmeno
     await tester.tap(find.byKey(const Key('hint-button')));
     await tester.pump();
     expect(tester.widget<Text>(find.byKey(const Key('hint-text'))).data, '_ _ _ _ _ _ _');
+    await tester.ensureVisible(find.byKey(const Key('hint-button')));
     await tester.tap(find.byKey(const Key('hint-button')));
     await tester.pump();
     expect(tester.widget<Text>(find.byKey(const Key('hint-text'))).data, 'p _ _ _ _ _ _');
@@ -76,7 +78,7 @@ void main() {
     expect(find.text('Správně!'), findsOneWidget);
     expect(find.text('způsobit zranění'), findsOneWidget);
     expect(find.text('Vysvětlení: pór + a + nit'), findsOneWidget);
-    expect(_streak(tester), 'Série: 1');
+    expect(_count(tester), 'Uhodnuto 1 / 1');
 
     // reset jednoho rébusu: vrátí se pole pro tip
     await tester.ensureVisible(find.byKey(const Key('reset-one-button')));
@@ -85,13 +87,13 @@ void main() {
     expect(find.byKey(const Key('tip-field')), findsOneWidget);
   });
 
-  testWidgets('ukázat řešení přeruší sérii', (tester) async {
+  testWidgets('ukázat řešení nepočítá jako uhodnuté', (tester) async {
     await _pump(tester);
     await tester.tap(find.byKey(const Key('reveal-button')));
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 800));
     expect(tester.widget<Text>(find.byKey(const Key('solution-text'))).data, 'poranit');
-    expect(_streak(tester), 'Série: 0');
+    expect(_count(tester), 'Uhodnuto 0 / 1');
   });
 
   testWidgets('rébus 18+ se v hádání neukáže, dokud to uživatel nezapne', (tester) async {

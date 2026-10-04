@@ -6,7 +6,6 @@ import 'package:flutter/material.dart';
 import '../../core/theme.dart';
 import '../../domain/models/puzzle.dart';
 import '../../domain/models/word_type.dart';
-import '../../domain/text_logic.dart';
 
 IconData wordTypeIcon(WordType t) => switch (t) {
   WordType.verb => Icons.directions_run,
@@ -61,7 +60,7 @@ class PuzzleCard extends StatelessWidget {
   const PuzzleCard({
     super.key,
     required this.image,
-    required this.solution,
+    this.plusMinus = false,
     required this.wordType,
     required this.difficulty,
     this.favorite,
@@ -72,8 +71,8 @@ class PuzzleCard extends StatelessWidget {
 
   final String image;
 
-  /// Slouží jen k odvození štítku ±; nikdy se nezobrazuje.
-  final String solution;
+  /// Zobrazit štítek ± (nastavuje autor).
+  final bool plusMinus;
   final WordType wordType;
   final int difficulty;
   final bool? favorite;
@@ -120,8 +119,7 @@ class PuzzleCard extends StatelessWidget {
                 DifficultyBadge(
                   difficulty: difficulty,
                   wordType: wordType,
-                  showPlusMinus:
-                      solution.trim().isNotEmpty && hasNoAcute(solution),
+                  showPlusMinus: plusMinus,
                 ),
                 if (adult) ...[const SizedBox(width: 6), const AdultChip()],
               ],

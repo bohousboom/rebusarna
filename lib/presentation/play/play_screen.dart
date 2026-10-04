@@ -9,6 +9,7 @@ import '../../domain/adult_filter.dart';
 import '../../domain/hints.dart';
 import '../../domain/models/puzzle.dart';
 import '../../domain/text_logic.dart';
+import '../shared/help_dialog.dart';
 import '../shared/puzzle_card.dart';
 
 /// Pořadí feedu: nevyřešené (zamíchané) první, potom vyřešené.
@@ -49,7 +50,7 @@ class _PlayScreenState extends ConsumerState<PlayScreen> {
   @override
   Widget build(BuildContext context) {
     final feed = ref.watch(feedProvider);
-    final streak = ref.watch(progressProvider.select((p) => p.streak));
+    final solved = ref.watch(progressProvider.select((p) => p.solved));
     return Column(
       children: [
         Padding(
@@ -66,9 +67,25 @@ class _PlayScreenState extends ConsumerState<PlayScreen> {
                 ),
               ),
               Chip(
-                key: const Key('streak'),
-                avatar: const Icon(Icons.local_fire_department, color: Colors.orange),
-                label: Text('Série: $streak'),
+                key: const Key('solved-count'),
+                avatar: const Icon(Icons.check_circle, color: Colors.green),
+                label: Text(feed.maybeWhen(
+                  data: (l) =>
+                      'Uhodnuto ${l.where((p) => solved.contains(p.id)).length} / ${l.length}',
+                  orElse: () => 'Uhodnuto',
+                )),
+              ),
+              const SizedBox(width: 4),
+              IconButton(
+                key: const Key('help-button'),
+                tooltip: 'Nápověda',
+                style: IconButton.styleFrom(
+                  padding: EdgeInsets.zero,
+                  minimumSize: const Size(36, 32),
+                  tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                ),
+                onPressed: () => showHelpDialog(context),
+                icon: const Icon(Icons.help_outline),
               ),
             ],
           ),
@@ -177,7 +194,6 @@ class _PuzzlePageState extends ConsumerState<PuzzlePage>
       _status = _Status.revealed;
       _wrong = false;
     });
-    ref.read(progressProvider.notifier).resetStreak();
     _report(revealed: true);
   }
 
@@ -221,7 +237,7 @@ class _PuzzlePageState extends ConsumerState<PuzzlePage>
               width: cardHeight * 2 / 3 + 12,
               child: PuzzleCard(
                 image: p.image,
-                solution: p.solution,
+                plusMinus: p.plusMinus,
                 wordType: p.wordType,
                 adult: p.adult,
                 difficulty: ref.watch(effectiveDifficultyProvider((p.id, p.difficulty))),
@@ -303,10 +319,11 @@ class _PuzzlePageState extends ConsumerState<PuzzlePage>
         ],
       ),
       if (widget.showSkip)
-        TextButton(
+        TextButton.icon(
           key: const Key('skip-button'),
           onPressed: widget.onNext,
-          child: const Text('Přeskočit'),
+          icon: const Icon(Icons.casino_outlined),
+          label: const Text('Jiná karta'),
         ),
     ];
   }
