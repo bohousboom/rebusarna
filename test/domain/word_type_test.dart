@@ -5,6 +5,8 @@ void main() {
   test('město je samostatný druh slova s popiskem', () {
     expect(WordType.city.label, 'město / místo');
     expect(WordType.fromName('city'), WordType.city);
+    expect(WordType.plural.label, 'množné číslo');
+    expect(WordType.fromName('plural'), WordType.plural);
   });
 
   test('neznámý název = jiné', () {

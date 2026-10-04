@@ -3,6 +3,7 @@ enum WordType {
   noun('podstatné jméno'),
   adjective('přídavné jméno'),
   city('město / místo'),
+  plural('množné číslo'),
   other('jiné');
 
   const WordType(this.label);
