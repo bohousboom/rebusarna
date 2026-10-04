@@ -28,7 +28,7 @@ class _PuzzleEditorState extends ConsumerState<PuzzleEditor> {
   late final _explanation = TextEditingController(text: widget.editing?.explanation);
   late final _author = TextEditingController(text: widget.editing?.authorName);
   PickedImage? _picked;
-  late WordType _wordType = widget.editing?.wordType ?? WordType.noun;
+  late List<WordType> _wordTypes = [...(widget.editing?.wordTypes ?? const [WordType.noun])];
   late int _difficulty = widget.editing?.difficulty ?? 1;
   late bool _adult = widget.editing?.adult ?? false;
   late bool _plusMinus = widget.editing?.plusMinus ?? false;
@@ -82,7 +82,7 @@ class _PuzzleEditorState extends ConsumerState<PuzzleEditor> {
       solution: _solution.text.trim(),
       meaning: meaning.isEmpty ? null : meaning,
       explanation: explanation.isEmpty ? null : explanation,
-      wordType: _wordType,
+      wordTypes: _wordTypes,
       difficulty: _difficulty,
       adult: _adult,
       plusMinus: _plusMinus,
@@ -115,7 +115,7 @@ class _PuzzleEditorState extends ConsumerState<PuzzleEditor> {
         _solution.clear();
         _meaning.clear();
         _explanation.clear();
-        _wordType = WordType.noun;
+        _wordTypes = [WordType.noun];
         _difficulty = 1;
         _adult = false;
         _plusMinus = false;
@@ -147,7 +147,7 @@ class _PuzzleEditorState extends ConsumerState<PuzzleEditor> {
                 : PuzzleCard(
                     image: image,
                     plusMinus: _plusMinus,
-                    wordType: _wordType,
+                    wordTypes: _wordTypes,
                     difficulty: _difficulty,
                     adult: _adult,
                   ),
@@ -177,7 +177,7 @@ class _PuzzleEditorState extends ConsumerState<PuzzleEditor> {
           onChanged: (v) => setState(() => _plusMinus = v),
         ),
         const SizedBox(height: 16),
-        Text('Druh slova', style: Theme.of(context).textTheme.labelLarge),
+        Text('Druh slova (můžeš vybrat i více)', style: Theme.of(context).textTheme.labelLarge),
         const SizedBox(height: 4),
         Wrap(
           spacing: 8,
@@ -186,8 +186,14 @@ class _PuzzleEditorState extends ConsumerState<PuzzleEditor> {
               ChoiceChip(
                 label: Text(t.label),
                 avatar: Icon(wordTypeIcon(t), size: 18),
-                selected: _wordType == t,
-                onSelected: (_) => setState(() => _wordType = t),
+                selected: _wordTypes.contains(t),
+                onSelected: (on) => setState(() {
+                  if (on) {
+                    _wordTypes = [..._wordTypes, t];
+                  } else if (_wordTypes.length > 1) {
+                    _wordTypes = [..._wordTypes]..remove(t);
+                  }
+                }),
               ),
           ],
         ),

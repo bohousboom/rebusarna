@@ -10,7 +10,7 @@ class Puzzle {
     required this.id,
     required this.image,
     required this.solution,
-    required this.wordType,
+    required this.wordTypes,
     required this.difficulty,
     required this.authorName,
     required this.createdAt,
@@ -41,7 +41,8 @@ class Puzzle {
 
   /// Štítek ± (řešení se píše jinak, než se vyslovuje); nastavuje autor.
   final bool plusMinus;
-  final WordType wordType;
+  /// Jeden nebo více druhů slova (vždy aspoň jeden); první je hlavní.
+  final List<WordType> wordTypes;
 
   /// 1 = lehká, 2 = střední, 3 = těžká.
   final int difficulty;
@@ -49,6 +50,8 @@ class Puzzle {
   final DateTime createdAt;
   final int ratingSum;
   final int ratingCount;
+
+  WordType get wordType => wordTypes.first;
 
   bool get isAssetImage => image.startsWith(kImageAssetPrefix);
 
@@ -62,6 +65,7 @@ class Puzzle {
         if (adult) 'adult': true,
         if (plusMinus) 'plusMinus': true,
         'wordType': wordType.name,
+        'wordTypes': [for (final t in wordTypes) t.name],
         'difficulty': difficulty,
         'authorName': authorName,
         'createdAt': createdAt.toIso8601String(),
@@ -79,7 +83,7 @@ class Puzzle {
         adult: json['adult'] as bool? ?? false,
         // starší záznamy bez příznaku: odvodit z řešení
         plusMinus: json['plusMinus'] as bool? ?? hasNoAcute(json['solution'] as String),
-        wordType: WordType.fromName(json['wordType'] as String?),
+        wordTypes: WordType.listFrom(json['wordTypes'], json['wordType'] as String?),
         difficulty: (json['difficulty'] as num?)?.toInt() ?? 1,
         authorName: json['authorName'] as String? ?? 'Neznámý',
         createdAt: DateTime.tryParse(json['createdAt'] as String? ?? '') ??

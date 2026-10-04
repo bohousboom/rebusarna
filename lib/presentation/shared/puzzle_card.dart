@@ -62,7 +62,7 @@ class PuzzleCard extends StatelessWidget {
     super.key,
     required this.image,
     this.plusMinus = false,
-    required this.wordType,
+    required this.wordTypes,
     required this.difficulty,
     this.favorite,
     this.onFavorite,
@@ -74,7 +74,7 @@ class PuzzleCard extends StatelessWidget {
 
   /// Zobrazit štítek ± (nastavuje autor).
   final bool plusMinus;
-  final WordType wordType;
+  final List<WordType> wordTypes;
   final int difficulty;
   final bool? favorite;
   final VoidCallback? onFavorite;
@@ -119,7 +119,7 @@ class PuzzleCard extends StatelessWidget {
               children: [
                 DifficultyBadge(
                   difficulty: difficulty,
-                  wordType: wordType,
+                  wordTypes: wordTypes,
                   showPlusMinus: plusMinus,
                 ),
                 if (adult) ...[const SizedBox(width: 6), const AdultChip()],
@@ -183,12 +183,12 @@ class DifficultyBadge extends StatelessWidget {
   const DifficultyBadge({
     super.key,
     required this.difficulty,
-    required this.wordType,
+    required this.wordTypes,
     required this.showPlusMinus,
   });
 
   final int difficulty;
-  final WordType wordType;
+  final List<WordType> wordTypes;
   final bool showPlusMinus;
 
   Widget _hint(String message, Widget child, {Key? key}) => Tooltip(
@@ -233,16 +233,18 @@ class DifficultyBadge extends StatelessWidget {
                 Text('±', key: const Key('badge-plusminus'), style: style),
               ),
             ],
-            const SizedBox(width: 10),
-            _hint(
-              'Druh slova: ${wordType.label}',
-              Icon(
-                wordTypeIcon(wordType),
-                key: const Key('badge-wordtype'),
-                size: 22,
-                color: fg,
+            for (var i = 0; i < wordTypes.length; i++) ...[
+              const SizedBox(width: 10),
+              _hint(
+                'Druh slova: ${wordTypes[i].label}',
+                Icon(
+                  wordTypeIcon(wordTypes[i]),
+                  key: Key(i == 0 ? 'badge-wordtype' : 'badge-wordtype-$i'),
+                  size: 22,
+                  color: fg,
+                ),
               ),
-            ),
+            ],
           ],
         ),
       ),

@@ -37,7 +37,7 @@ class _HelpDialog extends StatelessWidget {
                 width: 300 * 2 / 3 + 12,
                 child: const PuzzleCard(
                   image: 'assets/images/Hřebík_v1.1.jpeg',
-                  wordType: WordType.noun,
+                  wordTypes: [WordType.noun],
                   difficulty: 1,
                   plusMinus: true,
                 ),

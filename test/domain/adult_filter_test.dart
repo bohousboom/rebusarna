@@ -7,7 +7,7 @@ Puzzle _p(String id, {bool adult = false}) => Puzzle(
       id: id,
       image: 'assets/images/x.webp',
       solution: id,
-      wordType: WordType.noun,
+      wordTypes: [WordType.noun],
       difficulty: 1,
       authorName: 't',
       createdAt: DateTime(2026),

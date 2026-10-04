@@ -9,6 +9,13 @@ void main() {
     expect(WordType.fromName('plural'), WordType.plural);
   });
 
+  test('seznam druhů: z pole, jinak ze starého jediného druhu', () {
+    expect(WordType.listFrom(['noun', 'plural'], 'noun'), [WordType.noun, WordType.plural]);
+    expect(WordType.listFrom(null, 'verb'), [WordType.verb]);
+    expect(WordType.listFrom([], 'city'), [WordType.city]);
+    expect(WordType.listFrom(['noun', 'noun'], null), [WordType.noun]);
+  });
+
   test('neznámý název = jiné', () {
     expect(WordType.fromName('nesmysl'), WordType.other);
     expect(WordType.fromName(null), WordType.other);

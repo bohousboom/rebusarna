@@ -238,7 +238,7 @@ class _PuzzlePageState extends ConsumerState<PuzzlePage>
               child: PuzzleCard(
                 image: p.image,
                 plusMinus: p.plusMinus,
-                wordType: p.wordType,
+                wordTypes: p.wordTypes,
                 adult: p.adult,
                 difficulty: ref.watch(effectiveDifficultyProvider((p.id, p.difficulty))),
                 favorite: fav,
