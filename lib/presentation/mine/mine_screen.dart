@@ -66,6 +66,16 @@ class MineScreen extends ConsumerWidget {
           const ImportBuiltInCard(),
           const ReportsCard(),
           SwitchListTile(
+            key: const Key('dark-mode-switch'),
+            dense: true,
+            secondary: const Icon(Icons.dark_mode_outlined),
+            title: const Text('Noční režim'),
+            value: Theme.of(context).brightness == Brightness.dark,
+            onChanged: (v) => ref
+                .read(themeModeProvider.notifier)
+                .set(v ? ThemeMode.dark : ThemeMode.light),
+          ),
+          SwitchListTile(
             key: const Key('show-adult-switch'),
             dense: true,
             title: const Text('Zobrazovat rébusy 18+'),

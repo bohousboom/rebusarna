@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart' show ThemeMode;
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -42,6 +43,25 @@ class ShowAdultNotifier extends Notifier<bool> {
 }
 
 final showAdultProvider = NotifierProvider<ShowAdultNotifier, bool>(ShowAdultNotifier.new);
+
+const _kThemeMode = 'theme_mode';
+
+/// Režim vzhledu: výchozí podle systému, uživatel může vynutit světlý/noční.
+class ThemeModeNotifier extends Notifier<ThemeMode> {
+  @override
+  ThemeMode build() => switch (ref.read(sharedPreferencesProvider).getString(_kThemeMode)) {
+        'light' => ThemeMode.light,
+        'dark' => ThemeMode.dark,
+        _ => ThemeMode.system,
+      };
+
+  Future<void> set(ThemeMode mode) async {
+    state = mode;
+    await ref.read(sharedPreferencesProvider).setString(_kThemeMode, mode.name);
+  }
+}
+
+final themeModeProvider = NotifierProvider<ThemeModeNotifier, ThemeMode>(ThemeModeNotifier.new);
 
 final progressProvider =
     NotifierProvider<ProgressNotifier, PlayerProgress>(ProgressNotifier.new);
