@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../domain/report.dart';
+import 'providers.dart';
 import 'supabase_client.dart';
 
 /// Nahlašování rébusů (hráč) a jejich vyřízení (správce).
@@ -33,8 +34,10 @@ class ModerationRepository {
   Future<void> dismiss(String puzzleId) async {
     final client = _ref.read(supabaseClientProvider);
     if (client == null) return;
-    await client.from('puzzle_reports').delete().eq('puzzle_id', puzzleId);
+    // Smaže hlášení a zároveň rébus znovu zobrazí (pokud byl automaticky skrytý).
+    await client.rpc('dismiss_reports', params: {'p_puzzle_id': puzzleId});
     _ref.invalidate(reportsProvider);
+    _ref.invalidate(puzzlesProvider);
   }
 }
 

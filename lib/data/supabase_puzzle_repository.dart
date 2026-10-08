@@ -232,6 +232,7 @@ class SupabasePuzzleRepository implements PuzzleRepository {
         ownerId: r['owner_id'] as String?,
         adult: r['is_adult'] as bool? ?? false,
         plusMinus: r['is_plus_minus'] as bool? ?? hasNoAcute(r['solution'] as String),
+        hidden: r['hidden'] as bool? ?? false,
         image: _client.storage.from(_kBucket).getPublicUrl(r['image_path'] as String),
         solution: r['solution'] as String,
         meaning: r['meaning'] as String?,

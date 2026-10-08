@@ -7,6 +7,7 @@ import '../../domain/models/puzzle.dart';
 import '../../data/supabase_client.dart';
 import '../shared/account_bar.dart';
 import 'import_builtin_card.dart';
+import 'new_puzzles_screen.dart';
 import 'reports_screen.dart';
 import '../shared/puzzle_thumb.dart';
 
@@ -65,6 +66,7 @@ class MineScreen extends ConsumerWidget {
           const AccountBar(),
           const ImportBuiltInCard(),
           const ReportsCard(),
+          const NewPuzzlesCard(),
           SwitchListTile(
             key: const Key('dark-mode-switch'),
             dense: true,

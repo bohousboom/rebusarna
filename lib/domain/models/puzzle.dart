@@ -19,6 +19,7 @@ class Puzzle {
     this.ownerId,
     this.adult = false,
     this.plusMinus = false,
+    this.hidden = false,
     this.ratingSum = 0,
     this.ratingCount = 0,
   });
@@ -41,6 +42,9 @@ class Puzzle {
 
   /// Štítek ± (řešení se píše jinak, než se vyslovuje); nastavuje autor.
   final bool plusMinus;
+
+  /// Automaticky skryto po nahlášení; vidí ho jen autor a správce.
+  final bool hidden;
   /// Jeden nebo více druhů slova (vždy aspoň jeden); první je hlavní.
   final List<WordType> wordTypes;
 

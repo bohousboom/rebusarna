@@ -50,6 +50,22 @@ class PuzzleThumb extends ConsumerWidget {
             ),
             if (puzzle.adult)
               const Positioned(right: 6, top: 6, child: AdultChip()),
+            if (puzzle.hidden)
+              Positioned(
+                left: 0,
+                right: 0,
+                top: 28,
+                child: Container(
+                  key: const Key('hidden-badge'),
+                  padding: const EdgeInsets.symmetric(vertical: 3),
+                  color: Colors.orange.shade800,
+                  child: const Text(
+                    'Skryto – čeká na kontrolu',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(color: Colors.white, fontSize: 11, fontWeight: FontWeight.w700),
+                  ),
+                ),
+              ),
             if (solved)
               Align(
                 alignment: Alignment.bottomCenter,

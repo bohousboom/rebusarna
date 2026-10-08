@@ -3,7 +3,7 @@ import 'package:rebusarna/domain/adult_filter.dart';
 import 'package:rebusarna/domain/models/puzzle.dart';
 import 'package:rebusarna/domain/models/word_type.dart';
 
-Puzzle _p(String id, {bool adult = false}) => Puzzle(
+Puzzle _p(String id, {bool adult = false, bool hidden = false}) => Puzzle(
       id: id,
       image: 'assets/images/x.webp',
       solution: id,
@@ -12,6 +12,7 @@ Puzzle _p(String id, {bool adult = false}) => Puzzle(
       authorName: 't',
       createdAt: DateTime(2026),
       adult: adult,
+      hidden: hidden,
     );
 
 void main() {
@@ -23,6 +24,11 @@ void main() {
 
   test('po zapnutí se zobrazí vše', () {
     expect(visiblePuzzles(all, showAdult: true).map((p) => p.id), ['a', 'b', 'c']);
+  });
+
+  test('automaticky skryté se nehrají ani s 18+', () {
+    final l = [_p('a'), _p('h', hidden: true)];
+    expect(visiblePuzzles(l, showAdult: true).map((p) => p.id), ['a']);
   });
 
   test('JSON zachová značku 18+ a výchozí je false', () {

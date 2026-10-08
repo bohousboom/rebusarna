@@ -2,6 +2,7 @@ import 'package:go_router/go_router.dart';
 
 import '../presentation/create/create_screen.dart';
 import '../presentation/mine/mine_screen.dart';
+import '../presentation/mine/new_puzzles_screen.dart';
 import '../presentation/mine/reports_screen.dart';
 import '../presentation/play/play_screen.dart';
 import '../presentation/play/puzzle_detail_screen.dart';
@@ -11,6 +12,7 @@ import '../presentation/shared/app_shell.dart';
 GoRouter buildRouter() => GoRouter(
       initialLocation: '/play',
       routes: [
+        GoRoute(path: '/new', builder: (_, _) => const NewPuzzlesScreen()),
         GoRoute(path: '/reports', builder: (_, _) => const ReportsScreen()),
         GoRoute(
           path: '/puzzle/:id',
