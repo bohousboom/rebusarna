@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../data/difficulty.dart';
 import '../../data/providers.dart';
@@ -11,6 +12,7 @@ import '../../domain/models/puzzle.dart';
 import '../../domain/text_logic.dart';
 import '../shared/help_dialog.dart';
 import '../shared/puzzle_card.dart';
+import 'puzzle_actions.dart';
 
 /// Pořadí feedu: nevyřešené (zamíchané) první, potom vyřešené.
 final feedProvider = FutureProvider<List<Puzzle>>((ref) async {
@@ -24,6 +26,12 @@ final feedProvider = FutureProvider<List<Puzzle>>((ref) async {
   final done = all.where((p) => solved.contains(p.id)).toList()..shuffle(rnd);
   return [...todo, ...done];
 });
+
+final _compactIcon = IconButton.styleFrom(
+  padding: EdgeInsets.zero,
+  minimumSize: const Size(36, 32),
+  tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+);
 
 class PlayScreen extends ConsumerStatefulWidget {
   const PlayScreen({super.key});
@@ -51,6 +59,9 @@ class _PlayScreenState extends ConsumerState<PlayScreen> {
   Widget build(BuildContext context) {
     final feed = ref.watch(feedProvider);
     final solved = ref.watch(progressProvider.select((p) => p.solved));
+    final list = feed.value;
+    final current = list != null && _index < list.length ? list[_index] : null;
+    final perms = PuzzlePermissions.of(ref, current);
     return Column(
       children: [
         Padding(
@@ -76,14 +87,34 @@ class _PlayScreenState extends ConsumerState<PlayScreen> {
                 )),
               ),
               const SizedBox(width: 4),
+              if (perms.canReport)
+                IconButton(
+                  key: const Key('report-button'),
+                  tooltip: 'Nahlásit',
+                  style: _compactIcon,
+                  onPressed: () => reportPuzzle(context, ref, current!),
+                  icon: const Icon(Icons.flag_outlined),
+                ),
+              if (perms.canEdit)
+                IconButton(
+                  key: const Key('edit-button'),
+                  tooltip: 'Upravit',
+                  style: _compactIcon,
+                  onPressed: () => context.push('/puzzle/${current!.id}/edit'),
+                  icon: const Icon(Icons.edit_outlined),
+                ),
+              if (perms.canDelete)
+                IconButton(
+                  key: const Key('delete-button'),
+                  tooltip: 'Smazat',
+                  style: _compactIcon,
+                  onPressed: () => confirmDeletePuzzle(context, ref, current!),
+                  icon: const Icon(Icons.delete_outline),
+                ),
               IconButton(
                 key: const Key('help-button'),
                 tooltip: 'Nápověda',
-                style: IconButton.styleFrom(
-                  padding: EdgeInsets.zero,
-                  minimumSize: const Size(36, 32),
-                  tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                ),
+                style: _compactIcon,
                 onPressed: () => showHelpDialog(context),
                 icon: const Icon(Icons.help_outline),
               ),
