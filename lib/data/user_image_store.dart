@@ -1,10 +1,12 @@
 import 'dart:io';
 import 'dart:typed_data';
 
-import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:flutter/foundation.dart' show compute, kIsWeb;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
+
+import '../domain/image_shrink.dart';
 
 /// Vybraný obrázek: cesta pro náhled a data pro nahrání.
 class PickedImage {
@@ -24,17 +26,19 @@ abstract class UserImageStore {
 class GalleryUserImageStore implements UserImageStore {
   @override
   Future<PickedImage?> pick() async {
-    // Obrázek se při výběru zmenší, aby se vešel do limitu 1 MB.
-    final picked = await ImagePicker().pickImage(
-      source: ImageSource.gallery,
-      maxWidth: 1000,
-      imageQuality: 80,
-    );
+    final picked = await ImagePicker().pickImage(source: ImageSource.gallery);
     if (picked == null) return null;
-    final bytes = await picked.readAsBytes();
+    var bytes = await picked.readAsBytes();
     final name = picked.name.toLowerCase();
     final dot = name.lastIndexOf('.');
-    final ext = (dot >= 0 && name.length - dot <= 5) ? name.substring(dot + 1) : 'jpg';
+    var ext = (dot >= 0 && name.length - dot <= 5) ? name.substring(dot + 1) : 'jpg';
+
+    // Velké obrázky se zmenší a převedou na JPEG, aby se vešly do limitu 1 MB.
+    final shrunk = await compute(shrinkImage, bytes);
+    if (shrunk != null) {
+      bytes = shrunk;
+      ext = 'jpg';
+    }
 
     var path = picked.path;
     if (!kIsWeb) {
@@ -42,7 +46,7 @@ class GalleryUserImageStore implements UserImageStore {
       final dir = Directory('${(await getApplicationDocumentsDirectory()).path}/user_images');
       await dir.create(recursive: true);
       path = '${dir.path}/${DateTime.now().microsecondsSinceEpoch}.$ext';
-      await File(picked.path).copy(path);
+      await File(path).writeAsBytes(bytes);
     }
     return PickedImage(path: path, bytes: bytes, extension: ext);
   }
