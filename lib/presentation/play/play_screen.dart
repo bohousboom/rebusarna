@@ -7,24 +7,37 @@ import 'package:go_router/go_router.dart';
 import '../../data/difficulty.dart';
 import '../../data/providers.dart';
 import '../../domain/adult_filter.dart';
+import '../../domain/difficulty.dart';
+import '../../domain/feed_plan.dart';
 import '../../domain/hints.dart';
 import '../../domain/models/puzzle.dart';
 import '../../domain/text_logic.dart';
+import '../shared/difficulty_dialog.dart';
 import '../shared/help_dialog.dart';
 import '../shared/puzzle_card.dart';
 import 'puzzle_actions.dart';
 
-/// Pořadí feedu: nevyřešené (zamíchané) první, potom vyřešené.
+/// Pořadí feedu: nevyřešené první (podle nastavené obtížnosti), potom vyřešené.
+/// Statistiky a postup se čtou jen jednou, aby se feed neposouval během hraní.
 final feedProvider = FutureProvider<List<Puzzle>>((ref) async {
   final all = visiblePuzzles(
     await ref.watch(puzzlesProvider.future),
     showAdult: ref.watch(showAdultProvider),
   );
+  final setting = ref.watch(difficultySettingProvider);
+  final stats = await ref.read(difficultyStatsProvider.future);
   final solved = ref.read(progressProvider).solved;
-  final rnd = Random();
-  final todo = all.where((p) => !solved.contains(p.id)).toList()..shuffle(rnd);
-  final done = all.where((p) => solved.contains(p.id)).toList()..shuffle(rnd);
-  return [...todo, ...done];
+  return orderFeed(
+    all: all,
+    solved: solved,
+    levelOf: (p) {
+      final s = stats[p.id];
+      return s == null
+          ? p.difficulty
+          : computeDifficulty(authorDifficulty: p.difficulty, n: s.n, avgScore: s.avgScore);
+    },
+    mix: setting.mixFor(solvedCount: solved.length),
+  );
 });
 
 final _compactIcon = IconButton.styleFrom(
@@ -57,6 +70,11 @@ class _PlayScreenState extends ConsumerState<PlayScreen> {
 
   @override
   Widget build(BuildContext context) {
+    // Nové pořadí po změně obtížnosti: začít znovu od první karty.
+    ref.listen(difficultySettingProvider, (_, _) {
+      setState(() => _index = 0);
+      if (_pages.hasClients) _pages.jumpToPage(0);
+    });
     final feed = ref.watch(feedProvider);
     final solved = ref.watch(progressProvider.select((p) => p.solved));
     final list = feed.value;
@@ -112,6 +130,13 @@ class _PlayScreenState extends ConsumerState<PlayScreen> {
                   icon: const Icon(Icons.delete_outline),
                 ),
               IconButton(
+                key: const Key('difficulty-button'),
+                tooltip: 'Obtížnost',
+                style: _compactIcon,
+                onPressed: () => showDifficultyDialog(context),
+                icon: const Icon(Icons.tune),
+              ),
+              IconButton(
                 key: const Key('help-button'),
                 tooltip: 'Nápověda',
                 style: _compactIcon,
@@ -157,7 +182,8 @@ class _EndPage extends StatelessWidget {
         child: Padding(
           padding: EdgeInsets.all(32),
           child: Text(
-            'To je zatím vše. Vytvoř vlastní rébus v záložce Tvořit!',
+            'To je zatím vše. Zkus změnit obtížnost (ikona vpravo nahoře) '
+            'nebo vytvoř vlastní rébus v záložce Tvořit!',
             textAlign: TextAlign.center,
             style: TextStyle(fontSize: 18),
           ),

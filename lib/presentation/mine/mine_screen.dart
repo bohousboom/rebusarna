@@ -6,6 +6,7 @@ import '../../domain/adult_filter.dart';
 import '../../domain/models/puzzle.dart';
 import '../../data/supabase_client.dart';
 import '../shared/account_bar.dart';
+import '../shared/difficulty_dialog.dart';
 import 'import_builtin_card.dart';
 import 'new_puzzles_screen.dart';
 import 'reports_screen.dart';
@@ -76,6 +77,14 @@ class MineScreen extends ConsumerWidget {
             onChanged: (v) => ref
                 .read(themeModeProvider.notifier)
                 .set(v ? ThemeMode.dark : ThemeMode.light),
+          ),
+          ListTile(
+            key: const Key('difficulty-tile'),
+            dense: true,
+            leading: const Icon(Icons.tune),
+            title: const Text('Obtížnost'),
+            subtitle: Text(ref.watch(difficultySettingProvider).mode.label),
+            onTap: () => showDifficultyDialog(context),
           ),
           SwitchListTile(
             key: const Key('show-adult-switch'),
