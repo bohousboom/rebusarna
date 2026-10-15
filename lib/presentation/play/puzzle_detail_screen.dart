@@ -3,6 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../data/providers.dart';
+import '../../domain/models/puzzle.dart';
+import '../../domain/share_token.dart';
 import 'play_screen.dart';
 import 'puzzle_actions.dart';
 
@@ -13,10 +15,13 @@ class PuzzleDetailScreen extends ConsumerWidget {
 
   final String puzzleId;
 
+  /// Odkaz nese neprůhledný token ([shareToken]), v aplikaci se používá přímo id.
+  bool _matches(Puzzle x) => x.id == puzzleId || shareToken(x.id) == puzzleId;
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final puzzles = ref.watch(puzzlesProvider);
-    final puzzle = puzzles.value?.where((x) => x.id == puzzleId).firstOrNull;
+    final puzzle = puzzles.value?.where((x) => _matches(x)).firstOrNull;
     final perms = PuzzlePermissions.of(ref, puzzle);
     final canEdit = perms.canEdit;
 
@@ -56,7 +61,7 @@ class PuzzleDetailScreen extends ConsumerWidget {
           loading: () => const Center(child: CircularProgressIndicator()),
           error: (e, _) => Center(child: Text('$e')),
           data: (all) {
-            final p = all.where((x) => x.id == puzzleId).firstOrNull;
+            final p = all.where((x) => _matches(x)).firstOrNull;
             if (p == null) return const Center(child: Text('Rébus nenalezen'));
             final showAdult = ref.watch(showAdultProvider);
             if (p.adult && !showAdult && !canEdit) {

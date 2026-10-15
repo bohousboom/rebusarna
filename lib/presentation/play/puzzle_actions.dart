@@ -9,6 +9,7 @@ import '../../data/providers.dart';
 import '../../data/supabase_client.dart';
 import '../../domain/models/puzzle.dart';
 import '../../domain/report.dart';
+import '../../domain/share_token.dart';
 
 /// Co smí aktuální uživatel s jedním rébusem (nahlásit / upravit / smazat).
 class PuzzlePermissions {
@@ -157,7 +158,7 @@ class _ReportDialogState extends State<_ReportDialog> {
 /// Odkaz na konkrétní rébus (web používá vlastní adresu, mobil [kShareBaseUrl]).
 String puzzleShareUrl(String puzzleId) {
   final base = kIsWeb ? Uri.base.origin : kShareBaseUrl;
-  return '$base/#/puzzle/${Uri.encodeComponent(puzzleId)}';
+  return '$base/#/puzzle/${shareToken(puzzleId)}';
 }
 
 /// Zkopíruje odkaz na rébus do schránky, aby ho šlo poslat kamarádovi.
