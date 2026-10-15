@@ -5,7 +5,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../data/difficulty.dart';
+import '../../data/likes.dart';
 import '../../data/providers.dart';
+import '../../data/supabase_client.dart';
 import '../../domain/adult_filter.dart';
 import '../../domain/difficulty.dart';
 import '../../domain/feed_plan.dart';
@@ -453,6 +455,7 @@ class _PuzzlePageState extends ConsumerState<PuzzlePage>
             ),
           ),
         ),
+        _LikeRow(puzzle: p),
         const SizedBox(height: 12),
         FilledButton(
           key: const Key('next-button'),
@@ -466,6 +469,52 @@ class _PuzzlePageState extends ConsumerState<PuzzlePage>
             child: const Text('Resetovat tento rébus'),
           ),
       ],
+    );
+  }
+}
+
+
+/// Po vyřešení: hráč může rébus ohodnotit ("líbí se mi"); autor vidí počet.
+class _LikeRow extends ConsumerWidget {
+  const _LikeRow({required this.puzzle});
+
+  final Puzzle puzzle;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final userId = ref.watch(currentUserProvider).value?.id;
+    final isOwner = userId != null && puzzle.ownerId == userId;
+    // Hodnotit jde jen rébus uložený v databázi (má autora), cizí a přihlášeným.
+    final canLike = userId != null && puzzle.ownerId != null && !isOwner;
+    final count = puzzle.ratingCount;
+    if (!canLike) {
+      if (count == 0) return const SizedBox.shrink();
+      return Padding(
+        padding: const EdgeInsets.only(top: 8),
+        child: Text('♥ $count',
+            key: const Key('like-count'), textAlign: TextAlign.center),
+      );
+    }
+    final liked = ref.watch(likesProvider).value?.contains(puzzle.id) ?? false;
+    return Padding(
+      padding: const EdgeInsets.only(top: 8),
+      child: OutlinedButton.icon(
+        key: const Key('like-button'),
+        onPressed: () async {
+          try {
+            await ref.read(likesProvider.notifier).toggle(puzzle.id);
+          } catch (e) {
+            if (context.mounted) {
+              ScaffoldMessenger.of(context)
+                  .showSnackBar(SnackBar(content: Text('Hodnocení se nepovedlo: $e')));
+            }
+          }
+        },
+        icon: Icon(liked ? Icons.favorite : Icons.favorite_border,
+            color: liked ? Colors.red : null),
+        label: Text(liked ? 'Líbilo se mi' : 'Líbí se mi'
+            '${count > 0 ? '  ($count)' : ''}'),
+      ),
     );
   }
 }

@@ -50,6 +50,23 @@ class PuzzleThumb extends ConsumerWidget {
             ),
             if (puzzle.adult)
               const Positioned(right: 6, top: 6, child: AdultChip()),
+            if (puzzle.ratingCount > 0)
+              Positioned(
+                right: 6,
+                bottom: solved ? 34 : 6,
+                child: Container(
+                  key: const Key('like-badge'),
+                  padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                  decoration: BoxDecoration(
+                    color: Colors.black54,
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Text(
+                    '♥ ${puzzle.ratingCount}',
+                    style: const TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.w700),
+                  ),
+                ),
+              ),
             if (puzzle.hidden)
               Positioned(
                 left: 0,

@@ -68,6 +68,19 @@ class MineScreen extends ConsumerWidget {
           const ImportBuiltInCard(),
           const ReportsCard(),
           const NewPuzzlesCard(),
+          if (userId != null)
+            Builder(builder: (context) {
+              final likes = (puzzles.value ?? const <Puzzle>[])
+                  .where((p) => p.ownerId == userId)
+                  .fold<int>(0, (a, p) => a + p.ratingCount);
+              if (likes == 0) return const SizedBox.shrink();
+              return ListTile(
+                key: const Key('my-likes-tile'),
+                dense: true,
+                leading: const Icon(Icons.favorite, color: Colors.red),
+                title: Text('Tvé rébusy se hráčům líbily: $likes×'),
+              );
+            }),
           SwitchListTile(
             key: const Key('dark-mode-switch'),
             dense: true,

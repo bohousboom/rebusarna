@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../data/new_puzzles.dart';
+import '../../data/providers.dart';
 import '../shared/puzzle_card.dart';
 
 /// Karta v záložce Moje: nové cizí rébusy ke kontrole. Jen pro správce.
@@ -52,6 +53,7 @@ class NewPuzzlesScreen extends ConsumerWidget {
     final list = ref.watch(newPuzzlesProvider);
     final since = ref.watch(lastReviewedProvider);
     final unreviewed = ref.watch(unreviewedCountProvider);
+    final solved = ref.watch(progressProvider).solved;
     return Scaffold(
       appBar: AppBar(
         title: const Text('Nové karty'),
@@ -83,7 +85,8 @@ class NewPuzzlesScreen extends ConsumerWidget {
                       height: 72,
                       child: PuzzleImage(p.image, fit: BoxFit.cover, cacheWidth: 200),
                     ),
-                    title: Text(p.solution),
+                    // Řešení se neprozradí, dokud ho správce sám neuhodne (nebo neodhalí).
+                    title: Text(solved.contains(p.id) ? p.solution : 'Rébus – zkus uhodnout'),
                     subtitle: Text('${p.authorName} · ${_age(p.createdAt)}'
                         '${p.hidden ? ' · skryto' : ''}'),
                     trailing: isNew
