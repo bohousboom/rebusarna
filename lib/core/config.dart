@@ -14,3 +14,10 @@ const String kSupabasePublishableKey = String.fromEnvironment(
 /// Návratová adresa po přihlášení v mobilní aplikaci (musí být i v nastavení Supabase
 /// a v AndroidManifest.xml / Info.plist).
 const String kMobileAuthRedirect = 'cz.rebusarna://login-callback';
+
+/// Adresa webu pro sdílené odkazy z mobilní aplikace (na webu se bere aktuální adresa).
+/// Nastavit při sestavení: --dart-define=SHARE_BASE_URL=https://tvoje-domena.cz
+const String kShareBaseUrl = String.fromEnvironment(
+  'SHARE_BASE_URL',
+  defaultValue: 'https://rebusarna.vercel.app',
+);

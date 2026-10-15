@@ -1,6 +1,9 @@
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../core/config.dart';
 import '../../data/moderation.dart';
 import '../../data/providers.dart';
 import '../../data/supabase_client.dart';
@@ -147,5 +150,21 @@ class _ReportDialogState extends State<_ReportDialog> {
         ),
       ],
     );
+  }
+}
+
+
+/// Odkaz na konkrétní rébus (web používá vlastní adresu, mobil [kShareBaseUrl]).
+String puzzleShareUrl(String puzzleId) {
+  final base = kIsWeb ? Uri.base.origin : kShareBaseUrl;
+  return '$base/#/puzzle/${Uri.encodeComponent(puzzleId)}';
+}
+
+/// Zkopíruje odkaz na rébus do schránky, aby ho šlo poslat kamarádovi.
+Future<void> sharePuzzle(BuildContext context, Puzzle p) async {
+  await Clipboard.setData(ClipboardData(text: puzzleShareUrl(p.id)));
+  if (context.mounted) {
+    ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Odkaz na rébus je zkopírovaný. Pošli ho kamarádovi!')));
   }
 }

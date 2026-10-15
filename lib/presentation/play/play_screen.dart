@@ -324,6 +324,12 @@ class _PuzzlePageState extends ConsumerState<PuzzlePage>
               ),
             ),
           if (playing) ..._playingControls(p) else _resultPanel(p),
+          TextButton.icon(
+            key: const Key('share-button'),
+            onPressed: () => sharePuzzle(context, p),
+            icon: const Icon(Icons.share_outlined),
+            label: const Text('Sdílet odkaz na tento rébus'),
+          ),
         ],
       ),
     );
