@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../data/providers.dart';
 import '../../domain/adult_filter.dart';
 import '../../domain/models/puzzle.dart';
+import '../../domain/text_logic.dart';
 import '../../data/supabase_client.dart';
 import '../shared/account_bar.dart';
 import '../shared/difficulty_dialog.dart';
@@ -137,12 +138,11 @@ class MineScreen extends ConsumerWidget {
                   solved: progress.solved,
                   empty: 'Zatím jsi nic nevytvořil. Zkus záložku Tvořit.',
                 ),
-                _Grid(
+                _SolvedTab(
                   puzzles: visiblePuzzles(all, showAdult: showAdult)
                       .where((p) => progress.solved.contains(p.id))
                       .toList(),
                   solved: progress.solved,
-                  empty: 'Zatím jsi nic nevyřešil.',
                 ),
                 _Grid(
                   puzzles: visiblePuzzles(all, showAdult: showAdult)
@@ -188,6 +188,52 @@ class _Grid extends StatelessWidget {
       itemCount: puzzles.length,
       itemBuilder: (context, i) =>
           PuzzleThumb(puzzle: puzzles[i], solved: solved.contains(puzzles[i].id)),
+    );
+  }
+}
+
+/// Vyřešené rébusy s hledáním podle řešení.
+class _SolvedTab extends StatefulWidget {
+  const _SolvedTab({required this.puzzles, required this.solved});
+
+  final List<Puzzle> puzzles;
+  final Set<String> solved;
+
+  @override
+  State<_SolvedTab> createState() => _SolvedTabState();
+}
+
+class _SolvedTabState extends State<_SolvedTab> {
+  String _query = '';
+
+  @override
+  Widget build(BuildContext context) {
+    final found = searchBySolution(widget.puzzles, _query);
+    return Column(
+      children: [
+        if (widget.puzzles.isNotEmpty)
+          Padding(
+            padding: const EdgeInsets.fromLTRB(12, 8, 12, 0),
+            child: TextField(
+              key: const Key('solved-search-field'),
+              onChanged: (v) => setState(() => _query = v),
+              decoration: const InputDecoration(
+                prefixIcon: Icon(Icons.search),
+                hintText: 'Hledat podle řešení',
+                isDense: true,
+              ),
+            ),
+          ),
+        Expanded(
+          child: _Grid(
+            puzzles: found,
+            solved: widget.solved,
+            empty: widget.puzzles.isEmpty
+                ? 'Zatím jsi nic nevyřešil.'
+                : 'Nic nenalezeno.',
+          ),
+        ),
+      ],
     );
   }
 }

@@ -1,4 +1,5 @@
 import '../core/constants.dart';
+import 'models/puzzle.dart';
 
 const _diacritics = <String, String>{
   'á': 'a', 'ä': 'a', 'â': 'a', 'à': 'a',
@@ -35,4 +36,18 @@ bool isCorrect(String tip, String solution) {
 bool hasNoAcute(String solution) {
   final lower = solution.toLowerCase();
   return !kAcuteChars.split('').any(lower.contains);
+}
+
+/// Rébusy, jejichž řešení obsahuje [query] (bez ohledu na velikost písmen a diakritiku).
+List<Puzzle> searchBySolution(List<Puzzle> puzzles, String query) {
+  final q = normalize(query);
+  if (q.isEmpty) return puzzles;
+  return puzzles.where((p) => normalize(p.solution).contains(q)).toList();
+}
+
+/// Vlastní rébusy ([mine]) se stejným řešením jako [solution]; [exceptId] se přeskočí (úprava).
+List<Puzzle> ownDuplicates(List<Puzzle> mine, String solution, {String? exceptId}) {
+  final n = normalize(solution);
+  if (n.isEmpty) return const [];
+  return mine.where((p) => p.id != exceptId && normalize(p.solution) == n).toList();
 }

@@ -8,7 +8,9 @@ import '../../data/user_image_store.dart';
 import '../../domain/models/puzzle.dart';
 import '../../domain/models/word_type.dart';
 import '../../domain/puzzle_validation.dart';
+import '../../domain/text_logic.dart';
 import '../shared/puzzle_card.dart';
+import '../shared/puzzle_thumb.dart';
 
 /// Formulář rébusu: vytvoření nového ([editing] == null) nebo úprava vlastního.
 class PuzzleEditor extends ConsumerStatefulWidget {
@@ -127,8 +129,18 @@ class _PuzzleEditorState extends ConsumerState<PuzzleEditor> {
     widget.onSaved();
   }
 
+  /// Moje dřívější rébusy se stejným řešením (jen vlastní; cizí autoři nevadí).
+  List<Puzzle> _myDuplicates() {
+    final userId = ref.watch(currentUserProvider).value?.id;
+    final all = ref.watch(puzzlesProvider).value ?? const <Puzzle>[];
+    final mine = all.where((p) =>
+        p.id.startsWith('user-') || (userId != null && p.ownerId == userId));
+    return ownDuplicates(mine.toList(), _solution.text, exceptId: widget.editing?.id);
+  }
+
   @override
   Widget build(BuildContext context) {
+    final duplicates = _myDuplicates();
     final cardHeight = (MediaQuery.sizeOf(context).height * 0.4).clamp(200.0, 440.0);
     final image = _previewImage;
     return ListView(
@@ -164,10 +176,38 @@ class _PuzzleEditorState extends ConsumerState<PuzzleEditor> {
         TextField(
           key: const Key('solution-field'),
           controller: _solution,
+          onChanged: (_) => setState(() {}),
           decoration: const InputDecoration(
             labelText: 'Řešení *',
           ),
         ),
+        if (duplicates.isNotEmpty)
+          Container(
+            key: const Key('duplicate-warning'),
+            margin: const EdgeInsets.only(top: 8),
+            padding: const EdgeInsets.all(10),
+            decoration: BoxDecoration(
+              color: Colors.orange.withValues(alpha: 0.15),
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: Colors.orange.shade700),
+            ),
+            child: Row(
+              children: [
+                for (final d in duplicates.take(3))
+                  Padding(
+                    padding: const EdgeInsets.only(right: 8),
+                    child: SizedBox(
+                      width: 56,
+                      height: 84,
+                      child: PuzzleThumb(puzzle: d, solved: false),
+                    ),
+                  ),
+                const Expanded(
+                  child: Text('Rébus s tímto řešením už jsi vytvářel.'),
+                ),
+              ],
+            ),
+          ),
         SwitchListTile(
           key: const Key('plusminus-switch'),
           contentPadding: EdgeInsets.zero,
