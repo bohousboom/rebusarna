@@ -104,8 +104,9 @@ class MineScreen extends ConsumerWidget {
             key: const Key('show-adult-switch'),
             dense: true,
             title: const Text('Zobrazovat rébusy 18+'),
+            subtitle: userId == null ? const Text('Dostupné po přihlášení') : null,
             value: showAdult,
-            onChanged: (v) => _toggleAdult(context, ref, v),
+            onChanged: userId == null ? null : (v) => _toggleAdult(context, ref, v),
           ),
           Align(
             alignment: Alignment.centerRight,

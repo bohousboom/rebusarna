@@ -29,6 +29,9 @@ abstract class PuzzleRepository {
   /// Všechny rébusy (vestavěné i uživatelské).
   Future<List<Puzzle>> getAll();
 
+  /// Poslední načtení se nepodařilo a [getAll] vrátilo jen vestavěné rébusy.
+  bool get loadFailed;
+
   /// Uloží nový rébus a vrátí ho (se skutečným id a adresou obrázku).
   Future<Puzzle> create(Puzzle puzzle, {UploadImage? upload});
 

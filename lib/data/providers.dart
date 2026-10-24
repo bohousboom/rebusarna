@@ -32,10 +32,14 @@ final puzzlesProvider = FutureProvider<List<Puzzle>>(
 
 const _kShowAdult = 'show_adult';
 
-/// Zobrazovat rébusy 18+ (výchozí: ne). Ukládá se v zařízení.
+/// Zobrazovat rébusy 18+ (výchozí: ne). Ukládá se v zařízení; nepřihlášenému se
+/// 18+ nezobrazuje nikdy, ať je uloženo cokoli.
 class ShowAdultNotifier extends Notifier<bool> {
   @override
-  bool build() => ref.read(sharedPreferencesProvider).getBool(_kShowAdult) ?? false;
+  bool build() {
+    final loggedIn = ref.watch(currentUserProvider).value != null;
+    return loggedIn && (ref.read(sharedPreferencesProvider).getBool(_kShowAdult) ?? false);
+  }
 
   Future<void> set(bool value) async {
     state = value;

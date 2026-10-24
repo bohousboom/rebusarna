@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../data/difficulty.dart';
 import '../../data/providers.dart';
+import '../../domain/adult_filter.dart';
+import '../../domain/difficulty.dart';
 import '../../domain/feed_plan.dart';
+import '../../domain/models/puzzle.dart';
 
 const _hints = {
   DifficultyMode.gradual: 'Začneš lehkými, těžší přibývají s tím, jak hádáš.',
@@ -25,6 +29,30 @@ class _DifficultyDialog extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final setting = ref.watch(difficultySettingProvider);
     final notifier = ref.read(difficultySettingProvider.notifier);
+
+    // Kolik rébusů se v daném režimu vůbec nabídne (stejné pravidlo jako ve feedu).
+    final all = visiblePuzzles(
+      ref.watch(puzzlesProvider).value ?? const [],
+      showAdult: ref.watch(showAdultProvider),
+    );
+    final stats = ref.watch(difficultyStatsProvider).value ?? const {};
+    final solvedCount = ref.watch(progressProvider).solved.length;
+    int levelOf(Puzzle p) {
+      final s = stats[p.id];
+      return s == null
+          ? p.difficulty
+          : computeDifficulty(authorDifficulty: p.difficulty, n: s.n, avgScore: s.avgScore);
+    }
+
+    String availability(DifficultyMode m) {
+      final mix = setting.copyWith(mode: m).mixFor(solvedCount: solvedCount);
+      final n = all.where((p) => isAllowedByMix(mix, levelOf(p))).length;
+      final unlock = m == DifficultyMode.gradual && solvedCount < 10
+          ? ' Těžké se odemknou po 10 vyřešených.'
+          : '';
+      return 'Nyní k dispozici: $n z ${all.length}.$unlock';
+    }
+
     return AlertDialog(
       key: const Key('difficulty-dialog'),
       title: const Text('Obtížnost'),
@@ -46,7 +74,7 @@ class _DifficultyDialog extends ConsumerWidget {
                       dense: true,
                       value: m,
                       title: Text(m.label),
-                      subtitle: Text(_hints[m]!),
+                      subtitle: Text('${_hints[m]!}\n${availability(m)}'),
                     ),
                 ],
               ),

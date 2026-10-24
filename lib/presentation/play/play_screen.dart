@@ -148,6 +148,17 @@ class _PlayScreenState extends ConsumerState<PlayScreen> {
             ],
           ),
         ),
+        if (feed.hasValue && ref.read(puzzleRepositoryProvider).loadFailed)
+          Container(
+            key: const Key('offline-banner'),
+            width: double.infinity,
+            color: Colors.amber.shade100,
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+            child: const Text(
+              'Nepodařilo se spojit se serverem, zobrazuji jen základní rébusy.',
+              style: TextStyle(fontSize: 13, color: Colors.black87),
+            ),
+          ),
         Expanded(
           child: feed.when(
             loading: () => const Center(child: CircularProgressIndicator()),

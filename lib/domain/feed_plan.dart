@@ -63,6 +63,10 @@ class DifficultySetting {
       };
 }
 
+/// Smí se karta dané obtížnosti [level] (1–3) ukázat při poměru [mix]?
+bool isAllowedByMix(DifficultyMix? mix, int level) =>
+    mix == null || mix.counts[level.clamp(1, 3) - 1] > 0;
+
 /// Pořadí feedu: nevyřešené (podle [mix]) první, potom vyřešené.
 ///
 /// Obtížnost s nulovým počtem v [mix] se nezobrazí vůbec. Když v kole dojdou
@@ -76,7 +80,7 @@ List<Puzzle> orderFeed({
   Random? random,
 }) {
   final rnd = random ?? Random();
-  bool allowed(Puzzle p) => mix == null || mix.counts[levelOf(p).clamp(1, 3) - 1] > 0;
+  bool allowed(Puzzle p) => isAllowedByMix(mix, levelOf(p));
 
   final pool = all.where(allowed).toList();
   final todo = pool.where((p) => !solved.contains(p.id)).toList()..shuffle(rnd);

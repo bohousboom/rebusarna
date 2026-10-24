@@ -28,6 +28,9 @@ class LocalPuzzleRepository implements PuzzleRepository {
       _kUserPuzzlesKey, jsonEncode([for (final p in all) p.toJson()]));
 
   @override
+  bool get loadFailed => false;
+
+  @override
   Future<List<Puzzle>> getAll() async {
     final seed = [
       for (final p in jsonDecode(await loadSeed()) as List)

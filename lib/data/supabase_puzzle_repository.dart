@@ -27,6 +27,9 @@ class SupabasePuzzleRepository implements PuzzleRepository {
       ];
 
   @override
+  bool loadFailed = false;
+
+  @override
   Future<List<Puzzle>> getAll() async {
     final seed = await _loadSeed();
     try {
@@ -35,6 +38,7 @@ class SupabasePuzzleRepository implements PuzzleRepository {
           .select()
           .order('created_at', ascending: false);
       final remote = [for (final r in rows) _fromRow(r)];
+      loadFailed = false;
       final hidden = {for (final p in remote) p.id, ...await _deletedSeedKeys()};
       return [
         for (final p in seed)
@@ -42,6 +46,7 @@ class SupabasePuzzleRepository implements PuzzleRepository {
         ...remote,
       ];
     } catch (_) {
+      loadFailed = true;
       return seed; // offline: aspoň vestavěné rébusy
     }
   }
