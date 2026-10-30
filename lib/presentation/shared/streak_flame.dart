@@ -3,7 +3,36 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../data/providers.dart';
 
-/// Plamínek denní série: oranžový, když dnes už hráč uhodl; šedý, když série čeká na dnešní rébus.
+/// Hořící puzzle: dílek skládačky s plamenem nahoře. [lit] = svítí, jinak je šedé.
+class BurningPuzzle extends StatelessWidget {
+  const BurningPuzzle({super.key, this.size = 28, this.lit = true});
+
+  final double size;
+  final bool lit;
+
+  @override
+  Widget build(BuildContext context) {
+    final off = Theme.of(context).disabledColor;
+    return SizedBox(
+      width: size,
+      height: size * 1.15,
+      child: Stack(
+        clipBehavior: Clip.none,
+        alignment: Alignment.bottomCenter,
+        children: [
+          Icon(Icons.extension, size: size, color: lit ? Colors.deepOrange : off),
+          Positioned(
+            top: -size * 0.12,
+            child: Icon(Icons.local_fire_department,
+                size: size * 0.7, color: lit ? Colors.amber : off),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// Hořící puzzle s počtem dní denní série: oranžový, když dnes už hráč uhodl; šedý, když série čeká na dnešní rébus.
 class StreakFlame extends ConsumerWidget {
   const StreakFlame({super.key});
 
@@ -27,7 +56,7 @@ class StreakFlame extends ConsumerWidget {
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(Icons.local_fire_department, color: color, size: 26),
+            BurningPuzzle(size: 24, lit: lit),
             const SizedBox(width: 2),
             Text('$days',
                 key: const Key('streak-days'),

@@ -455,11 +455,18 @@ class _PuzzlePageState extends ConsumerState<PuzzlePage>
                   if (!solved || days == 0) return const SizedBox.shrink();
                   return Padding(
                     padding: const EdgeInsets.only(bottom: 4),
-                    child: Text(
-                      '🔥 $days ${streakDayWord(days)} v řadě',
+                    child: Row(
                       key: const Key('streak-message'),
-                      style: const TextStyle(
-                          color: Colors.white, fontWeight: FontWeight.w700),
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const BurningPuzzle(size: 22),
+                        const SizedBox(width: 6),
+                        Text(
+                          '$days ${streakDayWord(days)} v řadě',
+                          style: const TextStyle(
+                              color: Colors.white, fontWeight: FontWeight.w700),
+                        ),
+                      ],
                     ),
                   );
                 }),
