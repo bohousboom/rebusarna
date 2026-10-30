@@ -1,4 +1,4 @@
-import 'dart:math';
+import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -43,18 +43,14 @@ final feedProvider = FutureProvider<List<Puzzle>>((ref) async {
   );
 });
 
-final _compactIcon = IconButton.styleFrom(
-  padding: EdgeInsets.zero,
-  minimumSize: const Size(36, 32),
-  tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-);
-
 class PlayScreen extends ConsumerStatefulWidget {
   const PlayScreen({super.key});
 
   @override
   ConsumerState<PlayScreen> createState() => _PlayScreenState();
 }
+
+enum _Menu { report, download, edit, delete, difficulty, help }
 
 class _PlayScreenState extends ConsumerState<PlayScreen> {
   final _pages = PageController();
@@ -71,6 +67,23 @@ class _PlayScreenState extends ConsumerState<PlayScreen> {
         curve: Curves.easeOut,
       );
 
+  void _onMenu(_Menu item, Puzzle? current) {
+    switch (item) {
+      case _Menu.report:
+        reportPuzzle(context, ref, current!);
+      case _Menu.download:
+        downloadImage(context, current!);
+      case _Menu.edit:
+        context.push('/puzzle/${current!.id}/edit');
+      case _Menu.delete:
+        confirmDeletePuzzle(context, ref, current!);
+      case _Menu.difficulty:
+        showDifficultyDialog(context);
+      case _Menu.help:
+        showHelpDialog(context);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     // Nové pořadí po změně obtížnosti: začít znovu od první karty.
@@ -86,77 +99,55 @@ class _PlayScreenState extends ConsumerState<PlayScreen> {
     return Column(
       children: [
         Padding(
-          padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
+          padding: const EdgeInsets.fromLTRB(12, 4, 4, 0),
           child: Row(
             children: [
-              Expanded(
-                child: Text(
-                  feed.maybeWhen(
-                    data: (l) => 'Rébus ${min(_index + 1, l.length)} / ${l.length}',
-                    orElse: () => '',
-                  ),
-                  maxLines: 2,
-                  style: Theme.of(context).textTheme.titleMedium,
-                ),
-              ),
               const StreakFlame(),
-              Flexible(
+              const SizedBox(width: 8),
+              Tooltip(
+                message: 'Uhodnuto / všech rébusů',
+                triggerMode: TooltipTriggerMode.tap,
                 child: Chip(
-                key: const Key('solved-count'),
-                avatar: const Icon(Icons.check_circle, color: Colors.green),
-                label: Text(feed.maybeWhen(
-                  data: (l) =>
-                      'Uhodnuto ${l.where((p) => solved.contains(p.id)).length} / ${l.length}',
-                  orElse: () => 'Uhodnuto',
-                )),
+                  key: const Key('solved-count'),
+                  avatar: const Icon(Icons.check_circle, color: Colors.green, size: 18),
+                  visualDensity: VisualDensity.compact,
+                  materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                  label: Text(feed.maybeWhen(
+                    data: (l) =>
+                        '${l.where((p) => solved.contains(p.id)).length} / ${l.length}',
+                    orElse: () => '',
+                  )),
+                ),
               ),
-              ),
-              const SizedBox(width: 4),
-              if (perms.canReport)
-                IconButton(
-                  key: const Key('report-button'),
-                  tooltip: 'Nahlásit',
-                  style: _compactIcon,
-                  onPressed: () => reportPuzzle(context, ref, current!),
-                  icon: const Icon(Icons.flag_outlined),
-                ),
-              if (perms.canDownload)
-                IconButton(
-                  key: const Key('download-button'),
-                  tooltip: 'Stáhnout obrázek',
-                  style: _compactIcon,
-                  onPressed: () => downloadImage(context, current!),
-                  icon: const Icon(Icons.download_outlined),
-                ),
-              if (perms.canEdit)
-                IconButton(
-                  key: const Key('edit-button'),
-                  tooltip: 'Upravit',
-                  style: _compactIcon,
-                  onPressed: () => context.push('/puzzle/${current!.id}/edit'),
-                  icon: const Icon(Icons.edit_outlined),
-                ),
-              if (perms.canDelete)
-                IconButton(
-                  key: const Key('delete-button'),
-                  tooltip: 'Smazat',
-                  style: _compactIcon,
-                  onPressed: () => confirmDeletePuzzle(context, ref, current!),
-                  icon: const Icon(Icons.delete_outline),
-                ),
-              IconButton(
-                key: const Key('difficulty-button'),
-                tooltip: 'Obtížnost',
-                style: _compactIcon,
-                onPressed: () => showDifficultyDialog(context),
-                icon: const Icon(Icons.tune),
-              ),
-              IconButton(
-                key: const Key('help-button'),
-                tooltip: 'Nápověda',
-                style: _compactIcon,
-                onPressed: () => showHelpDialog(context),
-                icon: const Icon(Icons.help_outline),
+              const Spacer(),
+              PopupMenuButton<_Menu>(
+                key: const Key('more-menu'),
+                tooltip: 'Další akce',
+                onSelected: (m) => _onMenu(m, current),
+                itemBuilder: (_) => [
+                  if (perms.canReport)
+                    const PopupMenuItem(
+                        key: Key('report-button'),
+                        value: _Menu.report,
+                        child: Text('Nahlásit')),
+                  if (perms.canDownload)
+                    const PopupMenuItem(
+                        key: Key('download-button'),
+                        value: _Menu.download,
+                        child: Text('Stáhnout obrázek')),
+                  if (perms.canEdit)
+                    const PopupMenuItem(
+                        key: Key('edit-button'), value: _Menu.edit, child: Text('Upravit')),
+                  if (perms.canDelete)
+                    const PopupMenuItem(
+                        key: Key('delete-button'), value: _Menu.delete, child: Text('Smazat')),
+                  const PopupMenuItem(
+                      key: Key('difficulty-button'),
+                      value: _Menu.difficulty,
+                      child: Text('Obtížnost')),
+                  const PopupMenuItem(
+                      key: Key('help-button'), value: _Menu.help, child: Text('Nápověda')),
+                ],
               ),
             ],
           ),
@@ -190,6 +181,7 @@ class _PlayScreenState extends ConsumerState<PlayScreen> {
                         key: ValueKey(puzzles[i].id),
                         puzzle: puzzles[i],
                         onNext: _next,
+                        autoAdvance: i == _index,
                       ),
               );
             },
@@ -208,7 +200,7 @@ class _EndPage extends StatelessWidget {
         child: Padding(
           padding: EdgeInsets.all(32),
           child: Text(
-            'To je zatím vše. Zkus změnit obtížnost (ikona vpravo nahoře) '
+            'To je zatím vše. Zkus změnit obtížnost (nabídka ⋮ vpravo nahoře) '
             'nebo vytvoř vlastní rébus v záložce Tvořit!',
             textAlign: TextAlign.center,
             style: TextStyle(fontSize: 18),
@@ -225,13 +217,16 @@ class PuzzlePage extends ConsumerStatefulWidget {
     required this.puzzle,
     required this.onNext,
     this.nextLabel = 'Další',
-    this.showSkip = true,
+    this.autoAdvance = false,
   });
 
   final Puzzle puzzle;
   final VoidCallback onNext;
   final String nextLabel;
-  final bool showSkip;
+
+  /// Po uhodnutí se po chvíli samo přejde na další kartu (klepnutí kamkoli to zruší).
+  /// Má být true jen pro právě zobrazenou kartu.
+  final bool autoAdvance;
 
   @override
   ConsumerState<PuzzlePage> createState() => _PuzzlePageState();
@@ -243,6 +238,9 @@ class _PuzzlePageState extends ConsumerState<PuzzlePage>
   int _hintLevel = 0;
   int _wrongCount = 0;
   bool _wrong = false;
+  bool _showExplanation = false;
+  Timer? _autoTimer;
+  Duration? _autoDuration;
   late _Status _status =
       ref.read(progressProvider).solved.contains(widget.puzzle.id)
           ? _Status.solved
@@ -252,9 +250,37 @@ class _PuzzlePageState extends ConsumerState<PuzzlePage>
   bool get wantKeepAlive => true;
 
   @override
+  void didUpdateWidget(PuzzlePage old) {
+    super.didUpdateWidget(old);
+    if (!widget.autoAdvance) _cancelAuto();
+  }
+
+  @override
   void dispose() {
+    _autoTimer?.cancel();
     _tip.dispose();
     super.dispose();
+  }
+
+  /// Čas na přečtení: delší, když rébus má vysvětlení nebo význam.
+  void _startAuto() {
+    if (!widget.autoAdvance) return;
+    final p = widget.puzzle;
+    final hasText =
+        (p.explanation?.isNotEmpty ?? false) || (p.meaning?.isNotEmpty ?? false);
+    final d = Duration(seconds: hasText ? 12 : 4);
+    _autoTimer?.cancel();
+    _autoTimer = Timer(d, () {
+      _autoTimer = null;
+      if (mounted && widget.autoAdvance) widget.onNext();
+    });
+    setState(() => _autoDuration = d);
+  }
+
+  void _cancelAuto() {
+    _autoTimer?.cancel();
+    _autoTimer = null;
+    if (_autoDuration != null && mounted) setState(() => _autoDuration = null);
   }
 
   void _submit() {
@@ -266,6 +292,7 @@ class _PuzzlePageState extends ConsumerState<PuzzlePage>
       });
       ref.read(progressProvider.notifier).markSolved(widget.puzzle.id);
       _report(revealed: false);
+      _startAuto();
     } else {
       _wrongCount++;
       setState(() => _wrong = true);
@@ -291,72 +318,111 @@ class _PuzzlePageState extends ConsumerState<PuzzlePage>
   }
 
   void _resetThis() {
+    _cancelAuto();
     ref.read(progressProvider.notifier).resetOne(widget.puzzle.id);
     setState(() {
       _status = _Status.playing;
       _hintLevel = 0;
       _wrongCount = 0;
       _wrong = false;
+      _showExplanation = false;
       _tip.clear();
     });
+  }
+
+  Widget _card(double height) {
+    final p = widget.puzzle;
+    final fav = ref.watch(progressProvider.select((s) => s.favorites.contains(p.id)));
+    return SizedBox(
+      height: height,
+      width: height * 2 / 3 + 12,
+      child: PuzzleCard(
+        image: p.image,
+        plusMinus: p.plusMinus,
+        wordTypes: p.wordTypes,
+        adult: p.adult,
+        difficulty: ref.watch(effectiveDifficultyProvider((p.id, p.difficulty))),
+        favorite: fav,
+        onFavorite: () => ref.read(progressProvider.notifier).toggleFavorite(p.id),
+        onShare: () => sharePuzzle(context, p),
+        highlight: _status == _Status.solved,
+        onExpand: () => showPuzzleFullscreen(context, p.image),
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     super.build(context);
     final p = widget.puzzle;
-    final fav = ref.watch(progressProvider.select((s) => s.favorites.contains(p.id)));
-    final cardHeight = (MediaQuery.sizeOf(context).height * 0.48).clamp(220.0, 520.0);
     final playing = _status == _Status.playing;
 
-    return SingleChildScrollView(
-      padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Center(
-            child: SizedBox(
-              height: cardHeight,
-              width: cardHeight * 2 / 3 + 12,
-              child: PuzzleCard(
-                image: p.image,
-                plusMinus: p.plusMinus,
-                wordTypes: p.wordTypes,
-                adult: p.adult,
-                difficulty: ref.watch(effectiveDifficultyProvider((p.id, p.difficulty))),
-                favorite: fav,
-                onFavorite: () =>
-                    ref.read(progressProvider.notifier).toggleFavorite(p.id),
-                highlight: _status == _Status.solved,
-                onExpand: () => showPuzzleFullscreen(context, p.image),
+    final controls = Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        if (_hintLevel > 0 && playing)
+          Padding(
+            padding: const EdgeInsets.only(bottom: 8),
+            child: Text(
+              hintMask(p.solution, _hintLevel),
+              key: const Key('hint-text'),
+              textAlign: TextAlign.center,
+              style: const TextStyle(
+                fontSize: 24,
+                letterSpacing: 2,
+                fontWeight: FontWeight.w600,
+                fontFeatures: [FontFeature.tabularFigures()],
               ),
             ),
           ),
-          const SizedBox(height: 16),
-          if (_hintLevel > 0 && playing)
-            Padding(
-              padding: const EdgeInsets.only(bottom: 12),
-              child: Text(
-                hintMask(p.solution, _hintLevel),
-                key: const Key('hint-text'),
-                textAlign: TextAlign.center,
-                style: const TextStyle(
-                  fontSize: 24,
-                  letterSpacing: 2,
-                  fontWeight: FontWeight.w600,
-                  fontFeatures: [FontFeature.tabularFigures()],
+        if (playing) ..._playingControls(p) else _resultPanel(p),
+      ],
+    );
+
+    // Klepnutí kamkoli zruší automatický přechod na další kartu.
+    return Listener(
+      behavior: HitTestBehavior.translucent,
+      onPointerDown: (_) => _cancelAuto(),
+      child: LayoutBuilder(builder: (context, c) {
+        // Nízké okno (např. s klávesnicí): malá karta a celé se dá posunout.
+        if (c.maxHeight < 460) {
+          return SingleChildScrollView(
+            padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Center(child: _card(200)),
+                const SizedBox(height: 12),
+                controls,
+              ],
+            ),
+          );
+        }
+        // Jinak karta vyplní zbývající místo a ovládání je pod ní bez posouvání.
+        return Padding(
+          padding: const EdgeInsets.fromLTRB(16, 4, 16, 8),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Expanded(
+                child: LayoutBuilder(
+                  builder: (context, cc) {
+                    final byWidth = (cc.maxWidth - 12) * 1.5;
+                    return Center(
+                      child: _card(cc.maxHeight < byWidth ? cc.maxHeight : byWidth),
+                    );
+                  },
                 ),
               ),
-            ),
-          if (playing) ..._playingControls(p) else _resultPanel(p),
-          TextButton.icon(
-            key: const Key('share-button'),
-            onPressed: () => sharePuzzle(context, p),
-            icon: const Icon(Icons.share_outlined),
-            label: const Text('Sdílet odkaz na tento rébus'),
+              const SizedBox(height: 8),
+              ConstrainedBox(
+                constraints: BoxConstraints(maxHeight: c.maxHeight * 0.6),
+                child: SingleChildScrollView(child: controls),
+              ),
+            ],
           ),
-        ],
-      ),
+        );
+      }),
     );
   }
 
@@ -370,6 +436,7 @@ class _PuzzlePageState extends ConsumerState<PuzzlePage>
         enableSuggestions: false,
         decoration: InputDecoration(
           labelText: 'Tvůj tip',
+          isDense: true,
           errorText: _wrong ? 'Zkus to znovu' : null,
         ),
         onChanged: (_) {
@@ -377,7 +444,7 @@ class _PuzzlePageState extends ConsumerState<PuzzlePage>
         },
         onSubmitted: (_) => _submit(),
       ),
-      const SizedBox(height: 12),
+      const SizedBox(height: 8),
       FilledButton(
         key: const Key('submit-button'),
         onPressed: _submit,
@@ -408,19 +475,16 @@ class _PuzzlePageState extends ConsumerState<PuzzlePage>
           ),
         ],
       ),
-      if (widget.showSkip)
-        TextButton.icon(
-          key: const Key('skip-button'),
-          onPressed: widget.onNext,
-          icon: const Icon(Icons.casino_outlined),
-          label: const Text('Jiná karta'),
-        ),
     ];
   }
 
   Widget _resultPanel(Puzzle p) {
     final solved = _status == _Status.solved;
     final scheme = Theme.of(context).colorScheme;
+    final fg = solved ? Colors.white : scheme.onSecondaryContainer;
+    final hasMeaning = p.meaning != null && p.meaning!.isNotEmpty;
+    final hasExplanation = p.explanation != null && p.explanation!.isNotEmpty;
+    final days = ref.watch(progressProvider).activeStreak(DateTime.now());
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -432,98 +496,104 @@ class _PuzzlePageState extends ConsumerState<PuzzlePage>
           builder: (context, scale, child) =>
               Transform.scale(scale: scale, child: child),
           child: Container(
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
             decoration: BoxDecoration(
               color: solved ? Colors.green.shade600 : scheme.secondaryContainer,
               borderRadius: BorderRadius.circular(16),
             ),
             child: Column(
               children: [
-                Icon(solved ? Icons.celebration : Icons.visibility,
-                    size: 40, color: solved ? Colors.white : scheme.onSecondaryContainer),
-                const SizedBox(height: 4),
-                Text(
-                  solved ? 'Správně!' : 'Řešení',
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.w700,
-                    color: solved ? Colors.white : scheme.onSecondaryContainer,
-                  ),
-                ),
-                Consumer(builder: (context, ref, _) {
-                  final days = ref.watch(progressProvider).activeStreak(DateTime.now());
-                  if (!solved || days == 0) return const SizedBox.shrink();
-                  return Padding(
-                    padding: const EdgeInsets.only(bottom: 4),
-                    child: Row(
-                      key: const Key('streak-message'),
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        const BurningPuzzle(size: 22),
-                        const SizedBox(width: 6),
-                        Text(
-                          '$days ${streakDayWord(days)} v řadě',
-                          style: const TextStyle(
-                              color: Colors.white, fontWeight: FontWeight.w700),
-                        ),
-                      ],
+                Wrap(
+                  alignment: WrapAlignment.center,
+                  crossAxisAlignment: WrapCrossAlignment.center,
+                  spacing: 10,
+                  children: [
+                    Text(
+                      solved ? 'Správně!' : 'Řešení',
+                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700, color: fg),
                     ),
-                  );
-                }),
+                    if (solved && days > 0)
+                      Row(
+                        key: const Key('streak-message'),
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const BurningPuzzle(size: 18),
+                          const SizedBox(width: 4),
+                          Text('$days ${streakDayWord(days)} v řadě',
+                              style: TextStyle(color: fg, fontWeight: FontWeight.w700)),
+                        ],
+                      ),
+                  ],
+                ),
                 Text(
                   p.solution,
                   key: const Key('solution-text'),
-                  style: TextStyle(
-                    fontSize: 28,
-                    fontWeight: FontWeight.w800,
-                    color: solved ? Colors.white : scheme.onSecondaryContainer,
-                  ),
+                  textAlign: TextAlign.center,
+                  style: TextStyle(fontSize: 26, fontWeight: FontWeight.w800, color: fg),
                 ),
-                if (p.meaning != null && p.meaning!.isNotEmpty)
+                if (hasMeaning)
                   Padding(
-                    padding: const EdgeInsets.only(top: 6),
-                    child: Text(
-                      p.meaning!,
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        color: solved ? Colors.white : scheme.onSecondaryContainer,
-                      ),
-                    ),
+                    padding: const EdgeInsets.only(top: 2),
+                    child: Text(p.meaning!,
+                        textAlign: TextAlign.center, style: TextStyle(color: fg)),
                   ),
-                if (p.explanation != null && p.explanation!.isNotEmpty)
-                  Padding(
-                    padding: const EdgeInsets.only(top: 10),
-                    child: Text(
+                if (hasExplanation) ...[
+                  TextButton.icon(
+                    key: const Key('explanation-toggle'),
+                    style: TextButton.styleFrom(
+                      foregroundColor: fg,
+                      visualDensity: VisualDensity.compact,
+                    ),
+                    onPressed: () => setState(() => _showExplanation = !_showExplanation),
+                    icon: Icon(_showExplanation ? Icons.expand_less : Icons.expand_more),
+                    label: const Text('Vysvětlení'),
+                  ),
+                  if (_showExplanation)
+                    Text(
                       'Vysvětlení: ${p.explanation!}',
                       key: const Key('explanation-text'),
                       textAlign: TextAlign.center,
-                      style: TextStyle(
-                        color: solved ? Colors.white : scheme.onSecondaryContainer,
-                      ),
+                      style: TextStyle(color: fg),
                     ),
-                  ),
+                ],
               ],
             ),
           ),
         ),
-        _LikeRow(puzzle: p),
-        const SizedBox(height: 12),
-        FilledButton(
-          key: const Key('next-button'),
-          onPressed: widget.onNext,
-          child: Text(widget.nextLabel),
+        const SizedBox(height: 8),
+        Row(
+          children: [
+            Expanded(
+              child: FilledButton(
+                key: const Key('next-button'),
+                onPressed: widget.onNext,
+                child: Text(widget.nextLabel),
+              ),
+            ),
+            _LikeRow(puzzle: p),
+            if (solved)
+              IconButton(
+                key: const Key('reset-one-button'),
+                tooltip: 'Resetovat tento rébus',
+                onPressed: _resetThis,
+                icon: const Icon(Icons.restart_alt),
+              ),
+          ],
         ),
-        if (solved)
-          TextButton(
-            key: const Key('reset-one-button'),
-            onPressed: _resetThis,
-            child: const Text('Resetovat tento rébus'),
+        if (_autoDuration != null)
+          Padding(
+            padding: const EdgeInsets.only(top: 4),
+            child: TweenAnimationBuilder<double>(
+              key: const Key('auto-next-bar'),
+              tween: Tween(begin: 0, end: 1),
+              duration: _autoDuration!,
+              builder: (context, v, _) => LinearProgressIndicator(value: v, minHeight: 3),
+            ),
           ),
       ],
     );
   }
 }
-
 
 /// Po vyřešení: hráč může rébus ohodnotit ("líbí se mi"); autor vidí počet.
 class _LikeRow extends ConsumerWidget {
@@ -541,31 +611,32 @@ class _LikeRow extends ConsumerWidget {
     if (!canLike) {
       if (count == 0) return const SizedBox.shrink();
       return Padding(
-        padding: const EdgeInsets.only(top: 8),
-        child: Text('♥ $count',
-            key: const Key('like-count'), textAlign: TextAlign.center),
+        padding: const EdgeInsets.symmetric(horizontal: 8),
+        child: Text('♥ $count', key: const Key('like-count')),
       );
     }
     final liked = ref.watch(likesProvider).value?.contains(puzzle.id) ?? false;
-    return Padding(
-      padding: const EdgeInsets.only(top: 8),
-      child: OutlinedButton.icon(
-        key: const Key('like-button'),
-        onPressed: () async {
-          try {
-            await ref.read(likesProvider.notifier).toggle(puzzle.id);
-          } catch (e) {
-            if (context.mounted) {
-              ScaffoldMessenger.of(context)
-                  .showSnackBar(SnackBar(content: Text('Hodnocení se nepovedlo: $e')));
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        IconButton(
+          key: const Key('like-button'),
+          tooltip: liked ? 'Líbilo se mi' : 'Líbí se mi',
+          onPressed: () async {
+            try {
+              await ref.read(likesProvider.notifier).toggle(puzzle.id);
+            } catch (e) {
+              if (context.mounted) {
+                ScaffoldMessenger.of(context)
+                    .showSnackBar(SnackBar(content: Text('Hodnocení se nepovedlo: $e')));
+              }
             }
-          }
-        },
-        icon: Icon(liked ? Icons.favorite : Icons.favorite_border,
-            color: liked ? Colors.red : null),
-        label: Text(liked ? 'Líbilo se mi' : 'Líbí se mi'
-            '${count > 0 ? '  ($count)' : ''}'),
-      ),
+          },
+          icon: Icon(liked ? Icons.favorite : Icons.favorite_border,
+              color: liked ? Colors.red : null),
+        ),
+        if (count > 0) Text('$count'),
+      ],
     );
   }
 }

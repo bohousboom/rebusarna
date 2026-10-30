@@ -87,7 +87,6 @@ class PuzzleDetailScreen extends ConsumerWidget {
               puzzle: p,
               onNext: () => context.canPop() ? context.pop() : context.go('/play'),
               nextLabel: 'Zpět',
-              showSkip: false,
             );
           },
         ),

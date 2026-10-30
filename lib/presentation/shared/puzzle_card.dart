@@ -69,12 +69,16 @@ class PuzzleCard extends StatelessWidget {
     this.highlight = false,
     this.adult = false,
     this.onExpand,
+    this.onShare,
   });
 
   final String image;
 
   /// Klepnutí na kartu / ikonu rozšíření (celoobrazovkový náhled).
   final VoidCallback? onExpand;
+
+  /// Tlačítko sdílení odkazu na kartě (pod srdíčkem).
+  final VoidCallback? onShare;
 
   /// Zobrazit štítek ± (nastavuje autor).
   final bool plusMinus;
@@ -162,6 +166,21 @@ class PuzzleCard extends StatelessWidget {
                   color: Colors.redAccent,
                 ),
                 onPressed: onFavorite,
+              ),
+            ),
+          if (onShare != null)
+            Positioned(
+              right: 4,
+              top: favorite != null ? 56 : 4,
+              child: IconButton(
+                key: const Key('share-button'),
+                tooltip: 'Sdílet odkaz na rébus',
+                style: IconButton.styleFrom(
+                  backgroundColor: Colors.white70,
+                  minimumSize: const Size(48, 48),
+                ),
+                icon: const Icon(Icons.share_outlined, color: Colors.black87),
+                onPressed: onShare,
               ),
             ),
         ],

@@ -52,14 +52,14 @@ void main() {
     expect(find.byKey(const Key('badge-wordtype')), findsOneWidget);
     expect(find.byTooltip('Druh slova: sloveso'), findsOneWidget);
     expect(find.byTooltip('Obtížnost: střední (barva štítku)'), findsOneWidget);
-    expect(_count(tester), 'Uhodnuto 0 / 1');
+    expect(_count(tester), '0 / 1');
 
     // špatný tip
     await tester.enterText(find.byKey(const Key('tip-field')), 'zranit');
     await tester.tap(find.byKey(const Key('submit-button')));
     await tester.pump();
     expect(find.text('Zkus to znovu'), findsOneWidget);
-    expect(_count(tester), 'Uhodnuto 0 / 1');
+    expect(_count(tester), '0 / 1');
 
     // nápověda: 1. klik počet písmen, 2. klik první písmeno
     await tester.tap(find.byKey(const Key('hint-button')));
@@ -77,8 +77,12 @@ void main() {
     await tester.pump(const Duration(milliseconds: 800));
     expect(find.text('Správně!'), findsOneWidget);
     expect(find.text('způsobit zranění'), findsOneWidget);
+    // vysvětlení je sbalené, dokud se neklepne na tlačítko
+    expect(find.text('Vysvětlení: pór + a + nit'), findsNothing);
+    await tester.tap(find.byKey(const Key('explanation-toggle')));
+    await tester.pump();
     expect(find.text('Vysvětlení: pór + a + nit'), findsOneWidget);
-    expect(_count(tester), 'Uhodnuto 1 / 1');
+    expect(_count(tester), '1 / 1');
 
     // reset jednoho rébusu: vrátí se pole pro tip
     await tester.ensureVisible(find.byKey(const Key('reset-one-button')));
@@ -93,7 +97,7 @@ void main() {
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 800));
     expect(tester.widget<Text>(find.byKey(const Key('solution-text'))).data, 'poranit');
-    expect(_count(tester), 'Uhodnuto 0 / 1');
+    expect(_count(tester), '0 / 1');
   });
 
   testWidgets('rébus 18+ se v hádání neukáže, dokud to uživatel nezapne', (tester) async {
@@ -145,5 +149,68 @@ void main() {
     await tester.pump(const Duration(milliseconds: 800));
     expect(tester.widget<Text>(find.byKey(const Key('streak-days'))).data, '1');
     expect(find.byKey(const Key('streak-message')), findsOneWidget);
+  });
+
+  Future<void> _pumpTwo(WidgetTester tester) async {
+    SharedPreferences.setMockInitialValues({});
+    final prefs = await SharedPreferences.getInstance();
+    tester.view.physicalSize = const Size(360 * 3, 800 * 3);
+    tester.view.devicePixelRatio = 3;
+    addTearDown(tester.view.reset);
+    final second = Puzzle(
+      id: 't2',
+      image: 'assets/images/neexistuje.png',
+      solution: 'kolo',
+      wordTypes: [WordType.noun],
+      difficulty: 3,
+      authorName: 'test',
+      createdAt: DateTime(2026),
+    );
+    await tester.pumpWidget(ProviderScope(
+      overrides: [
+        sharedPreferencesProvider.overrideWithValue(prefs),
+        puzzlesProvider.overrideWith((ref) async => [_puzzle, second]),
+        feedProvider.overrideWith((ref) async => [_puzzle, second]),
+      ],
+      child: const MaterialApp(home: Scaffold(body: PlayScreen())),
+    ));
+    await tester.pumpAndSettle();
+  }
+
+  testWidgets('sdílení, tip i tlačítka jsou na telefonu vidět bez scrollování', (tester) async {
+    await _pump(tester);
+    for (final k in ['share-button', 'tip-field', 'submit-button', 'reveal-button']) {
+      expect(tester.getRect(find.byKey(Key(k))).bottom, lessThan(800), reason: k);
+    }
+    await tester.tap(find.byKey(const Key('reveal-button')));
+    await tester.pump(const Duration(milliseconds: 800));
+    expect(tester.getRect(find.byKey(const Key('next-button'))).bottom, lessThan(800));
+  });
+
+  testWidgets('po uhodnutí se po prodlevě samo přejde na další kartu', (tester) async {
+    await _pumpTwo(tester);
+    await tester.enterText(find.byKey(const Key('tip-field')), 'poranit');
+    await tester.tap(find.byKey(const Key('submit-button')));
+    await tester.pump(const Duration(milliseconds: 800));
+    expect(find.byKey(const Key('auto-next-bar')), findsOneWidget);
+    // rébus s vysvětlením: po 5 s ještě čeká
+    await tester.pump(const Duration(seconds: 5));
+    expect(find.byKey(const Key('solution-text')), findsOneWidget);
+    await tester.pump(const Duration(seconds: 8));
+    await tester.pumpAndSettle();
+    expect(find.byKey(const Key('tip-field')), findsOneWidget);
+  });
+
+  testWidgets('klepnutí po uhodnutí automatický přechod zruší', (tester) async {
+    await _pumpTwo(tester);
+    await tester.enterText(find.byKey(const Key('tip-field')), 'poranit');
+    await tester.tap(find.byKey(const Key('submit-button')));
+    await tester.pump(const Duration(milliseconds: 800));
+    await tester.tap(find.byKey(const Key('explanation-toggle')));
+    await tester.pump();
+    expect(find.byKey(const Key('auto-next-bar')), findsNothing);
+    await tester.pump(const Duration(seconds: 30));
+    await tester.pumpAndSettle();
+    expect(find.byKey(const Key('solution-text')), findsOneWidget);
   });
 }
