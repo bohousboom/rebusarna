@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/config.dart';
+import '../../data/image_download.dart';
 import '../../data/moderation.dart';
 import '../../data/providers.dart';
 import '../../data/supabase_client.dart';
@@ -17,13 +18,17 @@ class PuzzlePermissions {
     required this.canReport,
     required this.canEdit,
     required this.canDelete,
+    required this.canDownload,
   });
 
   final bool canReport;
   final bool canEdit;
   final bool canDelete;
 
-  bool get any => canReport || canEdit || canDelete;
+  /// Stáhnout obrázek smí autor a správce.
+  final bool canDownload;
+
+  bool get any => canReport || canEdit || canDelete || canDownload;
 
   static PuzzlePermissions of(WidgetRef ref, Puzzle? puzzle) {
     final userId = ref.watch(currentUserProvider).value?.id;
@@ -41,6 +46,7 @@ class PuzzlePermissions {
       canReport: canReport,
       canEdit: canEdit,
       canDelete: canEdit || isPendingBuiltIn,
+      canDownload: puzzle != null && (isOwner || isAdmin),
     );
   }
 }
@@ -69,6 +75,17 @@ Future<bool> confirmDeletePuzzle(BuildContext context, WidgetRef ref, Puzzle p) 
           .showSnackBar(SnackBar(content: Text('Smazání se nepovedlo: $e')));
     }
     return false;
+  }
+}
+
+/// Uloží obrázek rébusu do zařízení a ohlásí výsledek.
+Future<void> downloadImage(BuildContext context, Puzzle p) async {
+  final messenger = ScaffoldMessenger.of(context);
+  try {
+    await downloadPuzzleImage(p);
+    messenger.showSnackBar(const SnackBar(content: Text('Obrázek je uložený.')));
+  } catch (e) {
+    messenger.showSnackBar(SnackBar(content: Text('Stažení se nepovedlo: $e')));
   }
 }
 

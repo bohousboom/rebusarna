@@ -36,6 +36,13 @@ class PuzzleDetailScreen extends ConsumerWidget {
               icon: const Icon(Icons.flag_outlined),
               onPressed: () => reportPuzzle(context, ref, puzzle!),
             ),
+          if (perms.canDownload)
+            IconButton(
+              key: const Key('download-button'),
+              tooltip: 'Stáhnout obrázek',
+              icon: const Icon(Icons.download_outlined),
+              onPressed: () => downloadImage(context, puzzle!),
+            ),
           if (canEdit)
             IconButton(
               key: const Key('edit-button'),

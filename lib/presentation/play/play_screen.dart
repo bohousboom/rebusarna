@@ -120,6 +120,14 @@ class _PlayScreenState extends ConsumerState<PlayScreen> {
                   onPressed: () => reportPuzzle(context, ref, current!),
                   icon: const Icon(Icons.flag_outlined),
                 ),
+              if (perms.canDownload)
+                IconButton(
+                  key: const Key('download-button'),
+                  tooltip: 'Stáhnout obrázek',
+                  style: _compactIcon,
+                  onPressed: () => downloadImage(context, current!),
+                  icon: const Icon(Icons.download_outlined),
+                ),
               if (perms.canEdit)
                 IconButton(
                   key: const Key('edit-button'),
