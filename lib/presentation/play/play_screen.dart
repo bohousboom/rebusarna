@@ -17,6 +17,7 @@ import '../../domain/text_logic.dart';
 import '../shared/difficulty_dialog.dart';
 import '../shared/help_dialog.dart';
 import '../shared/puzzle_card.dart';
+import '../shared/streak_flame.dart';
 import 'puzzle_actions.dart';
 
 /// Pořadí feedu: nevyřešené první (podle nastavené obtížnosti), potom vyřešené.
@@ -94,10 +95,13 @@ class _PlayScreenState extends ConsumerState<PlayScreen> {
                     data: (l) => 'Rébus ${min(_index + 1, l.length)} / ${l.length}',
                     orElse: () => '',
                   ),
+                  maxLines: 2,
                   style: Theme.of(context).textTheme.titleMedium,
                 ),
               ),
-              Chip(
+              const StreakFlame(),
+              Flexible(
+                child: Chip(
                 key: const Key('solved-count'),
                 avatar: const Icon(Icons.check_circle, color: Colors.green),
                 label: Text(feed.maybeWhen(
@@ -105,6 +109,7 @@ class _PlayScreenState extends ConsumerState<PlayScreen> {
                       'Uhodnuto ${l.where((p) => solved.contains(p.id)).length} / ${l.length}',
                   orElse: () => 'Uhodnuto',
                 )),
+              ),
               ),
               const SizedBox(width: 4),
               if (perms.canReport)
@@ -315,6 +320,7 @@ class _PuzzlePageState extends ConsumerState<PuzzlePage>
                 onFavorite: () =>
                     ref.read(progressProvider.notifier).toggleFavorite(p.id),
                 highlight: _status == _Status.solved,
+                onExpand: () => showPuzzleFullscreen(context, p.image),
               ),
             ),
           ),
@@ -436,6 +442,19 @@ class _PuzzlePageState extends ConsumerState<PuzzlePage>
                     color: solved ? Colors.white : scheme.onSecondaryContainer,
                   ),
                 ),
+                Consumer(builder: (context, ref, _) {
+                  final days = ref.watch(progressProvider).activeStreak(DateTime.now());
+                  if (!solved || days == 0) return const SizedBox.shrink();
+                  return Padding(
+                    padding: const EdgeInsets.only(bottom: 4),
+                    child: Text(
+                      '🔥 $days ${streakDayWord(days)} v řadě',
+                      key: const Key('streak-message'),
+                      style: const TextStyle(
+                          color: Colors.white, fontWeight: FontWeight.w700),
+                    ),
+                  );
+                }),
                 Text(
                   p.solution,
                   key: const Key('solution-text'),

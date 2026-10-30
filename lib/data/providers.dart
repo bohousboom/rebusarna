@@ -81,6 +81,22 @@ final difficultySettingProvider =
     NotifierProvider<DifficultySettingNotifier, DifficultySetting>(
         DifficultySettingNotifier.new);
 
+const _kMineCollapsed = 'mine_header_collapsed';
+
+/// Sbalený horní panel v záložce Moje (víc místa na karty). Ukládá se v zařízení.
+class MineCollapsedNotifier extends Notifier<bool> {
+  @override
+  bool build() => ref.read(sharedPreferencesProvider).getBool(_kMineCollapsed) ?? false;
+
+  Future<void> toggle() async {
+    state = !state;
+    await ref.read(sharedPreferencesProvider).setBool(_kMineCollapsed, state);
+  }
+}
+
+final mineCollapsedProvider =
+    NotifierProvider<MineCollapsedNotifier, bool>(MineCollapsedNotifier.new);
+
 const _kThemeMode = 'theme_mode';
 
 /// Režim vzhledu: výchozí podle systému, uživatel může vynutit světlý/noční.

@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../domain/streak.dart' as streak_logic;
 import 'providers.dart';
 import 'remote_progress.dart';
 import 'supabase_client.dart';
@@ -8,18 +9,42 @@ import 'supabase_client.dart';
 const _kSolved = 'progress_solved';
 const _kFavorites = 'progress_favorites';
 const _kStreak = 'progress_streak';
+const _kStreakDay = 'progress_streak_day';
 
-/// Stav hráče: vyřešené a oblíbené rébusy a aktuální série.
+/// Stav hráče: vyřešené a oblíbené rébusy a denní série (dny v řadě s aspoň jedním
+/// uhodnutým rébusem); [lastDay] je poslední den (`yyyy-MM-dd`), kdy hráč uhodl.
 class PlayerProgress {
   const PlayerProgress({
     this.solved = const {},
     this.favorites = const {},
     this.streak = 0,
+    this.lastDay,
   });
 
   final Set<String> solved;
   final Set<String> favorites;
   final int streak;
+  final String? lastDay;
+
+  /// Série k zobrazení (0, když se už přerušila).
+  int activeStreak(DateTime now) =>
+      streak_logic.activeStreak(streak: streak, lastDay: lastDay, now: now);
+
+  bool solvedToday(DateTime now) =>
+      streak_logic.solvedToday(lastDay: lastDay, now: now);
+
+  PlayerProgress copyWith({
+    Set<String>? solved,
+    Set<String>? favorites,
+    int? streak,
+    String? lastDay,
+  }) =>
+      PlayerProgress(
+        solved: solved ?? this.solved,
+        favorites: favorites ?? this.favorites,
+        streak: streak ?? this.streak,
+        lastDay: lastDay ?? this.lastDay,
+      );
 }
 
 /// Lokální stav (shared_preferences) + synchronizace se Supabase, když je hráč přihlášený.
@@ -37,6 +62,7 @@ class ProgressNotifier extends Notifier<PlayerProgress> {
       solved: (_prefs.getStringList(_kSolved) ?? const []).toSet(),
       favorites: (_prefs.getStringList(_kFavorites) ?? const []).toSet(),
       streak: _prefs.getInt(_kStreak) ?? 0,
+      lastDay: _prefs.getString(_kStreakDay),
     );
   }
 
@@ -60,10 +86,16 @@ class ProgressNotifier extends Notifier<PlayerProgress> {
     if (r == null) return;
     try {
       final remote = await r.fetch();
+      // Série platí z toho zařízení, kde se hrálo naposledy (při stejném dni vyšší).
+      final remoteWins = remote.lastDay != null &&
+          (state.lastDay == null ||
+              remote.lastDay!.compareTo(state.lastDay!) > 0 ||
+              (remote.lastDay == state.lastDay && remote.streak > state.streak));
       state = PlayerProgress(
         solved: {...state.solved, ...remote.solved},
         favorites: {...state.favorites, ...remote.favorites},
-        streak: state.streak > remote.streak ? state.streak : remote.streak,
+        streak: remoteWins ? remote.streak : state.streak,
+        lastDay: remoteWins ? remote.lastDay : state.lastDay,
       );
       await _save();
       await r.pushAll(state);
@@ -74,41 +106,37 @@ class ProgressNotifier extends Notifier<PlayerProgress> {
     await _prefs.setStringList(_kSolved, state.solved.toList());
     await _prefs.setStringList(_kFavorites, state.favorites.toList());
     await _prefs.setInt(_kStreak, state.streak);
+    final day = state.lastDay;
+    if (day == null) {
+      await _prefs.remove(_kStreakDay);
+    } else {
+      await _prefs.setString(_kStreakDay, day);
+    }
   }
 
-  /// Vyřešeno: přidá do vyřešených a zvýší sérii (jen při prvním vyřešení).
+  /// Vyřešeno: přidá do vyřešených a prodlouží denní sérii (jen při prvním vyřešení rébusu).
   Future<void> markSolved(String id) async {
     if (state.solved.contains(id)) return;
-    state = PlayerProgress(
+    final now = DateTime.now();
+    state = state.copyWith(
       solved: {...state.solved, id},
-      favorites: state.favorites,
-      streak: state.streak + 1,
+      streak: streak_logic.streakAfterSolve(
+          streak: state.streak, lastDay: state.lastDay, now: now),
+      lastDay: streak_logic.dayKey(now),
     );
     await _save();
     final streak = state.streak;
+    final day = state.lastDay;
     await _sync((r) async {
       await r.addSolved(id);
-      await r.setStreak(streak);
+      await r.setStreak(streak, day);
     });
   }
 
-  /// Hráč se vzdal a ukázal řešení – série se přeruší.
-  Future<void> resetStreak() async {
-    if (state.streak == 0) return;
-    state = PlayerProgress(
-        solved: state.solved, favorites: state.favorites, streak: 0);
-    await _save();
-    await _sync((r) => r.setStreak(0));
-  }
-
-  /// Smaže uhodnutý stav jednoho rébusu (oblíbené zůstává).
+  /// Smaže uhodnutý stav jednoho rébusu (oblíbené i série zůstávají).
   Future<void> resetOne(String id) async {
     if (!state.solved.contains(id)) return;
-    state = PlayerProgress(
-      solved: {...state.solved}..remove(id),
-      favorites: state.favorites,
-      streak: state.streak,
-    );
+    state = state.copyWith(solved: {...state.solved}..remove(id));
     await _save();
     await _sync((r) => r.removeSolved(id));
   }
@@ -119,7 +147,7 @@ class ProgressNotifier extends Notifier<PlayerProgress> {
     await _save();
     await _sync((r) async {
       await r.clearSolved();
-      await r.setStreak(0);
+      await r.setStreak(0, null);
     });
   }
 
@@ -127,8 +155,7 @@ class ProgressNotifier extends Notifier<PlayerProgress> {
     final favs = {...state.favorites};
     final nowFavorite = !favs.remove(id);
     if (nowFavorite) favs.add(id);
-    state = PlayerProgress(
-        solved: state.solved, favorites: favs, streak: state.streak);
+    state = state.copyWith(favorites: favs);
     await _save();
     await _sync((r) => r.setFavorite(id, nowFavorite));
   }

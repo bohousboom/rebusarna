@@ -13,11 +13,12 @@ class RemoteProgress {
   Future<PlayerProgress> fetch() async {
     final solved = await _client.from('solved').select('puzzle_id');
     final favs = await _client.from('favorites').select('puzzle_id');
-    final profile = await _client.from('profiles').select('streak').maybeSingle();
+    final profile = await _client.from('profiles').select('streak, last_solved_day').maybeSingle();
     return PlayerProgress(
       solved: {for (final r in solved) r['puzzle_id'] as String},
       favorites: {for (final r in favs) r['puzzle_id'] as String},
       streak: (profile?['streak'] as num?)?.toInt() ?? 0,
+      lastDay: profile?['last_solved_day'] as String?,
     );
   }
 
@@ -32,7 +33,7 @@ class RemoteProgress {
         for (final id in p.favorites) {'user_id': _uid, 'puzzle_id': id},
       ]);
     }
-    await setStreak(p.streak);
+    await setStreak(p.streak, p.lastDay);
   }
 
   Future<void> addSolved(String id) =>
@@ -47,6 +48,7 @@ class RemoteProgress {
       ? _client.from('favorites').upsert({'user_id': _uid, 'puzzle_id': id})
       : _client.from('favorites').delete().eq('user_id', _uid).eq('puzzle_id', id);
 
-  Future<void> setStreak(int streak) =>
-      _client.from('profiles').upsert({'user_id': _uid, 'streak': streak});
+  Future<void> setStreak(int streak, String? lastDay) => _client
+      .from('profiles')
+      .upsert({'user_id': _uid, 'streak': streak, 'last_solved_day': lastDay});
 }

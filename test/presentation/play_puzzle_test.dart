@@ -123,4 +123,27 @@ void main() {
     expect(find.byKey(const Key('tip-field')), findsNothing);
     expect(find.text('Zatím tu nejsou žádné rébusy.'), findsOneWidget);
   });
+
+  testWidgets('klepnutí na kartu otevře celoobrazovkový náhled a tlačítko ho zavře',
+      (tester) async {
+    await _pump(tester);
+    expect(find.byKey(const Key('fullscreen-preview')), findsNothing);
+    await tester.tap(find.byKey(const Key('card-expand-area')));
+    await tester.pumpAndSettle();
+    expect(find.byKey(const Key('fullscreen-preview')), findsOneWidget);
+    await tester.tap(find.byKey(const Key('fullscreen-close')));
+    await tester.pumpAndSettle();
+    expect(find.byKey(const Key('fullscreen-preview')), findsNothing);
+  });
+
+  testWidgets('uhodnutí zapálí denní plamínek', (tester) async {
+    await _pump(tester);
+    expect(tester.widget<Text>(find.byKey(const Key('streak-days'))).data, '0');
+    await tester.enterText(find.byKey(const Key('tip-field')), 'poranit');
+    await tester.tap(find.byKey(const Key('submit-button')));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 800));
+    expect(tester.widget<Text>(find.byKey(const Key('streak-days'))).data, '1');
+    expect(find.byKey(const Key('streak-message')), findsOneWidget);
+  });
 }

@@ -68,9 +68,13 @@ class PuzzleCard extends StatelessWidget {
     this.onFavorite,
     this.highlight = false,
     this.adult = false,
+    this.onExpand,
   });
 
   final String image;
+
+  /// Klepnutí na kartu / ikonu rozšíření (celoobrazovkový náhled).
+  final VoidCallback? onExpand;
 
   /// Zobrazit štítek ± (nastavuje autor).
   final bool plusMinus;
@@ -111,6 +115,22 @@ class PuzzleCard extends StatelessWidget {
               child: PuzzleImage(image, cacheWidth: 900),
             ),
           ),
+          if (onExpand != null) ...[
+            Positioned.fill(
+              child: GestureDetector(
+                key: const Key('card-expand-area'),
+                behavior: HitTestBehavior.translucent,
+                onTap: onExpand,
+              ),
+            ),
+            const Positioned(
+              right: 10,
+              bottom: 10,
+              child: IgnorePointer(
+                child: Icon(Icons.fullscreen, color: Colors.black45, size: 28),
+              ),
+            ),
+          ],
           Positioned(
             left: 10,
             top: 10,
@@ -250,4 +270,49 @@ class DifficultyBadge extends StatelessWidget {
       ),
     );
   }
+}
+
+/// Celoobrazovkový náhled rébusu: obrázek se dá přiblížit; tlačítko ho zase zmenší.
+Future<void> showPuzzleFullscreen(BuildContext context, String image) {
+  return Navigator.of(context, rootNavigator: true).push(
+    PageRouteBuilder<void>(
+      opaque: true,
+      barrierColor: Colors.black,
+      transitionDuration: const Duration(milliseconds: 200),
+      pageBuilder: (context, _, _) => Scaffold(
+        key: const Key('fullscreen-preview'),
+        backgroundColor: Colors.black,
+        body: Stack(
+          fit: StackFit.expand,
+          children: [
+            InteractiveViewer(
+              maxScale: 5,
+              child: Center(child: PuzzleImage(image)),
+            ),
+            SafeArea(
+              child: Align(
+                alignment: Alignment.topRight,
+                child: Padding(
+                  padding: const EdgeInsets.all(8),
+                  child: IconButton.filled(
+                    key: const Key('fullscreen-close'),
+                    tooltip: 'Zmenšit',
+                    style: IconButton.styleFrom(
+                      backgroundColor: Colors.white24,
+                      foregroundColor: Colors.white,
+                      minimumSize: const Size(48, 48),
+                    ),
+                    icon: const Icon(Icons.fullscreen_exit),
+                    onPressed: () => Navigator.of(context).pop(),
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+      transitionsBuilder: (_, animation, _, child) =>
+          FadeTransition(opacity: animation, child: child),
+    ),
+  );
 }
