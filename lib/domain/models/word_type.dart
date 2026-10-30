@@ -4,6 +4,7 @@ enum WordType {
   adjective('přídavné jméno'),
   city('město / místo'),
   plural('množné číslo'),
+  foreign('cizí jazyk'),
   other('jiné');
 
   const WordType(this.label);

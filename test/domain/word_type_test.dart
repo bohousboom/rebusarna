@@ -7,6 +7,8 @@ void main() {
     expect(WordType.fromName('city'), WordType.city);
     expect(WordType.plural.label, 'množné číslo');
     expect(WordType.fromName('plural'), WordType.plural);
+    expect(WordType.foreign.label, 'cizí jazyk');
+    expect(WordType.fromName('foreign'), WordType.foreign);
   });
 
   test('seznam druhů: z pole, jinak ze starého jediného druhu', () {

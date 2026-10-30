@@ -13,6 +13,7 @@ IconData wordTypeIcon(WordType t) => switch (t) {
   WordType.adjective => Icons.brush,
   WordType.city => Icons.location_city,
   WordType.plural => Icons.layers,
+  WordType.foreign => Icons.translate,
   WordType.other => Icons.more_horiz,
 };
 
