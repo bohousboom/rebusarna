@@ -25,8 +25,8 @@ Kolo = **ko + lo**, ne „něco kulatého“.
 - **Předmět ve tvaru písmene:** *Vyhlídka = cesta ve tvaru Y + hlídka*
 - **Slovní hříčka:** zvuková podobnost. *Jihlava = „jih“ + láva*
 - **Záměna písmene:** *Chlap = chlup, U → A*
-- **Česko-anglický:** anglická slova znějí česky. *Bikiny = bee + key + knee*
-  (na kartě je jen obraz, žádný anglický text)
+- **Cizí jazyk:** cizí slova (angličtina, španělština…) znějí česky. *Kokpit = cock + pit*, *Bikiny = bee + key + knee*
+  (na kartě je jen obraz, žádný cizojazyčný text)
 
 ## 5. Jak vybrat dobrý obraz
 Zeptej se u každého prvku:

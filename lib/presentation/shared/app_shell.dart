@@ -15,9 +15,9 @@ class AppShell extends StatelessWidget {
         onDestinationSelected: (i) =>
             shell.goBranch(i, initialLocation: i == shell.currentIndex),
         destinations: const [
-          NavigationDestination(icon: Icon(Icons.extension), label: 'Hrát'),
-          NavigationDestination(icon: Icon(Icons.edit), label: 'Tvořit'),
-          NavigationDestination(icon: Icon(Icons.person), label: 'Moje'),
+          NavigationDestination(icon: Icon(Icons.extension), label: 'Hrát', tooltip: ''),
+          NavigationDestination(icon: Icon(Icons.edit), label: 'Tvořit', tooltip: ''),
+          NavigationDestination(icon: Icon(Icons.person), label: 'Moje', tooltip: ''),
         ],
       ),
     );

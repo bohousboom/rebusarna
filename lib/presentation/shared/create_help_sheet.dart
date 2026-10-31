@@ -190,7 +190,10 @@ class _CodeBlockState extends State<_CodeBlock> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          SelectableText(widget.code, style: const TextStyle(fontFamily: 'monospace', fontSize: 13)),
+          SelectableText(
+            widget.code,
+            style: TextStyle(fontFamily: 'monospace', fontSize: 13, color: scheme.onSurface),
+          ),
           Align(
             alignment: Alignment.centerRight,
             child: TextButton.icon(
