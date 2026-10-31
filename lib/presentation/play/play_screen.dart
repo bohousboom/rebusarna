@@ -361,6 +361,16 @@ class _PuzzlePageState extends ConsumerState<PuzzlePage>
     final controls = Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
+        if (_hintLevel > 0 && playing && (p.language?.isNotEmpty ?? false))
+          Padding(
+            padding: const EdgeInsets.only(bottom: 4),
+            child: Text(
+              'Hledej v jazyce: ${p.language}',
+              key: const Key('hint-language'),
+              textAlign: TextAlign.center,
+              style: const TextStyle(fontWeight: FontWeight.w600),
+            ),
+          ),
         if (_hintLevel > 0 && playing)
           Padding(
             padding: const EdgeInsets.only(bottom: 8),

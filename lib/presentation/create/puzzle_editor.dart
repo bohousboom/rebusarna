@@ -28,6 +28,7 @@ class _PuzzleEditorState extends ConsumerState<PuzzleEditor> {
   late final _solution = TextEditingController(text: widget.editing?.solution);
   late final _meaning = TextEditingController(text: widget.editing?.meaning);
   late final _explanation = TextEditingController(text: widget.editing?.explanation);
+  late final _language = TextEditingController(text: widget.editing?.language);
   late final _author = TextEditingController(text: widget.editing?.authorName);
   PickedImage? _picked;
   late List<WordType> _wordTypes = [...(widget.editing?.wordTypes ?? const [WordType.noun])];
@@ -47,6 +48,7 @@ class _PuzzleEditorState extends ConsumerState<PuzzleEditor> {
     _solution.dispose();
     _meaning.dispose();
     _explanation.dispose();
+    _language.dispose();
     _author.dispose();
     super.dispose();
   }
@@ -57,12 +59,17 @@ class _PuzzleEditorState extends ConsumerState<PuzzleEditor> {
   }
 
   Future<void> _save() async {
-    final errors = validateDraft(
+    final isForeign = _wordTypes.contains(WordType.foreign);
+    final errors = [
+      ...validateDraft(
       image: _previewImage,
       solution: _solution.text,
       explanation: _explanation.text,
       requireExplanation: !_isEdit,
-    );
+    ),
+      if (isForeign && _language.text.trim().isEmpty)
+        'Doplň, z jakého jazyka se řešení hledá.',
+    ];
     setState(() => _errors = errors);
     if (errors.isNotEmpty) return;
 
@@ -84,6 +91,7 @@ class _PuzzleEditorState extends ConsumerState<PuzzleEditor> {
       solution: _solution.text.trim(),
       meaning: meaning.isEmpty ? null : meaning,
       explanation: explanation.isEmpty ? null : explanation,
+      language: isForeign ? _language.text.trim() : null,
       wordTypes: _wordTypes,
       difficulty: _difficulty,
       adult: _adult,
@@ -117,6 +125,7 @@ class _PuzzleEditorState extends ConsumerState<PuzzleEditor> {
         _solution.clear();
         _meaning.clear();
         _explanation.clear();
+        _language.clear();
         _wordTypes = [WordType.noun];
         _difficulty = 1;
         _adult = false;
@@ -237,6 +246,17 @@ class _PuzzleEditorState extends ConsumerState<PuzzleEditor> {
               ),
           ],
         ),
+        if (_wordTypes.contains(WordType.foreign)) ...[
+          const SizedBox(height: 8),
+          TextField(
+            key: const Key('language-field'),
+            controller: _language,
+            decoration: const InputDecoration(
+              labelText: 'Z jakého jazyka *',
+              helperText: 'Např. angličtina. Hráč to uvidí v nápovědě.',
+            ),
+          ),
+        ],
         const SizedBox(height: 16),
         Text('Obtížnost', style: Theme.of(context).textTheme.labelLarge),
         const SizedBox(height: 4),

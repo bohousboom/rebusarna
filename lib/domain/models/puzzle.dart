@@ -16,6 +16,7 @@ class Puzzle {
     required this.createdAt,
     this.meaning,
     this.explanation,
+    this.language,
     this.ownerId,
     this.adult = false,
     this.plusMinus = false,
@@ -33,6 +34,9 @@ class Puzzle {
 
   /// Vysvětlení, jak se od obrázku dospěje k řešení.
   final String? explanation;
+
+  /// Z jakého jazyka řešení vzniká (u druhu „cizí jazyk“), např. „angličtina“.
+  final String? language;
 
   /// Id autora (Supabase uživatel); u vestavěných rébusů null.
   final String? ownerId;
@@ -65,6 +69,7 @@ class Puzzle {
         'solution': solution,
         if (meaning != null) 'meaning': meaning,
         if (explanation != null) 'explanation': explanation,
+        if (language != null) 'language': language,
         if (ownerId != null) 'ownerId': ownerId,
         if (adult) 'adult': true,
         if (plusMinus) 'plusMinus': true,
@@ -83,6 +88,7 @@ class Puzzle {
         solution: json['solution'] as String,
         meaning: json['meaning'] as String?,
         explanation: json['explanation'] as String?,
+        language: json['language'] as String?,
         ownerId: json['ownerId'] as String?,
         adult: json['adult'] as bool? ?? false,
         // starší záznamy bez příznaku: odvodit z řešení
