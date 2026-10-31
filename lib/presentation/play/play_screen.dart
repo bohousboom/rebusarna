@@ -12,6 +12,7 @@ import '../../domain/adult_filter.dart';
 import '../../domain/difficulty.dart';
 import '../../domain/feed_plan.dart';
 import '../../domain/hints.dart';
+import '../../domain/languages.dart';
 import '../../domain/models/puzzle.dart';
 import '../../domain/text_logic.dart';
 import '../shared/difficulty_dialog.dart';
@@ -331,6 +332,11 @@ class _PuzzlePageState extends ConsumerState<PuzzlePage>
     });
   }
 
+  bool _hasLanguage(Puzzle p) => p.language?.isNotEmpty ?? false;
+
+  /// Počet kroků nápovědy: jazyk (jen u cizího jazyka), počet písmen, první písmeno.
+  int _maxHints(Puzzle p) => _hasLanguage(p) ? 3 : 2;
+
   Widget _card(double height) {
     final p = widget.puzzle;
     final fav = ref.watch(progressProvider.select((s) => s.favorites.contains(p.id)));
@@ -361,21 +367,21 @@ class _PuzzlePageState extends ConsumerState<PuzzlePage>
     final controls = Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        if (_hintLevel > 0 && playing && (p.language?.isNotEmpty ?? false))
+        if (_hintLevel > 0 && playing && _hasLanguage(p))
           Padding(
             padding: const EdgeInsets.only(bottom: 4),
             child: Text(
-              'Hledej v jazyce: ${p.language}',
+              'Hledej v jazyce: ${languageLabel(p.language!)}',
               key: const Key('hint-language'),
               textAlign: TextAlign.center,
               style: const TextStyle(fontWeight: FontWeight.w600),
             ),
           ),
-        if (_hintLevel > 0 && playing)
+        if (_hintLevel > (_hasLanguage(p) ? 1 : 0) && playing)
           Padding(
             padding: const EdgeInsets.only(bottom: 8),
             child: Text(
-              hintMask(p.solution, _hintLevel),
+              hintMask(p.solution, _hintLevel - (_hasLanguage(p) ? 1 : 0)),
               key: const Key('hint-text'),
               textAlign: TextAlign.center,
               style: const TextStyle(
@@ -471,20 +477,22 @@ class _PuzzlePageState extends ConsumerState<PuzzlePage>
           Expanded(
             child: OutlinedButton.icon(
               key: const Key('hint-button'),
-              onPressed: _hintLevel >= 2 ? null : () => setState(() => _hintLevel++),
+              onPressed: _hintLevel >= _maxHints(p) ? null : () => setState(() => _hintLevel++),
               icon: const Icon(Icons.lightbulb_outline),
               label: Text(_hintLevel == 0
                   ? 'Nápověda'
-                  : _hintLevel == 1
-                      ? 'První písmeno'
-                      : 'Hotovo'),
+                  : _hintLevel >= _maxHints(p)
+                      ? 'Hotovo'
+                      : _hintLevel == _maxHints(p) - 1
+                          ? 'První písmeno'
+                          : 'Počet písmen'),
             ),
           ),
           const SizedBox(width: 8),
           Expanded(
             child: OutlinedButton(
               key: const Key('reveal-button'),
-              onPressed: _reveal,
+              onPressed: _hintLevel >= _maxHints(p) ? _reveal : null,
               child: const Text('Ukázat řešení'),
             ),
           ),

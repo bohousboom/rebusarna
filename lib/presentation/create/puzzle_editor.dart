@@ -5,6 +5,7 @@ import '../../data/providers.dart';
 import '../../data/puzzle_repository.dart' show UploadImage;
 import '../../data/supabase_client.dart';
 import '../../data/user_image_store.dart';
+import '../../domain/languages.dart';
 import '../../domain/models/puzzle.dart';
 import '../../domain/models/word_type.dart';
 import '../../domain/puzzle_validation.dart';
@@ -248,12 +249,24 @@ class _PuzzleEditorState extends ConsumerState<PuzzleEditor> {
         ),
         if (_wordTypes.contains(WordType.foreign)) ...[
           const SizedBox(height: 8),
+          Wrap(
+            spacing: 8,
+            children: [
+              for (final (name, flag) in kLanguages)
+                ChoiceChip(
+                  label: Text('$flag $name'),
+                  selected: _language.text.trim().toLowerCase() == name,
+                  onSelected: (_) => setState(() => _language.text = name),
+                ),
+            ],
+          ),
           TextField(
             key: const Key('language-field'),
             controller: _language,
+            onChanged: (_) => setState(() {}),
             decoration: const InputDecoration(
               labelText: 'Z jakého jazyka *',
-              helperText: 'Např. angličtina. Hráč to uvidí v nápovědě.',
+              helperText: 'Vyber nahoře, nebo napiš jiný. Hráč to uvidí v nápovědě.',
             ),
           ),
         ],

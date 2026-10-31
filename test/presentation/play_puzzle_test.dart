@@ -93,6 +93,10 @@ void main() {
 
   testWidgets('ukázat řešení nepočítá jako uhodnuté', (tester) async {
     await _pump(tester);
+    await tester.tap(find.byKey(const Key('hint-button')));
+    await tester.pump();
+    await tester.tap(find.byKey(const Key('hint-button')));
+    await tester.pump();
     await tester.tap(find.byKey(const Key('reveal-button')));
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 800));
@@ -182,6 +186,10 @@ void main() {
     for (final k in ['share-button', 'tip-field', 'submit-button', 'reveal-button']) {
       expect(tester.getRect(find.byKey(Key(k))).bottom, lessThan(800), reason: k);
     }
+    await tester.tap(find.byKey(const Key('hint-button')));
+    await tester.pump();
+    await tester.tap(find.byKey(const Key('hint-button')));
+    await tester.pump();
     await tester.tap(find.byKey(const Key('reveal-button')));
     await tester.pump(const Duration(milliseconds: 800));
     expect(tester.getRect(find.byKey(const Key('next-button'))).bottom, lessThan(800));
