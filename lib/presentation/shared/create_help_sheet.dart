@@ -192,7 +192,7 @@ class _CodeBlockState extends State<_CodeBlock> {
         children: [
           SelectableText(
             widget.code,
-            style: TextStyle(fontFamily: 'monospace', fontSize: 13, color: scheme.onSurface),
+            style: TextStyle(fontSize: 13, height: 1.35, color: scheme.onSurface),
           ),
           Align(
             alignment: Alignment.centerRight,
