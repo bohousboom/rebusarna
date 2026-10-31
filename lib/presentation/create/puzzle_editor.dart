@@ -10,10 +10,13 @@ import '../../domain/models/puzzle.dart';
 import '../../domain/models/word_type.dart';
 import '../../domain/puzzle_validation.dart';
 import '../../domain/text_logic.dart';
+import '../shared/create_help_sheet.dart';
 import '../shared/puzzle_card.dart';
 import '../shared/puzzle_thumb.dart';
 
 /// Formulář rébusu: vytvoření nového ([editing] == null) nebo úprava vlastního.
+const _helpHintSeenKey = 'create_help_hint_seen';
+
 class PuzzleEditor extends ConsumerStatefulWidget {
   const PuzzleEditor({super.key, this.editing, required this.onSaved, this.title});
 
@@ -40,6 +43,24 @@ class _PuzzleEditorState extends ConsumerState<PuzzleEditor> {
   bool _saving = false;
 
   bool get _isEdit => widget.editing != null;
+
+  @override
+  void initState() {
+    super.initState();
+    if (!_isEdit) WidgetsBinding.instance.addPostFrameCallback((_) => _maybeShowHint());
+  }
+
+  /// Při prvním otevření jednou upozorní na nápovědu „?“.
+  Future<void> _maybeShowHint() async {
+    final prefs = ref.read(sharedPreferencesProvider);
+    if (!mounted || prefs.getBool(_helpHintSeenKey) == true) return;
+    await prefs.setBool(_helpHintSeenKey, true);
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      content: const Text('Nevíš, jak na to? Klepni na ?'),
+      action: SnackBarAction(label: 'Ukázat', onPressed: () => showCreateHelp(context)),
+    ));
+  }
 
   /// Cesta k obrázku pro náhled: nově vybraný, nebo stávající.
   String? get _previewImage => _picked?.path ?? widget.editing?.image;
@@ -189,6 +210,7 @@ class _PuzzleEditorState extends ConsumerState<PuzzleEditor> {
           onChanged: (_) => setState(() {}),
           decoration: const InputDecoration(
             labelText: 'Řešení *',
+            suffixIcon: HelpIconButton(sectionPrefix: formHelpSection),
           ),
         ),
         if (duplicates.isNotEmpty)
@@ -221,14 +243,22 @@ class _PuzzleEditorState extends ConsumerState<PuzzleEditor> {
         SwitchListTile(
           key: const Key('plusminus-switch'),
           contentPadding: EdgeInsets.zero,
-          title: const Text('Štítek ±'),
+          title: const Row(children: [
+            Flexible(child: Text('Štítek ±')),
+            HelpIconButton(sectionPrefix: formHelpSection),
+          ]),
           subtitle: const Text('Zapni, když se řešení píše jinak, než se vyslovuje.'),
           value: _plusMinus,
           onChanged: (v) => setState(() => _plusMinus = v),
         ),
         const SizedBox(height: 16),
-        Text('Druh slova (můžeš vybrat i více)', style: Theme.of(context).textTheme.labelLarge),
-        const SizedBox(height: 4),
+        Row(children: [
+          Flexible(
+            child: Text('Druh slova (můžeš vybrat i více)',
+                style: Theme.of(context).textTheme.labelLarge),
+          ),
+          const HelpIconButton(sectionPrefix: formHelpSection),
+        ]),
         Wrap(
           spacing: 8,
           children: [
@@ -271,8 +301,10 @@ class _PuzzleEditorState extends ConsumerState<PuzzleEditor> {
           ),
         ],
         const SizedBox(height: 16),
-        Text('Obtížnost', style: Theme.of(context).textTheme.labelLarge),
-        const SizedBox(height: 4),
+        Row(children: [
+          Text('Obtížnost', style: Theme.of(context).textTheme.labelLarge),
+          const HelpIconButton(sectionPrefix: formHelpSection),
+        ]),
         SegmentedButton<int>(
           showSelectedIcon: false,
           segments: const [
