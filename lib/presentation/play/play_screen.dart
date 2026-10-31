@@ -490,10 +490,15 @@ class _PuzzlePageState extends ConsumerState<PuzzlePage>
           ),
           const SizedBox(width: 8),
           Expanded(
-            child: OutlinedButton(
-              key: const Key('reveal-button'),
-              onPressed: _hintLevel >= _maxHints(p) ? _reveal : null,
-              child: const Text('Ukázat řešení'),
+            child: Tooltip(
+              message: _hintLevel >= _maxHints(p)
+                  ? 'Tak jo, vzdát se můžeš. Mozek ti to ale nezapomene. 🙈'
+                  : 'Hola hola, takhle zlehka to nepůjde! Nejdřív vyždímej všechny nápovědy. 🕵️',
+              child: OutlinedButton(
+                key: const Key('reveal-button'),
+                onPressed: _hintLevel >= _maxHints(p) ? _reveal : null,
+                child: const Text('Ukázat řešení'),
+              ),
             ),
           ),
         ],
