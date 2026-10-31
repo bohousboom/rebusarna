@@ -235,6 +235,7 @@ class PuzzlePage extends ConsumerStatefulWidget {
 class _PuzzlePageState extends ConsumerState<PuzzlePage>
     with AutomaticKeepAliveClientMixin {
   final _tip = TextEditingController();
+  final _controlsKey = GlobalKey();
   int _hintLevel = 0;
   int _wrongCount = 0;
   bool _wrong = false;
@@ -379,6 +380,10 @@ class _PuzzlePageState extends ConsumerState<PuzzlePage>
       ],
     );
 
+    // Při zobrazení klávesnice se přepne rozvržení níže; GlobalKey zachová
+    // pole i jeho fokus, jinak by se klávesnice hned zavřela.
+    final controlsKeyed = KeyedSubtree(key: _controlsKey, child: controls);
+
     // Klepnutí kamkoli zruší automatický přechod na další kartu.
     return Listener(
       behavior: HitTestBehavior.translucent,
@@ -393,7 +398,7 @@ class _PuzzlePageState extends ConsumerState<PuzzlePage>
               children: [
                 Center(child: _card(200)),
                 const SizedBox(height: 12),
-                controls,
+                controlsKeyed,
               ],
             ),
           );
@@ -417,7 +422,7 @@ class _PuzzlePageState extends ConsumerState<PuzzlePage>
               const SizedBox(height: 8),
               ConstrainedBox(
                 constraints: BoxConstraints(maxHeight: c.maxHeight * 0.6),
-                child: SingleChildScrollView(child: controls),
+                child: SingleChildScrollView(child: controlsKeyed),
               ),
             ],
           ),
