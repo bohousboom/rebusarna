@@ -46,3 +46,10 @@ app.*.map.json
 
 # Widget Preview related
 .widget_preview/
+
+# Android podpis (nikdy do gitu)
+android/key.properties
+*.jks
+*.keystore
+ZALOHA_KLICE.txt
+*.apk

@@ -21,3 +21,7 @@ const String kShareBaseUrl = String.fromEnvironment(
   'SHARE_BASE_URL',
   defaultValue: 'https://rebusarna.vercel.app',
 );
+
+/// Odkaz ke stažení Android APK (nejnovější GitHub Release).
+const String kAndroidApkUrl =
+    'https://github.com/bohousboom/rebusarna/releases/latest/download/rebusarna.apk';

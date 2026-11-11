@@ -9,6 +9,7 @@ import '../../domain/text_logic.dart';
 import '../../data/supabase_client.dart';
 import '../shared/account_bar.dart';
 import '../shared/difficulty_dialog.dart';
+import 'android_download_card.dart';
 import 'import_builtin_card.dart';
 import 'new_puzzles_screen.dart';
 import 'reports_screen.dart';
@@ -101,6 +102,7 @@ class MineScreen extends ConsumerWidget {
                     const ImportBuiltInCard(),
                     const ReportsCard(),
                     const NewPuzzlesCard(),
+                    const AndroidDownloadCard(),
                     if (userId != null)
                       Builder(builder: (context) {
                         final likes = (puzzles.value ?? const <Puzzle>[])
