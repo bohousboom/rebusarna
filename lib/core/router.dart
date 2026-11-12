@@ -13,6 +13,18 @@ import '../presentation/shared/app_shell.dart';
 
 GoRouter buildRouter() => GoRouter(
       initialLocation: '/play',
+      // Návrat z Google přihlášení přijde jako deep link cz.rebusarna://login-callback?code=…
+      // Token si zpracuje Supabase sám; router pro něj nemá stránku, tak by
+      // ukázal chybu. Přesměrujeme na hlavní obrazovku.
+      redirect: (context, state) {
+        final uri = state.uri;
+        if (uri.scheme == 'cz.rebusarna' ||
+            uri.host == 'login-callback' ||
+            uri.path.contains('login-callback')) {
+          return '/play';
+        }
+        return null;
+      },
       routes: [
         GoRoute(path: '/new', builder: (_, _) => const NewPuzzlesScreen()),
         GoRoute(path: '/download', builder: (_, _) => const DownloadScreen()),
