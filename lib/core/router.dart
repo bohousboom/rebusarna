@@ -1,6 +1,7 @@
 import 'package:go_router/go_router.dart';
 
 import '../presentation/create/create_screen.dart';
+import '../presentation/download/download_screen.dart';
 import '../presentation/mine/likes_screen.dart';
 import '../presentation/mine/mine_screen.dart';
 import '../presentation/mine/new_puzzles_screen.dart';
@@ -14,7 +15,8 @@ GoRouter buildRouter() => GoRouter(
       initialLocation: '/play',
       routes: [
         GoRoute(path: '/new', builder: (_, _) => const NewPuzzlesScreen()),
-        GoRoute(path: '/likes', builder: (_, _) => const LikesScreen()),
+        GoRoute(path: '/download', builder: (_, _) => const DownloadScreen()),
+        GoRoute(path: '/likes',builder: (_, _) => const LikesScreen()),
         GoRoute(path: '/reports', builder: (_, _) => const ReportsScreen()),
         GoRoute(
           path: '/puzzle/:id',

@@ -25,3 +25,7 @@ const String kShareBaseUrl = String.fromEnvironment(
 /// Odkaz ke stažení Android APK (nejnovější GitHub Release).
 const String kAndroidApkUrl =
     'https://github.com/bohousboom/rebusarna/releases/latest/download/rebusarna.apk';
+
+/// Odkaz ke stažení iOS aplikace (App Store / TestFlight). Prázdný = tlačítko je zatím neaktivní.
+/// Nastavit při sestavení: --dart-define=IOS_APP_URL=https://apps.apple.com/...
+const String kIosAppUrl = String.fromEnvironment('IOS_APP_URL');

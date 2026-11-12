@@ -22,8 +22,17 @@
 
   <!-- iOS meta tags & icons -->
   <meta name="mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black">
-  <meta name="apple-mobile-web-app-title" content="rebusarna">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="Rébusárna">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#FBF8FF" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#121318" media="(prefers-color-scheme: dark)">
+  <style>
+    /* Barva pod průhledným stavovým řádkem iOS = barva aplikace (jinak je vidět rozmazaný přechod). */
+    html, body { margin: 0; background: #FBF8FF; }
+    @media (prefers-color-scheme: dark) { html, body { background: #121318; } }
+  </style>
   <link rel="apple-touch-icon" href="icons/Icon-192.png">
 
   <!-- Favicon -->
