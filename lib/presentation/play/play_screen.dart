@@ -14,6 +14,7 @@ import '../../domain/feed_plan.dart';
 import '../../domain/hints.dart';
 import '../../domain/languages.dart';
 import '../../domain/models/puzzle.dart';
+import '../../domain/models/puzzle_category.dart';
 import '../../domain/text_logic.dart';
 import '../shared/difficulty_dialog.dart';
 import '../shared/help_dialog.dart';
@@ -24,10 +25,14 @@ import 'puzzle_actions.dart';
 /// Pořadí feedu: nevyřešené první (podle nastavené obtížnosti), potom vyřešené.
 /// Statistiky a postup se čtou jen jednou, aby se feed neposouval během hraní.
 final feedProvider = FutureProvider<List<Puzzle>>((ref) async {
-  final all = visiblePuzzles(
-    await ref.watch(puzzlesProvider.future),
-    showAdult: ref.watch(showAdultProvider),
-  );
+  final category = ref.watch(selectedCategoryProvider);
+  final all = [
+    for (final p in visiblePuzzles(
+      await ref.watch(puzzlesProvider.future),
+      showAdult: ref.watch(showAdultProvider),
+    ))
+      if (category == null || p.categoryId == category) p,
+  ];
   final setting = ref.watch(difficultySettingProvider);
   final stats = await ref.read(difficultyStatsProvider.future);
   final solved = ref.read(progressProvider).solved;
@@ -42,6 +47,25 @@ final feedProvider = FutureProvider<List<Puzzle>>((ref) async {
     },
     mix: setting.mixFor(solvedCount: solved.length),
   );
+});
+
+/// Kolik rébusů hráč uhodl (bez ohledu na vybranou sadu).
+final solvedCountProvider = Provider<int>((ref) {
+  final all = ref.watch(puzzlesProvider).value;
+  if (all == null) return 0;
+  final solved = ref.watch(progressProvider.select((p) => p.solved));
+  final visible = visiblePuzzles(all, showAdult: ref.watch(showAdultProvider));
+  return visible.where((p) => solved.contains(p.id)).length;
+});
+
+/// Sady, ve kterých je aspoň jeden zobrazitelný rébus (prázdné se v nabídce neukazují).
+final availableCategoriesProvider = Provider<List<PuzzleCategory>>((ref) {
+  final all = ref.watch(puzzlesProvider).value ?? const <Puzzle>[];
+  final used = {
+    for (final p in visiblePuzzles(all, showAdult: ref.watch(showAdultProvider))) p.categoryId,
+  };
+  final cats = ref.watch(categoriesProvider).value ?? PuzzleCategory.builtIn;
+  return [for (final c in cats) if (used.contains(c.id)) c];
 });
 
 class PlayScreen extends ConsumerStatefulWidget {
@@ -92,8 +116,13 @@ class _PlayScreenState extends ConsumerState<PlayScreen> {
       setState(() => _index = 0);
       if (_pages.hasClients) _pages.jumpToPage(0);
     });
+    // Jiná sada = nový seznam: začít znovu od první karty.
+    ref.listen(selectedCategoryProvider, (_, _) {
+      setState(() => _index = 0);
+      if (_pages.hasClients) _pages.jumpToPage(0);
+    });
     final feed = ref.watch(feedProvider);
-    final solved = ref.watch(progressProvider.select((p) => p.solved));
+    final solvedCount = ref.watch(solvedCountProvider);
     final list = feed.value;
     final current = list != null && _index < list.length ? list[_index] : null;
     final perms = PuzzlePermissions.of(ref, current);
@@ -106,20 +135,18 @@ class _PlayScreenState extends ConsumerState<PlayScreen> {
               const StreakFlame(),
               const SizedBox(width: 8),
               Tooltip(
-                message: 'Uhodnuto / všech rébusů',
+                message: 'Uhodnuté rébusy',
                 triggerMode: TooltipTriggerMode.tap,
                 child: Chip(
                   key: const Key('solved-count'),
                   avatar: const Icon(Icons.check_circle, color: Colors.green, size: 18),
                   visualDensity: VisualDensity.compact,
                   materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                  label: Text(feed.maybeWhen(
-                    data: (l) =>
-                        '${l.where((p) => solved.contains(p.id)).length} / ${l.length}',
-                    orElse: () => '',
-                  )),
+                  label: Text('$solvedCount'),
                 ),
               ),
+              const SizedBox(width: 8),
+              const _CategoryPicker(),
               const Spacer(),
               PopupMenuButton<_Menu>(
                 key: const Key('more-menu'),
@@ -193,6 +220,74 @@ class _PlayScreenState extends ConsumerState<PlayScreen> {
   }
 }
 
+const _allCategories = 'all';
+
+/// Výběr sady v horní liště: „Všechny“ nebo jedna sada.
+class _CategoryPicker extends ConsumerWidget {
+  const _CategoryPicker();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final selectedId = ref.watch(selectedCategoryProvider);
+    final available = ref.watch(availableCategoriesProvider);
+    final selected = selectedId == null
+        ? null
+        : categoryOf(ref.watch(categoriesProvider).value, selectedId);
+    final scheme = Theme.of(context).colorScheme;
+    return Flexible(
+      child: PopupMenuButton<Object>(
+        key: const Key('category-picker'),
+        tooltip: 'Vybrat sadu rébusů',
+        initialValue: selectedId ?? _allCategories,
+        onSelected: (c) => ref
+            .read(selectedCategoryProvider.notifier)
+            .set(c is PuzzleCategory ? c.id : null),
+        itemBuilder: (_) => [
+          const PopupMenuItem<Object>(
+            key: Key('category-all'),
+            value: _allCategories,
+            child: Text('Všechny sady'),
+          ),
+          for (final c in available)
+            PopupMenuItem<Object>(
+              key: Key('category-${c.id}'),
+              value: c,
+              child: Row(children: [
+                Icon(c.icon, size: 20),
+                const SizedBox(width: 10),
+                Flexible(child: Text(c.label)),
+              ]),
+            ),
+        ],
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+          decoration: BoxDecoration(
+            color: selected == null ? null : scheme.primaryContainer,
+            border: Border.all(color: scheme.outlineVariant),
+            borderRadius: BorderRadius.circular(16),
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(selected?.icon ?? Icons.apps, size: 18),
+              const SizedBox(width: 6),
+              Flexible(
+                child: Text(
+                  selected?.label ?? 'Všechny',
+                  key: const Key('category-label'),
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(fontSize: 13),
+                ),
+              ),
+              const Icon(Icons.arrow_drop_down, size: 20),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
 class _EndPage extends StatelessWidget {
   const _EndPage();
 
@@ -208,6 +303,18 @@ class _EndPage extends StatelessWidget {
           ),
         ),
       );
+}
+
+enum _Hint {
+  category('Sada'),
+  language('Jazyk'),
+  count('Počet písmen'),
+  first('První písmeno');
+
+  const _Hint(this.nextLabel);
+
+  /// Popisek tlačítka, když je tento krok na řadě.
+  final String nextLabel;
 }
 
 enum _Status { playing, solved, revealed }
@@ -332,10 +439,29 @@ class _PuzzlePageState extends ConsumerState<PuzzlePage>
     });
   }
 
+  PuzzleCategory _category(Puzzle p) =>
+      categoryOf(ref.read(categoriesProvider).value, p.categoryId);
+
   bool _hasLanguage(Puzzle p) => p.language?.isNotEmpty ?? false;
 
-  /// Počet kroků nápovědy: jazyk (jen u cizího jazyka), počet písmen, první písmeno.
-  int _maxHints(Puzzle p) => _hasLanguage(p) ? 3 : 2;
+  /// Kroky nápovědy po řadě: sada (kromě „Ostatní“), jazyk (jen u cizího jazyka),
+  /// počet písmen, první písmeno.
+  List<_Hint> _hints(Puzzle p) => [
+        if (_category(p).isInformative) _Hint.category,
+        if (_hasLanguage(p)) _Hint.language,
+        _Hint.count,
+        _Hint.first,
+      ];
+
+  int _maxHints(Puzzle p) => _hints(p).length;
+
+  /// Kolik kroků před počtem písmen je textových (sada, jazyk).
+  int _textHints(Puzzle p) => _maxHints(p) - 2;
+
+  bool _hintShown(Puzzle p, _Hint h) {
+    final i = _hints(p).indexOf(h);
+    return i >= 0 && _hintLevel > i;
+  }
 
   Widget _card(double height) {
     final p = widget.puzzle;
@@ -367,7 +493,17 @@ class _PuzzlePageState extends ConsumerState<PuzzlePage>
     final controls = Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        if (_hintLevel > 0 && playing && _hasLanguage(p))
+        if (playing && _hintShown(p, _Hint.category))
+          Padding(
+            padding: const EdgeInsets.only(bottom: 4),
+            child: Text(
+              'Slovo patří do sady: ${_category(p).label}',
+              key: const Key('hint-category'),
+              textAlign: TextAlign.center,
+              style: const TextStyle(fontWeight: FontWeight.w600),
+            ),
+          ),
+        if (playing && _hintShown(p, _Hint.language))
           Padding(
             padding: const EdgeInsets.only(bottom: 4),
             child: Text(
@@ -377,11 +513,11 @@ class _PuzzlePageState extends ConsumerState<PuzzlePage>
               style: const TextStyle(fontWeight: FontWeight.w600),
             ),
           ),
-        if (_hintLevel > (_hasLanguage(p) ? 1 : 0) && playing)
+        if (_hintLevel > _textHints(p) && playing)
           Padding(
             padding: const EdgeInsets.only(bottom: 8),
             child: Text(
-              hintMask(p.solution, _hintLevel - (_hasLanguage(p) ? 1 : 0)),
+              hintMask(p.solution, _hintLevel - _textHints(p)),
               key: const Key('hint-text'),
               textAlign: TextAlign.center,
               style: const TextStyle(
@@ -483,9 +619,7 @@ class _PuzzlePageState extends ConsumerState<PuzzlePage>
                   ? 'Nápověda'
                   : _hintLevel >= _maxHints(p)
                       ? 'Hotovo'
-                      : _hintLevel == _maxHints(p) - 1
-                          ? 'První písmeno'
-                          : 'Počet písmen'),
+                      : _hints(p)[_hintLevel].nextLabel),
             ),
           ),
           const SizedBox(width: 8),
@@ -564,6 +698,23 @@ class _PuzzlePageState extends ConsumerState<PuzzlePage>
                     padding: const EdgeInsets.only(top: 2),
                     child: Text(p.meaning!,
                         textAlign: TextAlign.center, style: TextStyle(color: fg)),
+                  ),
+                if (_category(p).isInformative)
+                  Padding(
+                    padding: const EdgeInsets.only(top: 4),
+                    child: Row(
+                      key: const Key('category-chip'),
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(_category(p).icon, size: 14, color: fg.withValues(alpha: 0.85)),
+                        const SizedBox(width: 4),
+                        Text(
+                          _category(p).label,
+                          style: TextStyle(
+                              fontSize: 12.5, color: fg.withValues(alpha: 0.85)),
+                        ),
+                      ],
+                    ),
                   ),
                 if (hasExplanation) ...[
                   TextButton.icon(

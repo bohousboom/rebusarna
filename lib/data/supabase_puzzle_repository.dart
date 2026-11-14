@@ -4,6 +4,7 @@ import 'package:flutter/services.dart' show rootBundle;
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../domain/models/puzzle.dart';
+import '../domain/models/puzzle_category.dart';
 import '../domain/models/word_type.dart';
 import '../domain/text_logic.dart';
 import 'puzzle_repository.dart';
@@ -118,6 +119,7 @@ class SupabasePuzzleRepository implements PuzzleRepository {
       'meaning': puzzle.meaning,
       'explanation': puzzle.explanation,
       'language': puzzle.language,
+      'category': puzzle.categoryId,
       'word_type': puzzle.wordType.name,
       'word_types': [for (final t in puzzle.wordTypes) t.name],
       'difficulty': puzzle.difficulty,
@@ -220,6 +222,7 @@ class SupabasePuzzleRepository implements PuzzleRepository {
         'meaning': p.meaning,
         'explanation': p.explanation,
         'language': p.language,
+        'category': p.categoryId,
         'word_type': p.wordType.name,
         'word_types': [for (final t in p.wordTypes) t.name],
         'difficulty': p.difficulty,
@@ -245,6 +248,7 @@ class SupabasePuzzleRepository implements PuzzleRepository {
         meaning: r['meaning'] as String?,
         explanation: r['explanation'] as String?,
         language: r['language'] as String?,
+        categoryId: r['category'] as String? ?? PuzzleCategory.otherId,
         wordTypes: WordType.listFrom(r['word_types'], r['word_type'] as String?),
         difficulty: (r['difficulty'] as num?)?.toInt() ?? 1,
         authorName: r['author_name'] as String? ?? 'Anonym',

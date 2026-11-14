@@ -5,6 +5,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../domain/feed_plan.dart';
 import '../domain/models/puzzle.dart';
+import '../domain/models/puzzle_category.dart';
+import 'category_repository.dart';
 import 'local_puzzle_repository.dart';
 import 'player_progress.dart';
 import 'puzzle_repository.dart';
@@ -29,6 +31,29 @@ final puzzleRepositoryProvider = Provider<PuzzleRepository>((ref) {
 final puzzlesProvider = FutureProvider<List<Puzzle>>(
   (ref) => ref.watch(puzzleRepositoryProvider).getAll(),
 );
+
+final categoryRepositoryProvider =
+    Provider<CategoryRepository>((ref) => CategoryRepository(ref.watch(supabaseClientProvider)));
+
+/// Všechny sady rébusů (ze serveru, jinak základní sada).
+final categoriesProvider = FutureProvider<List<PuzzleCategory>>(
+  (ref) => ref.watch(categoryRepositoryProvider).getAll(),
+);
+
+/// Sada podle id; neznámé id (smazaná/chybějící) = „Ostatní“.
+PuzzleCategory categoryOf(List<PuzzleCategory>? all, String id) =>
+    (all ?? PuzzleCategory.builtIn).where((c) => c.id == id).firstOrNull ?? PuzzleCategory.other;
+
+/// Id vybrané sady ve hře; null = všechny. Drží se jen do zavření aplikace.
+class SelectedCategoryNotifier extends Notifier<String?> {
+  @override
+  String? build() => null;
+
+  void set(String? id) => state = id;
+}
+
+final selectedCategoryProvider =
+    NotifierProvider<SelectedCategoryNotifier, String?>(SelectedCategoryNotifier.new);
 
 const _kShowAdult = 'show_adult';
 

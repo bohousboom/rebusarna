@@ -7,6 +7,7 @@ import '../../data/supabase_client.dart';
 import '../../data/user_image_store.dart';
 import '../../domain/languages.dart';
 import '../../domain/models/puzzle.dart';
+import '../../domain/models/puzzle_category.dart';
 import '../../domain/models/word_type.dart';
 import '../../domain/puzzle_validation.dart';
 import '../../domain/text_logic.dart';
@@ -36,6 +37,7 @@ class _PuzzleEditorState extends ConsumerState<PuzzleEditor> {
   late final _author = TextEditingController(text: widget.editing?.authorName);
   PickedImage? _picked;
   late List<WordType> _wordTypes = [...(widget.editing?.wordTypes ?? const [WordType.noun])];
+  late String _category = widget.editing?.categoryId ?? PuzzleCategory.otherId;
   late int _difficulty = widget.editing?.difficulty ?? 1;
   late bool _adult = widget.editing?.adult ?? false;
   late bool _plusMinus = widget.editing?.plusMinus ?? false;
@@ -114,6 +116,7 @@ class _PuzzleEditorState extends ConsumerState<PuzzleEditor> {
       meaning: meaning.isEmpty ? null : meaning,
       explanation: explanation.isEmpty ? null : explanation,
       language: isForeign ? _language.text.trim() : null,
+      categoryId: _category,
       wordTypes: _wordTypes,
       difficulty: _difficulty,
       adult: _adult,
@@ -149,6 +152,7 @@ class _PuzzleEditorState extends ConsumerState<PuzzleEditor> {
         _explanation.clear();
         _language.clear();
         _wordTypes = [WordType.noun];
+        _category = PuzzleCategory.otherId;
         _difficulty = 1;
         _adult = false;
         _plusMinus = false;
@@ -167,6 +171,35 @@ class _PuzzleEditorState extends ConsumerState<PuzzleEditor> {
     final mine = all.where((p) =>
         p.id.startsWith('user-') || (userId != null && p.ownerId == userId));
     return ownDuplicates(mine.toList(), _solution.text, exceptId: widget.editing?.id);
+  }
+
+  Widget _categoryField() {
+    final cats = ref.watch(categoriesProvider).value ?? PuzzleCategory.builtIn;
+    // sada rébusu, která už v seznamu není: ať se dá dál vybrat
+    final items = cats.any((c) => c.id == _category)
+        ? cats
+        : [...cats, PuzzleCategory(_category, _category)];
+    return DropdownButtonFormField<String>(
+      key: ValueKey('category-field-$_category'),
+      initialValue: _category,
+      isExpanded: true,
+      decoration: const InputDecoration(
+        labelText: 'Sada (téma)',
+        helperText: 'Hráč ji uvidí v nápovědě a po vyřešení.',
+      ),
+      items: [
+        for (final c in items)
+          DropdownMenuItem(
+            value: c.id,
+            child: Row(children: [
+              Icon(c.icon, size: 20),
+              const SizedBox(width: 10),
+              Flexible(child: Text(c.label, overflow: TextOverflow.ellipsis)),
+            ]),
+          ),
+      ],
+      onChanged: (c) => setState(() => _category = c ?? PuzzleCategory.otherId),
+    );
   }
 
   @override
@@ -300,6 +333,8 @@ class _PuzzleEditorState extends ConsumerState<PuzzleEditor> {
             ),
           ),
         ],
+        const SizedBox(height: 16),
+        _categoryField(),
         const SizedBox(height: 16),
         Row(children: [
           Text('Obtížnost', style: Theme.of(context).textTheme.labelLarge),

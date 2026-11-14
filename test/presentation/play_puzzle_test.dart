@@ -52,14 +52,14 @@ void main() {
     expect(find.byKey(const Key('badge-wordtype')), findsOneWidget);
     expect(find.byTooltip('Druh slova: sloveso'), findsOneWidget);
     expect(find.byTooltip('Obtížnost: střední (barva štítku)'), findsOneWidget);
-    expect(_count(tester), '0 / 1');
+    expect(_count(tester), '0');
 
     // špatný tip
     await tester.enterText(find.byKey(const Key('tip-field')), 'zranit');
     await tester.tap(find.byKey(const Key('submit-button')));
     await tester.pump();
     expect(find.text('Zkus to znovu'), findsOneWidget);
-    expect(_count(tester), '0 / 1');
+    expect(_count(tester), '0');
 
     // nápověda: 1. klik počet písmen, 2. klik první písmeno
     await tester.tap(find.byKey(const Key('hint-button')));
@@ -82,7 +82,7 @@ void main() {
     await tester.tap(find.byKey(const Key('explanation-toggle')));
     await tester.pump();
     expect(find.text('Vysvětlení: pór + a + nit'), findsOneWidget);
-    expect(_count(tester), '1 / 1');
+    expect(_count(tester), '1');
 
     // reset jednoho rébusu: vrátí se pole pro tip
     await tester.ensureVisible(find.byKey(const Key('reset-one-button')));
@@ -101,7 +101,7 @@ void main() {
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 800));
     expect(tester.widget<Text>(find.byKey(const Key('solution-text'))).data, 'poranit');
-    expect(_count(tester), '0 / 1');
+    expect(_count(tester), '0');
   });
 
   testWidgets('rébus 18+ se v hádání neukáže, dokud to uživatel nezapne', (tester) async {

@@ -1,4 +1,5 @@
 import '../text_logic.dart';
+import 'puzzle_category.dart';
 import 'word_type.dart';
 
 /// Cesta k vestavěným obrázkům (assets).
@@ -17,6 +18,7 @@ class Puzzle {
     this.meaning,
     this.explanation,
     this.language,
+    this.categoryId = PuzzleCategory.otherId,
     this.ownerId,
     this.adult = false,
     this.plusMinus = false,
@@ -37,6 +39,9 @@ class Puzzle {
 
   /// Z jakého jazyka řešení vzniká (u druhu „cizí jazyk“), např. „angličtina“.
   final String? language;
+
+  /// Id sady (téma) rébusu; názvy sad jsou v `categoriesProvider`.
+  final String categoryId;
 
   /// Id autora (Supabase uživatel); u vestavěných rébusů null.
   final String? ownerId;
@@ -70,6 +75,7 @@ class Puzzle {
         if (meaning != null) 'meaning': meaning,
         if (explanation != null) 'explanation': explanation,
         if (language != null) 'language': language,
+        if (categoryId != PuzzleCategory.otherId) 'category': categoryId,
         if (ownerId != null) 'ownerId': ownerId,
         if (adult) 'adult': true,
         if (plusMinus) 'plusMinus': true,
@@ -89,6 +95,7 @@ class Puzzle {
         meaning: json['meaning'] as String?,
         explanation: json['explanation'] as String?,
         language: json['language'] as String?,
+        categoryId: json['category'] as String? ?? PuzzleCategory.otherId,
         ownerId: json['ownerId'] as String?,
         adult: json['adult'] as bool? ?? false,
         // starší záznamy bez příznaku: odvodit z řešení
