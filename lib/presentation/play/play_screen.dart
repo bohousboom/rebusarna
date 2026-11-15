@@ -26,12 +26,17 @@ import 'puzzle_actions.dart';
 /// Statistiky a postup se čtou jen jednou, aby se feed neposouval během hraní.
 final feedProvider = FutureProvider<List<Puzzle>>((ref) async {
   final category = ref.watch(selectedCategoryProvider);
+  // Sady „jen na vyžádání“ se do výběru „Všechny sady“ nezahrnují.
+  final onDemand = {
+    for (final c in await ref.watch(categoriesProvider.future))
+      if (c.onDemand) c.id,
+  };
   final all = [
     for (final p in visiblePuzzles(
       await ref.watch(puzzlesProvider.future),
       showAdult: ref.watch(showAdultProvider),
     ))
-      if (category == null || p.categoryId == category) p,
+      if (category == null ? !onDemand.contains(p.categoryId) : p.categoryId == category) p,
   ];
   final setting = ref.watch(difficultySettingProvider);
   final stats = await ref.read(difficultyStatsProvider.future);

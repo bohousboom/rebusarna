@@ -5,31 +5,48 @@ import '../../data/providers.dart';
 import '../../data/supabase_client.dart';
 import '../../domain/models/puzzle_category.dart';
 
-/// Správce: seznam sad rébusů, nová sada a přejmenování. Ostatní hráči sady jen vybírají.
+/// Správce: seznam sad rébusů, nová sada, přejmenování a příznak „jen na vyžádání“. Ostatní hráči sady jen vybírají.
 class CategoriesCard extends ConsumerWidget {
   const CategoriesCard({super.key});
 
-  Future<String?> _askName(BuildContext context, {String? initial}) {
-    final controller = TextEditingController(text: initial);
-    return showDialog<String>(
+  /// Dialog s názvem a příznakem „jen na vyžádání“; null = zrušeno.
+  Future<({String name, bool onDemand})?> _askCategory(BuildContext context,
+      {PuzzleCategory? initial}) {
+    final controller = TextEditingController(text: initial?.label);
+    var onDemand = initial?.onDemand ?? false;
+    return showDialog<({String name, bool onDemand})>(
       context: context,
-      builder: (ctx) => AlertDialog(
-        title: Text(initial == null ? 'Nová sada' : 'Přejmenovat sadu'),
-        content: TextField(
-          key: const Key('category-name-field'),
-          controller: controller,
-          autofocus: true,
-          maxLength: 40,
-          decoration: const InputDecoration(labelText: 'Název sady'),
-          onSubmitted: (v) => Navigator.pop(ctx, v),
-        ),
-        actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Zrušit')),
-          FilledButton(
-            onPressed: () => Navigator.pop(ctx, controller.text),
-            child: Text(initial == null ? 'Přidat' : 'Uložit'),
+      builder: (ctx) => StatefulBuilder(
+        builder: (ctx, setState) => AlertDialog(
+          title: Text(initial == null ? 'Nová sada' : 'Upravit sadu'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextField(
+                key: const Key('category-name-field'),
+                controller: controller,
+                autofocus: true,
+                maxLength: 40,
+                decoration: const InputDecoration(labelText: 'Název sady'),
+              ),
+              SwitchListTile(
+                key: const Key('category-on-demand-switch'),
+                contentPadding: EdgeInsets.zero,
+                title: const Text('Jen na vyžádání'),
+                subtitle: const Text('Nemíchat do „Všechny sady“, hraje se po výběru sady.'),
+                value: onDemand,
+                onChanged: (v) => setState(() => onDemand = v),
+              ),
+            ],
           ),
-        ],
+          actions: [
+            TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Zrušit')),
+            FilledButton(
+              onPressed: () => Navigator.pop(ctx, (name: controller.text, onDemand: onDemand)),
+              child: Text(initial == null ? 'Přidat' : 'Uložit'),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -75,16 +92,17 @@ class CategoriesCard extends ConsumerWidget {
                     ActionChip(
                       key: Key('category-chip-${c.id}'),
                       avatar: Icon(c.icon, size: 18),
-                      label: Text(c.label),
+                      label: Text(c.onDemand ? '${c.label} · na vyžádání' : c.label),
                       tooltip: c.id == PuzzleCategory.otherId
-                          ? 'Výchozí sadu nejde přejmenovat'
-                          : 'Přejmenovat',
+                          ? 'Výchozí sadu nejde upravit'
+                          : 'Upravit',
                       onPressed: c.id == PuzzleCategory.otherId
                           ? null
                           : () async {
-                              final name = await _askName(context, initial: c.label);
-                              if (name == null || !context.mounted) return;
-                              await _run(context, ref, () => repo.rename(c.id, name));
+                              final r = await _askCategory(context, initial: c);
+                              if (r == null || !context.mounted) return;
+                              await _run(context, ref,
+                                  () => repo.update(c.id, r.name, onDemand: r.onDemand));
                             },
                     ),
                 ],
@@ -93,10 +111,10 @@ class CategoriesCard extends ConsumerWidget {
               FilledButton.tonalIcon(
                 key: const Key('add-category-button'),
                 onPressed: () async {
-                  final name = await _askName(context);
-                  if (name == null || !context.mounted) return;
+                  final r = await _askCategory(context);
+                  if (r == null || !context.mounted) return;
                   await _run(context, ref, () async {
-                    await repo.add(name);
+                    await repo.add(r.name, onDemand: r.onDemand);
                   });
                 },
                 icon: const Icon(Icons.add),

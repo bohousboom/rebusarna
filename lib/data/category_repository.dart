@@ -20,6 +20,7 @@ class CategoryRepository {
             r['id'] as String,
             r['label'] as String,
             iconName: r['icon_name'] as String?,
+            onDemand: r['on_demand'] as bool? ?? false,
           ),
       ];
       return list.isEmpty ? PuzzleCategory.builtIn : PuzzleCategory.sorted(list);
@@ -35,12 +36,12 @@ class CategoryRepository {
   }
 
   /// Založí novou sadu; vrací její id. Chyba, když název nejde použít nebo už existuje.
-  Future<String> add(String label) async {
+  Future<String> add(String label, {bool onDemand = false}) async {
     final name = label.trim();
     final id = PuzzleCategory.idFromLabel(name);
     if (id.isEmpty) throw ArgumentError('Název sady musí obsahovat písmena nebo číslice.');
     try {
-      await _db.from('puzzle_categories').insert({'id': id, 'label': name});
+      await _db.from('puzzle_categories').insert({'id': id, 'label': name, 'on_demand': onDemand});
     } on PostgrestException catch (e) {
       if (e.code == '23505') throw StateError('Sada s tímto názvem už existuje.');
       rethrow;
@@ -48,11 +49,13 @@ class CategoryRepository {
     return id;
   }
 
-  Future<void> rename(String id, String label) async {
+  Future<void> update(String id, String label, {required bool onDemand}) async {
     final name = label.trim();
     if (name.isEmpty) throw ArgumentError('Název sady nesmí být prázdný.');
     try {
-      await _db.from('puzzle_categories').update({'label': name}).eq('id', id);
+      await _db
+          .from('puzzle_categories')
+          .update({'label': name, 'on_demand': onDemand}).eq('id', id);
     } on PostgrestException catch (e) {
       if (e.code == '23505') throw StateError('Sada s tímto názvem už existuje.');
       rethrow;

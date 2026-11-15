@@ -5,11 +5,15 @@ import 'package:flutter/material.dart' show IconData, Icons;
 /// Seznam sad je v databázi (tabulka `puzzle_categories`) a spravuje ho správce;
 /// [builtIn] je základní sada, která se používá i bez připojení k serveru.
 class PuzzleCategory {
-  const PuzzleCategory(this.id, this.label, {this.iconName});
+  const PuzzleCategory(this.id, this.label, {this.iconName, this.onDemand = false});
 
   /// Hodnota ve sloupci `category` (malá písmena, číslice, podtržítko).
   final String id;
   final String label;
+
+  /// Jen na vyžádání: rébusy sady se nemíchají do „Všechny sady“, hrají se
+  /// teprve po jejím výběru (např. filmy, táborové).
+  final bool onDemand;
 
   /// Název ikony z [_icons]; neznámý nebo prázdný = obecná ikona.
   final String? iconName;
