@@ -146,8 +146,7 @@ class _PlayScreenState extends ConsumerState<PlayScreen> {
                 ),
               ),
               const SizedBox(width: 8),
-              const _CategoryPicker(),
-              const Spacer(),
+              const Expanded(child: _CategoryPicker()),
               PopupMenuButton<_Menu>(
                 key: const Key('more-menu'),
                 tooltip: 'Další akce',
@@ -234,7 +233,8 @@ class _CategoryPicker extends ConsumerWidget {
         ? null
         : categoryOf(ref.watch(categoriesProvider).value, selectedId);
     final scheme = Theme.of(context).colorScheme;
-    return Flexible(
+    return Align(
+      alignment: Alignment.centerLeft,
       child: PopupMenuButton<Object>(
         key: const Key('category-picker'),
         tooltip: 'Vybrat sadu rébusů',
