@@ -30,7 +30,10 @@ class PuzzleThumb extends ConsumerWidget {
           ),
         ),
         clipBehavior: Clip.antiAlias,
-        child: Stack(
+        // Obsah se ořízne vnitřním poloměrem rámečku (14 − jeho šířka), ať jsou rohy obrázku stejné jako rámeček.
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(solved ? 11 : 13),
+          child: Stack(
           fit: StackFit.expand,
           children: [
             PuzzleImage(puzzle.image, fit: BoxFit.cover, cacheWidth: 360),
@@ -120,6 +123,7 @@ class PuzzleThumb extends ConsumerWidget {
                 ),
               ),
           ],
+        ),
         ),
       ),
     );
