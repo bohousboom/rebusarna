@@ -1,6 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:rebusarna/domain/models/puzzle.dart';
 import 'package:rebusarna/domain/models/puzzle_category.dart';
+import 'package:rebusarna/domain/models/word_type.dart';
 
 void main() {
   test('Ostatní není informativní, ostatní základní sady ano', () {
@@ -39,7 +40,7 @@ void main() {
       id: 'a',
       image: 'assets/images/a.webp',
       solution: 'Ananas',
-      wordTypes: const [],
+      wordTypes: const [WordType.noun],
       difficulty: 1,
       authorName: 'x',
       createdAt: DateTime(2026),
