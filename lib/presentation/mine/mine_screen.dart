@@ -24,16 +24,16 @@ class MineScreen extends ConsumerWidget {
     final ok = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('Resetovat postup?'),
+        title: const Text('Zapomenout a začít od nuly?'),
         content: const Text(
-            'Všechny uhodnuté rébusy se znovu skryjí. Oblíbené zůstanou.'),
+            'Všechna tvoje řešení i série se smažou a rébusy můžeš hádat znovu. Oblíbené zůstanou.'),
         actions: [
           TextButton(
               onPressed: () => Navigator.pop(ctx, false),
               child: const Text('Zrušit')),
           FilledButton(
               onPressed: () => Navigator.pop(ctx, true),
-              child: const Text('Resetovat')),
+              child: const Text('Zapomenout')),
         ],
       ),
     );
@@ -147,19 +147,15 @@ class MineScreen extends ConsumerWidget {
                       onChanged:
                           userId == null ? null : (v) => _toggleAdult(context, ref, v),
                     ),
-                    Align(
-                      alignment: Alignment.centerRight,
-                      child: Padding(
-                        padding: const EdgeInsets.only(right: 8),
-                        child: TextButton.icon(
-                          key: const Key('reset-all-button'),
-                          onPressed: progress.solved.isEmpty
-                              ? null
-                              : () => _confirmReset(context, ref),
-                          icon: const Icon(Icons.restart_alt),
-                          label: const Text('Resetovat postup'),
-                        ),
-                      ),
+                    ListTile(
+                      key: const Key('reset-all-button'),
+                      dense: true,
+                      enabled: progress.solved.isNotEmpty,
+                      leading: const Icon(Icons.restart_alt),
+                      title: const Text('Zapomenout a začít od nuly'),
+                      subtitle: const Text(
+                          'Smaže všechna řešení, rébusy můžeš hádat znovu'),
+                      onTap: () => _confirmReset(context, ref),
                     ),
                   ],
                 ),

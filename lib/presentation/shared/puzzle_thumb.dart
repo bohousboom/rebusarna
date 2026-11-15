@@ -105,7 +105,11 @@ class PuzzleThumb extends ConsumerWidget {
                 child: Container(
                   width: double.infinity,
                   padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 6),
-                  color: Colors.green.shade700,
+                  decoration: BoxDecoration(
+                    color: Colors.green.shade700,
+                    // Vnitřní poloměr zeleného rámečku karty: 14 (karta) − 3 (šířka rámečku).
+                    borderRadius: const BorderRadius.vertical(bottom: Radius.circular(11)),
+                  ),
                   child: Text(
                     puzzle.solution,
                     maxLines: 1,
