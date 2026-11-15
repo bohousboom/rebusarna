@@ -333,7 +333,7 @@
   "createdAt": "2026-01-01T00:00:00.000Z",
   "ratingSum": 0,
   "ratingCount": 0,
-  "category": "domov"
+  "category": "obleceni"
  },
  {
   "id": "seed-kalamita",
@@ -357,7 +357,7 @@
   "createdAt": "2026-01-01T00:00:00.000Z",
   "ratingSum": 0,
   "ratingCount": 0,
-  "category": "domov"
+  "category": "obleceni"
  },
  {
   "id": "seed-kopec-v1",
@@ -645,7 +645,7 @@
   "createdAt": "2026-01-01T00:00:00.000Z",
   "ratingSum": 0,
   "ratingCount": 0,
-  "category": "domov"
+  "category": "obleceni"
  },
  {
   "id": "seed-okurka",
@@ -765,7 +765,7 @@
   "createdAt": "2026-01-01T00:00:00.000Z",
   "ratingSum": 0,
   "ratingCount": 0,
-  "category": "domov"
+  "category": "obleceni"
  },
  {
   "id": "seed-pneumatika",
@@ -837,7 +837,7 @@
   "createdAt": "2026-01-01T00:00:00.000Z",
   "ratingSum": 0,
   "ratingCount": 0,
-  "category": "cinnosti"
+  "category": "other"
  },
  {
   "id": "seed-pohyby",
@@ -1160,7 +1160,7 @@
   "createdAt": "2026-01-01T00:00:00.000Z",
   "ratingSum": 0,
   "ratingCount": 0,
-  "category": "cinnosti"
+  "category": "other"
  },
  {
   "id": "seed-valet-v2",
@@ -1172,7 +1172,7 @@
   "createdAt": "2026-01-01T00:00:00.000Z",
   "ratingSum": 0,
   "ratingCount": 0,
-  "category": "cinnosti"
+  "category": "other"
  },
  {
   "id": "seed-valka",

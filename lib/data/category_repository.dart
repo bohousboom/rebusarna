@@ -22,7 +22,7 @@ class CategoryRepository {
             iconName: r['icon_name'] as String?,
           ),
       ];
-      return list.isEmpty ? PuzzleCategory.builtIn : list;
+      return list.isEmpty ? PuzzleCategory.builtIn : PuzzleCategory.sorted(list);
     } catch (_) {
       return PuzzleCategory.builtIn;
     }

@@ -111,7 +111,7 @@ const _kMineCollapsed = 'mine_header_collapsed';
 /// Sbalený horní panel v záložce Moje (víc místa na karty). Ukládá se v zařízení.
 class MineCollapsedNotifier extends Notifier<bool> {
   @override
-  bool build() => ref.read(sharedPreferencesProvider).getBool(_kMineCollapsed) ?? false;
+  bool build() => ref.read(sharedPreferencesProvider).getBool(_kMineCollapsed) ?? true;
 
   Future<void> toggle() async {
     state = !state;

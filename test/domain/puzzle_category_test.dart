@@ -17,6 +17,17 @@ void main() {
     }
   });
 
+  test('řazení: základní sady, Ostatní, nakonec vlastní sady', () {
+    final sorted = PuzzleCategory.sorted([
+      const PuzzleCategory('zzz', 'Vlastní B'),
+      PuzzleCategory.other,
+      const PuzzleCategory('aaa', 'Vlastní A'),
+      PuzzleCategory.builtIn.first,
+    ]);
+    expect([for (final c in sorted) c.id],
+        [PuzzleCategory.builtIn.first.id, 'other', 'aaa', 'zzz']);
+  });
+
   test('id z názvu nové sady: bez diakritiky a mezer', () {
     expect(PuzzleCategory.idFromLabel('Jídlo a pití'), 'jidlo_a_piti');
     expect(PuzzleCategory.idFromLabel('  Žluťoučký kůň! '), 'zlutoucky_kun');

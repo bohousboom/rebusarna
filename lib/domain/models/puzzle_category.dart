@@ -28,16 +28,34 @@ class PuzzleCategory {
     PuzzleCategory('priroda', 'Zvířata a příroda', iconName: 'pets'),
     PuzzleCategory('jidlo', 'Jídlo a pití', iconName: 'restaurant'),
     PuzzleCategory('domov', 'Domov a věci', iconName: 'chair_alt'),
+    PuzzleCategory('obleceni', 'Oblečení', iconName: 'checkroom'),
     PuzzleCategory('doprava', 'Doprava a technika', iconName: 'directions_car'),
     PuzzleCategory('lide', 'Lidé a povolání', iconName: 'groups'),
     PuzzleCategory('mista', 'Místa a stavby', iconName: 'home_work'),
     PuzzleCategory('kultura', 'Kultura a sport', iconName: 'theater_comedy'),
     PuzzleCategory('pohadky', 'Pohádky a fantasy', iconName: 'auto_awesome'),
     PuzzleCategory('veda', 'Věda a tělo', iconName: 'science'),
-    PuzzleCategory('cinnosti', 'Činnosti (slovesa)', iconName: 'directions_run'),
     PuzzleCategory('pojmy', 'Pojmy a čas', iconName: 'lightbulb_outline'),
     other,
   ];
+
+  /// Pořadí v nabídkách: základní sady podle [builtIn], potom „Ostatní“,
+  /// nakonec sady přidané správcem (podle názvu).
+  static List<PuzzleCategory> sorted(Iterable<PuzzleCategory> cats) {
+    final builtInIds = [for (final c in builtIn) c.id];
+    int rank(PuzzleCategory c) {
+      final i = builtInIds.indexOf(c.id);
+      if (c.id == otherId) return builtInIds.length;
+      return i >= 0 ? i : builtInIds.length + 1;
+    }
+
+    final list = cats.toList();
+    list.sort((a, b) {
+      final r = rank(a).compareTo(rank(b));
+      return r != 0 ? r : a.label.toLowerCase().compareTo(b.label.toLowerCase());
+    });
+    return list;
+  }
 
   /// Id z názvu nové sady: bez diakritiky, malá písmena, mezery a znaky jako „_“.
   /// Prázdný výsledek = název se nedá použít.
@@ -67,7 +85,7 @@ class PuzzleCategory {
     'theater_comedy': Icons.theater_comedy,
     'auto_awesome': Icons.auto_awesome,
     'science': Icons.science,
-    'directions_run': Icons.directions_run,
+    'checkroom': Icons.checkroom,
     'lightbulb_outline': Icons.lightbulb_outline,
     'more_horiz': Icons.more_horiz,
   };

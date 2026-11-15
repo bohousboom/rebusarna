@@ -92,23 +92,6 @@ class _PlayScreenState extends ConsumerState<PlayScreen> {
         curve: Curves.easeOut,
       );
 
-  void _onMenu(_Menu item, Puzzle? current) {
-    switch (item) {
-      case _Menu.report:
-        reportPuzzle(context, ref, current!);
-      case _Menu.download:
-        downloadImage(context, current!);
-      case _Menu.edit:
-        context.push('/puzzle/${current!.id}/edit');
-      case _Menu.delete:
-        confirmDeletePuzzle(context, ref, current!);
-      case _Menu.difficulty:
-        showDifficultyDialog(context);
-      case _Menu.help:
-        showHelpDialog(context);
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     // Nové pořadí po změně obtížnosti: začít znovu od první karty.
@@ -123,9 +106,6 @@ class _PlayScreenState extends ConsumerState<PlayScreen> {
     });
     final feed = ref.watch(feedProvider);
     final solvedCount = ref.watch(solvedCountProvider);
-    final list = feed.value;
-    final current = list != null && _index < list.length ? list[_index] : null;
-    final perms = PuzzlePermissions.of(ref, current);
     return Column(
       children: [
         Padding(
@@ -147,36 +127,6 @@ class _PlayScreenState extends ConsumerState<PlayScreen> {
               ),
               const SizedBox(width: 8),
               const _CategoryPicker(),
-              const Spacer(),
-              PopupMenuButton<_Menu>(
-                key: const Key('more-menu'),
-                tooltip: 'Další akce',
-                onSelected: (m) => _onMenu(m, current),
-                itemBuilder: (_) => [
-                  if (perms.canReport)
-                    const PopupMenuItem(
-                        key: Key('report-button'),
-                        value: _Menu.report,
-                        child: Text('Nahlásit')),
-                  if (perms.canDownload)
-                    const PopupMenuItem(
-                        key: Key('download-button'),
-                        value: _Menu.download,
-                        child: Text('Stáhnout obrázek')),
-                  if (perms.canEdit)
-                    const PopupMenuItem(
-                        key: Key('edit-button'), value: _Menu.edit, child: Text('Upravit')),
-                  if (perms.canDelete)
-                    const PopupMenuItem(
-                        key: Key('delete-button'), value: _Menu.delete, child: Text('Smazat')),
-                  const PopupMenuItem(
-                      key: Key('difficulty-button'),
-                      value: _Menu.difficulty,
-                      child: Text('Obtížnost')),
-                  const PopupMenuItem(
-                      key: Key('help-button'), value: _Menu.help, child: Text('Nápověda')),
-                ],
-              ),
             ],
           ),
         ),
@@ -215,6 +165,64 @@ class _PlayScreenState extends ConsumerState<PlayScreen> {
             },
           ),
         ),
+      ],
+    );
+  }
+}
+
+/// Nabídka ⋮ v rohu karty (nahlásit, stáhnout, upravit, smazat, obtížnost, nápověda).
+class _CardMenu extends ConsumerWidget {
+  const _CardMenu({required this.puzzle});
+
+  final Puzzle puzzle;
+
+  void _onMenu(BuildContext context, WidgetRef ref, _Menu item) {
+    switch (item) {
+      case _Menu.report:
+        reportPuzzle(context, ref, puzzle);
+      case _Menu.download:
+        downloadImage(context, puzzle);
+      case _Menu.edit:
+        context.push('/puzzle/${puzzle.id}/edit');
+      case _Menu.delete:
+        confirmDeletePuzzle(context, ref, puzzle);
+      case _Menu.difficulty:
+        showDifficultyDialog(context);
+      case _Menu.help:
+        showHelpDialog(context);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final perms = PuzzlePermissions.of(ref, puzzle);
+    return PopupMenuButton<_Menu>(
+      key: const Key('more-menu'),
+      tooltip: 'Další akce',
+      style: IconButton.styleFrom(backgroundColor: Colors.white70),
+      iconColor: Colors.black87,
+      onSelected: (m) => _onMenu(context, ref, m),
+      itemBuilder: (_) => [
+        if (perms.canReport)
+          const PopupMenuItem(
+              key: Key('report-button'), value: _Menu.report, child: Text('Nahlásit')),
+        if (perms.canDownload)
+          const PopupMenuItem(
+              key: Key('download-button'),
+              value: _Menu.download,
+              child: Text('Stáhnout obrázek')),
+        if (perms.canEdit)
+          const PopupMenuItem(
+              key: Key('edit-button'), value: _Menu.edit, child: Text('Upravit')),
+        if (perms.canDelete)
+          const PopupMenuItem(
+              key: Key('delete-button'), value: _Menu.delete, child: Text('Smazat')),
+        const PopupMenuItem(
+            key: Key('difficulty-button'),
+            value: _Menu.difficulty,
+            child: Text('Obtížnost')),
+        const PopupMenuItem(
+            key: Key('help-button'), value: _Menu.help, child: Text('Nápověda')),
       ],
     );
   }
@@ -296,7 +304,7 @@ class _EndPage extends StatelessWidget {
         child: Padding(
           padding: EdgeInsets.all(32),
           child: Text(
-            'To je zatím vše. Zkus změnit obtížnost (nabídka ⋮ vpravo nahoře) '
+            'To je zatím vše. Zkus změnit obtížnost (nabídka ⋮ v rohu karty) '
             'nebo vytvoř vlastní rébus v záložce Tvořit!',
             textAlign: TextAlign.center,
             style: TextStyle(fontSize: 18),
@@ -478,6 +486,7 @@ class _PuzzlePageState extends ConsumerState<PuzzlePage>
         favorite: fav,
         onFavorite: () => ref.read(progressProvider.notifier).toggleFavorite(p.id),
         onShare: () => sharePuzzle(context, p),
+        menu: _CardMenu(puzzle: p),
         highlight: _status == _Status.solved,
         onExpand: () => showPuzzleFullscreen(context, p.image),
       ),
