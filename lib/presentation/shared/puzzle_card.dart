@@ -71,7 +71,6 @@ class PuzzleCard extends StatelessWidget {
     this.adult = false,
     this.onExpand,
     this.onShare,
-    this.menu,
   });
 
   final String image;
@@ -81,9 +80,6 @@ class PuzzleCard extends StatelessWidget {
 
   /// Tlačítko sdílení odkazu na kartě (pod srdíčkem).
   final VoidCallback? onShare;
-
-  /// Nabídka akcí (⋮) v pravém horním rohu; srdíčko a sdílení jsou pod ní.
-  final Widget? menu;
 
   /// Zobrazit štítek ± (nastavuje autor).
   final bool plusMinus;
@@ -155,16 +151,10 @@ class PuzzleCard extends StatelessWidget {
               ],
             ),
           ),
-          if (menu != null)
-            Positioned(
-              right: 4,
-              top: 4,
-              child: SizedBox(width: 48, height: 48, child: menu),
-            ),
           if (favorite != null)
             Positioned(
               right: 4,
-              top: menu != null ? 56 : 4,
+              top: 4,
               child: IconButton(
                 key: const Key('favorite-button'),
                 tooltip: 'Oblíbené',
@@ -182,7 +172,7 @@ class PuzzleCard extends StatelessWidget {
           if (onShare != null)
             Positioned(
               right: 4,
-              top: 4 + (menu != null ? 52 : 0) + (favorite != null ? 52 : 0),
+              top: favorite != null ? 56 : 4,
               child: IconButton(
                 key: const Key('share-button'),
                 tooltip: 'Sdílet odkaz na rébus',
