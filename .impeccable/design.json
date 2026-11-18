@@ -1,0 +1,99 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-11-18T00:00:00Z",
+  "title": "Design System: Rébusárna",
+  "extensions": {
+    "colorMeta": {
+      "seed-indigo": { "role": "primary", "displayName": "Seed Indigo", "canonical": "#3F51B5", "tonalRamp": ["#0B1450","#1A2480","#2A3A9E","#3F51B5","#5C6BC0","#8C97D6","#C5CAE9","#E8EAF6"] },
+      "difficulty-easy-teal": { "role": "secondary", "displayName": "Easy Teal", "canonical": "#1ABC9C", "tonalRamp": ["#08352D","#0E5C4D","#13806B","#1ABC9C","#4CCDB3","#85DFCC","#BBEFE4","#E3F8F3"] },
+      "difficulty-medium-yellow": { "role": "secondary", "displayName": "Medium Yellow", "canonical": "#F1C40F", "tonalRamp": ["#403304","#695208","#917309","#F1C40F","#F4D03F","#F7DC6F","#FAE9A8","#FDF5D9"] },
+      "difficulty-hard-red": { "role": "secondary", "displayName": "Hard Red", "canonical": "#E74C3C", "tonalRamp": ["#4A120C","#7A1F15","#A83024","#E74C3C","#EC7063","#F1948A","#F6BDB7","#FBE3E0"] },
+      "card-white": { "role": "neutral", "displayName": "Card White", "canonical": "#FFFFFF", "tonalRamp": ["#1A1A1A","#444444","#6E6E6E","#9A9A9A","#C4C4C4","#E0E0E0","#F2F2F2","#FFFFFF"] }
+    },
+    "typographyMeta": {
+      "badge": { "displayName": "Badge", "purpose": "? and ± symbols on difficulty badges." },
+      "title": { "displayName": "Title", "purpose": "Dialog and sheet headings." },
+      "body": { "displayName": "Body", "purpose": "Prompts and explanations." },
+      "caption": { "displayName": "Caption", "purpose": "Thumbnails and fine print." }
+    },
+    "shadows": [
+      { "name": "card-lift", "value": "0 4px 10px rgba(0,0,0,0.26)", "purpose": "The only shadow: lifts the puzzle card off the surface." }
+    ],
+    "motion": [
+      { "name": "card-state", "value": "300ms", "purpose": "Card border and highlight changes." },
+      { "name": "fullscreen-fade", "value": "200ms", "purpose": "Fade into the full-screen image viewer." }
+    ],
+    "breakpoints": [
+      { "name": "min-supported", "value": "360px" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Puzzle Card",
+      "kind": "card",
+      "refersTo": "puzzle-card",
+      "description": "White framed mat holding the rébus image with a difficulty badge.",
+      "html": "<div class=\"ds-card\"><div class=\"ds-card-img\"></div><div class=\"ds-badge\"><span>?</span><span>±</span></div></div>",
+      "css": ".ds-card{position:relative;width:220px;height:220px;background:#fff;border:1px solid rgba(0,0,0,.12);border-radius:24px;padding:6px;box-shadow:0 4px 10px rgba(0,0,0,.26);box-sizing:border-box;transition:border-color .3s} .ds-card-img{width:100%;height:100%;border-radius:18px;background:#e8eaf6} .ds-badge{position:absolute;left:10px;top:10px;display:flex;gap:10px;padding:8px 12px;background:#1ABC9C;color:#fff;border-radius:12px;font:800 18px sans-serif}"
+    },
+    {
+      "name": "Difficulty Badge (medium)",
+      "kind": "chip",
+      "refersTo": "difficulty-badge",
+      "description": "Corner badge; fill encodes difficulty, symbols carry the clues.",
+      "html": "<div class=\"ds-badge-m\"><span>?</span><span>±</span></div>",
+      "css": ".ds-badge-m{display:inline-flex;gap:10px;padding:8px 12px;background:#F1C40F;color:rgba(0,0,0,.87);border-radius:12px;font:800 18px sans-serif}"
+    },
+    {
+      "name": "Adult Chip",
+      "kind": "chip",
+      "refersTo": "adult-chip",
+      "description": "18+ marker.",
+      "html": "<span class=\"ds-adult\">18+</span>",
+      "css": ".ds-adult{display:inline-block;padding:6px 8px;background:rgba(0,0,0,.87);color:#fff;border-radius:12px;font:800 14px sans-serif}"
+    },
+    {
+      "name": "Filled Button",
+      "kind": "button",
+      "refersTo": "button-filled",
+      "description": "Material 3 filled button, minimum 52px tall.",
+      "html": "<button class=\"ds-btn\">Další</button>",
+      "css": ".ds-btn{min-height:52px;min-width:48px;padding:0 24px;background:#3F51B5;color:#fff;border:0;border-radius:26px;font:500 16px sans-serif} .ds-btn:hover{background:#4A5CC4} .ds-btn:focus-visible{outline:3px solid #8C97D6;outline-offset:2px}"
+    },
+    {
+      "name": "Text Field",
+      "kind": "input",
+      "description": "Default Material outline field.",
+      "html": "<input class=\"ds-input\" placeholder=\"Tvůj tip\">",
+      "css": ".ds-input{height:52px;padding:0 16px;border:1px solid #79747E;border-radius:4px;font:400 16px sans-serif;box-sizing:border-box} .ds-input:focus-visible{outline:2px solid #3F51B5;border-color:#3F51B5}"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Puzzle Card Deck",
+    "overview": "Rébusárna is a pack of picture cards you flip through. Each rébus sits in a white, rounded card that takes the stage; everything around it is stock Material 3, tonal and quiet, generated from a single indigo seed (#3F51B5) in both light and dark. The mood is calm and focused: surfaces stay out of the way so the player can think, and saturated color appears only where it carries information.",
+    "keyCharacteristics": [
+      "Material 3 with ColorScheme.fromSeed (indigo #3F51B5), light and dark; no custom fonts.",
+      "The puzzle card is the signature: white mat, 24px corners, image inset 6px.",
+      "Difficulty is the only saturated color system; always paired with symbols and a text tooltip.",
+      "Large touch targets: buttons at least 52px tall, icon buttons 48px."
+    ],
+    "rules": [
+      { "name": "The Signal-Only Rule", "body": "Saturated color means difficulty, favorite, or correct. Never use teal, yellow or red as decoration or for non-difficulty states.", "section": "colors" },
+      { "name": "The Label-Behind-Color Rule", "body": "A color never stands alone: the badge always carries symbols and a tooltip naming the difficulty in Czech.", "section": "colors" },
+      { "name": "The Czech-Diacritics Rule", "body": "Every text style must render Czech diacritics without clipping.", "section": "typography" },
+      { "name": "The One Lift Rule", "body": "Only the puzzle card casts a shadow; every other surface is tonal and flat.", "section": "elevation" }
+    ],
+    "dos": [
+      "Do let the puzzle image dominate each screen; keep surrounding chrome tonal.",
+      "Do derive all non-difficulty color from the indigo seed via the Material scheme.",
+      "Do pair difficulty color with symbols and a Czech text label.",
+      "Do keep touch targets at 48px or larger, and keep the layout working at 360px."
+    ],
+    "donts": [
+      "Don't use teal, yellow or red for anything but difficulty (or red for favorite).",
+      "Don't add a second shadow style or lift other surfaces.",
+      "Don't introduce a custom typeface or decorative display type.",
+      "Don't make search, browsing or answer-revealing UI prominent; the game depends on not trivializing it."
+    ]
+  }
+}

@@ -17,6 +17,13 @@ IconData wordTypeIcon(WordType t) => switch (t) {
   WordType.other => Icons.more_horiz,
 };
 
+/// true: štítek je uvnitř bílého rámečku, přilepený do rohu obrázku.
+/// false: štítek je přilepený do rohu celé karty (přes rámeček).
+const kBadgeInsideFrame = false;
+const _frameInset = 6.0;
+const _cardRadius = 24.0;
+const _imageRadius = 18.0;
+
 /// Obrázek rébusu: asset, soubor v zařízení (nebo URL na webu).
 class PuzzleImage extends StatelessWidget {
   const PuzzleImage(
@@ -136,52 +143,67 @@ class PuzzleCard extends StatelessWidget {
               ),
             ),
           ],
+          // Štítek přilepený přímo do rohu karty (jako na fyzické předloze).
           Positioned(
-            left: 10,
-            top: 10,
+            left: kBadgeInsideFrame ? _frameInset : 0,
+            top: kBadgeInsideFrame ? _frameInset : 0,
             child: Row(
               mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 DifficultyBadge(
+                  cornerRadius: kBadgeInsideFrame ? _imageRadius : _cardRadius,
                   difficulty: difficulty,
                   wordTypes: wordTypes,
                   showPlusMinus: plusMinus,
                 ),
-                if (adult) ...[const SizedBox(width: 6), const AdultChip()],
+                if (adult)
+                  const Padding(
+                    padding: EdgeInsets.only(left: 6, top: 8),
+                    child: AdultChip(),
+                  ),
               ],
             ),
           ),
-          if (favorite != null)
+          // Akce vpravo nahoře, pod sebou; větší než dřív, aby se dobře trefovaly.
+          if (favorite != null || onShare != null)
             Positioned(
-              right: 4,
-              top: 4,
-              child: IconButton(
-                key: const Key('favorite-button'),
-                tooltip: 'Oblíbené',
-                style: IconButton.styleFrom(
-                  backgroundColor: Colors.white70,
-                  minimumSize: const Size(48, 48),
-                ),
-                icon: Icon(
-                  favorite! ? Icons.favorite : Icons.favorite_border,
-                  color: Colors.redAccent,
-                ),
-                onPressed: onFavorite,
-              ),
-            ),
-          if (onShare != null)
-            Positioned(
-              right: 4,
-              top: favorite != null ? 56 : 4,
-              child: IconButton(
-                key: const Key('share-button'),
-                tooltip: 'Sdílet odkaz na rébus',
-                style: IconButton.styleFrom(
-                  backgroundColor: Colors.white70,
-                  minimumSize: const Size(48, 48),
-                ),
-                icon: const Icon(Icons.share_outlined, color: Colors.black87),
-                onPressed: onShare,
+              right: 8,
+              top: 8,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  if (favorite != null)
+                    IconButton(
+                      key: const Key('favorite-button'),
+                      tooltip: 'Oblíbené',
+                      style: IconButton.styleFrom(
+                        backgroundColor: Colors.white.withValues(alpha: 0.65),
+                        minimumSize: const Size(44, 44),
+                        tapTargetSize: MaterialTapTargetSize.padded,
+                      ),
+                      iconSize: 24,
+                      icon: Icon(
+                        favorite! ? Icons.favorite : Icons.favorite_border,
+                        color: Colors.redAccent,
+                      ),
+                      onPressed: onFavorite,
+                    ),
+                  if (favorite != null && onShare != null) const SizedBox(height: 8),
+                  if (onShare != null)
+                    IconButton(
+                      key: const Key('share-button'),
+                      tooltip: 'Sdílet odkaz na rébus',
+                      style: IconButton.styleFrom(
+                        backgroundColor: Colors.white.withValues(alpha: 0.65),
+                        minimumSize: const Size(44, 44),
+                        tapTargetSize: MaterialTapTargetSize.padded,
+                      ),
+                      iconSize: 24,
+                      icon: const Icon(Icons.share_outlined, color: Colors.black87),
+                      onPressed: onShare,
+                    ),
+                ],
               ),
             ),
         ],
@@ -222,6 +244,7 @@ class AdultChip extends StatelessWidget {
 class DifficultyBadge extends StatelessWidget {
   const DifficultyBadge({
     super.key,
+    this.cornerRadius = 24,
     required this.difficulty,
     required this.wordTypes,
     required this.showPlusMinus,
@@ -230,6 +253,9 @@ class DifficultyBadge extends StatelessWidget {
   final int difficulty;
   final List<WordType> wordTypes;
   final bool showPlusMinus;
+
+  /// Zaoblení vnějšího (levého horního) rohu: shodné s rohem, do kterého se lepí.
+  final double cornerRadius;
 
   Widget _hint(String message, Widget child, {Key? key}) => Tooltip(
     key: key,
@@ -254,10 +280,14 @@ class DifficultyBadge extends StatelessWidget {
     return _hint(
       'Obtížnost: ${difficultyLabel(difficulty)} (barva štítku)',
       Container(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+        padding: const EdgeInsets.fromLTRB(16, 10, 14, 10),
         decoration: BoxDecoration(
           color: color,
-          borderRadius: BorderRadius.circular(12),
+          // Vnější roh kopíruje zaoblení karty (24), vnitřní je menší.
+          borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(cornerRadius),
+            bottomRight: const Radius.circular(16),
+          ),
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
