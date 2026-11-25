@@ -152,7 +152,10 @@ class PuzzleCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 DifficultyBadge(
-                  cornerRadius: kBadgeInsideFrame ? _imageRadius : _cardRadius,
+                  // Stack leží uvnitř rámečku, jeho ořez má poloměr zmenšený o šířku rámečku.
+                  cornerRadius: kBadgeInsideFrame
+                      ? _imageRadius
+                      : _cardRadius - (highlight ? 4 : 1),
                   difficulty: difficulty,
                   wordTypes: wordTypes,
                   showPlusMinus: plusMinus,
