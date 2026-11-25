@@ -33,3 +33,4 @@ flutter:
     - assets/seed_puzzles.json
     - assets/images/
     - assets/help/
+    - assets/icons/

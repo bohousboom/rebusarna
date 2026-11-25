@@ -12,23 +12,28 @@ class BurningPuzzle extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final off = Theme.of(context).disabledColor;
-    return SizedBox(
+    Widget img = Image.asset(
+      'assets/icons/streak_puzzle.png',
       width: size,
-      height: size * 1.15,
-      child: Stack(
-        clipBehavior: Clip.none,
-        alignment: Alignment.bottomCenter,
-        children: [
-          Icon(Icons.extension, size: size, color: lit ? Colors.deepOrange : off),
-          Positioned(
-            top: -size * 0.12,
-            child: Icon(Icons.local_fire_department,
-                size: size * 0.7, color: lit ? Colors.amber : off),
-          ),
-        ],
-      ),
+      height: size,
+      fit: BoxFit.contain,
     );
+    if (!lit) {
+      // Nesvítí: černobílá a trochu průhledná.
+      img = Opacity(
+        opacity: 0.6,
+        child: ColorFiltered(
+          colorFilter: const ColorFilter.matrix(<double>[
+            0.2126, 0.7152, 0.0722, 0, 0, //
+            0.2126, 0.7152, 0.0722, 0, 0,
+            0.2126, 0.7152, 0.0722, 0, 0,
+            0, 0, 0, 1, 0,
+          ]),
+          child: img,
+        ),
+      );
+    }
+    return SizedBox(width: size, height: size, child: img);
   }
 }
 
@@ -47,8 +52,8 @@ class StreakFlame extends ConsumerWidget {
       message: days == 0
           ? 'Uhodni dnes rébus a zapal sérii'
           : lit
-              ? 'Série: $days ${_dayWord(days)} v řadě'
-              : 'Série $days ${_dayWord(days)}, uhodni dnes rébus a neztratíš ji',
+          ? 'Série: $days ${_dayWord(days)} v řadě'
+          : 'Série $days ${_dayWord(days)}, uhodni dnes rébus a neztratíš ji',
       triggerMode: TooltipTriggerMode.tap,
       child: Container(
         key: const Key('streak-flame'),
@@ -56,12 +61,17 @@ class StreakFlame extends ConsumerWidget {
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            BurningPuzzle(size: 24, lit: lit),
+            BurningPuzzle(size: 26, lit: lit),
             const SizedBox(width: 2),
-            Text('$days',
-                key: const Key('streak-days'),
-                style: TextStyle(
-                    color: color, fontWeight: FontWeight.w800, fontSize: 18)),
+            Text(
+              '$days',
+              key: const Key('streak-days'),
+              style: TextStyle(
+                color: color,
+                fontWeight: FontWeight.w800,
+                fontSize: 18,
+              ),
+            ),
           ],
         ),
       ),

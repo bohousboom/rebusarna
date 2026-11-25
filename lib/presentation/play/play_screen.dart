@@ -684,7 +684,7 @@ class _PuzzlePageState extends ConsumerState<PuzzlePage>
                         key: const Key('streak-message'),
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          const BurningPuzzle(size: 18),
+                          const BurningPuzzle(size: 22),
                           const SizedBox(width: 4),
                           Text('$days ${streakDayWord(days)} v řadě',
                               style: TextStyle(color: fg, fontWeight: FontWeight.w700)),
